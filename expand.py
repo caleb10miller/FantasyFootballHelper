@@ -888,6 +888,12 @@ def main(year=2022, save_csv=True):
 
     df_final = create_final_dataset(year=year)
 
+    df_final['ESPN ADP'] = df_final['ESPN ADP'].fillna(301)
+    df_final['NFL ADP'] = df_final['NFL ADP'].fillna(301)
+    df_final['RTSports ADP'] = df_final['RTSports ADP'].fillna(301)
+    df_final['Sleeper ADP'] = df_final['Sleeper ADP'].fillna(301)
+    df_final['Average ADP'] = df_final['Average ADP'].fillna(301)
+
     if save_csv:
         out_file = f"nfl_{year}_final_na.csv"
         df_final.to_csv(out_file, index=False)
