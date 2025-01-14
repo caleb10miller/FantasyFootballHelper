@@ -851,7 +851,7 @@ def create_final_dataset(year=2022):
     final_df.update(df_st_final)
     final_df.reset_index(inplace=True)
 
-    points_from_points = pd.read_csv(f"Capstone/data/fantasy_points_from_points_allowed_{year}.csv")
+    points_from_points = pd.read_csv(f"Capstone/data/{year}/fantasy_points_from_points_allowed_{year}.csv")
     final_df = final_df.merge(points_from_points, on='Player Name', how='left')
 
     # 7) Merge ADP data into final_df
@@ -898,7 +898,7 @@ def main(year=2022, save_csv=True):
 
     if save_csv:
         os.makedirs(f"Capstone/data/{year}", exist_ok=True)
-        out_file = f"Capstone/data/{year}/nfl_{year}_final_na.csv"
+        out_file = f"Capstone/data/{year}/nfl_{year}_final_data.csv"
         df_final.to_csv(out_file, index=False)
         print(f"\nSaved final dataset to {out_file}")
 
