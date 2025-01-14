@@ -32,14 +32,13 @@ import os
 # 0) GLOBAL SETTINGS
 ##############################
 
-# Removed "Def Fumbles Lost", "ST_Defensive Touchdowns", "Defensive Touchdowns Allowed" from FINAL_COLUMNS
 FINAL_COLUMNS = [
     "Season", "Player ID", "Player Name", "Position", "Team",
     "Games Played", "Games Started",
     "Passing Attempts", "Passing Completions", "Passing Yards", "Passing Touchdowns", "Interceptions Thrown",
     "Rushing Attempts", "Rushing Yards", "Rushing Touchdowns",
     "Targets", "Receptions", "Receiving Yards", "Receiving Touchdowns",
-    "Fumbles", "Fumbles Lost", "Two Point Conversions",
+    "Fumbles",
     "Field Goals Made", "Field Goals Attempted", "Extra Points Made", "Extra Points Attempted", 
     "Total Yards Allowed", "Total Plays", "Takeaways", "First Downs Allowed", 
     "Passing Yards Allowed", "Passing Touchdowns Allowed", "Rushing Yards Allowed", "Rushing Touchdowns Allowed",
@@ -349,8 +348,6 @@ def transform_passing(df_passing, year=2022):
 
     # Other placeholders
     out["Fumbles"] = np.nan
-    out["Fumbles Lost"] = np.nan
-    out["Two Point Conversions"] = np.nan
     out["Field Goals Made"] = np.nan
     out["Field Goals Attempted"] = np.nan
     out["Extra Points Made"] = np.nan
@@ -397,8 +394,6 @@ def transform_rushing(df_rushing, year=2022):
 
     # Other placeholders
     out["Fumbles"] = pd.to_numeric(df_rushing.get("Fmb", pd.Series(dtype=float)), errors="coerce")
-    out["Fumbles Lost"] = np.nan
-    out["Two Point Conversions"] = np.nan
     out["Field Goals Made"] = np.nan
     out["Field Goals Attempted"] = np.nan
     out["Extra Points Made"] = np.nan
@@ -445,8 +440,6 @@ def transform_receiving(df_receiving, year=2022):
 
     # Other placeholders
     out["Fumbles"] = pd.to_numeric(df_receiving.get("Fmb", pd.Series(dtype=float)), errors="coerce")
-    out["Fumbles Lost"] = np.nan
-    out["Two Point Conversions"] = np.nan
     out["Field Goals Made"] = np.nan
     out["Field Goals Attempted"] = np.nan
     out["Extra Points Made"] = np.nan
@@ -492,8 +485,6 @@ def transform_kicking(df_kick, year=2022):
     out["Receiving Touchdowns"] = np.nan
 
     out["Fumbles"] = np.nan
-    out["Fumbles Lost"] = np.nan
-    out["Two Point Conversions"] = np.nan
 
     out["Field Goals Made"] = pd.to_numeric(df_kick.get("FGM", pd.Series(dtype=float)), errors="coerce")
     out["Field Goals Attempted"] = pd.to_numeric(df_kick.get("FGA", pd.Series(dtype=float)), errors="coerce")
@@ -598,8 +589,6 @@ def transform_team_defense(df_def, year=2022):
             "Receiving Yards": np.nan,
             "Receiving Touchdowns": np.nan,
             "Fumbles": np.nan,
-            "Fumbles Lost": np.nan,            # Offensive placeholder
-            "Two Point Conversions": np.nan,
             "Field Goals Made": np.nan,
             "Field Goals Attempted": np.nan,
             "Extra Points Made": np.nan,
