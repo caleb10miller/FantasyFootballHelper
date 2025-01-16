@@ -336,6 +336,64 @@ def get_adp_stats(year=2022):
 
     return df
 
+def get_and_transform_two_point_conversion_stats(year):
+    """
+    Fetches NFL 2-point conversion stats for a given year from StatMuse.
+
+    Args:
+        year (int): The season year to fetch data for.
+
+    Returns:
+        pd.DataFrame: A DataFrame with columns ['Player Name', 'XP2'].
+    """
+    url = f"https://www.statmuse.com/nfl/ask/most-2-point-conversion-leaders-in-the-nfl-{year}"
+    print(f"[Scrape] 2-Point Conversion stats: {url}")
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    # Locate the table on the page
+    table = soup.find('table')
+    if table is None:
+        raise ValueError("Could not find the 2-point conversion table on StatMuse.")
+    
+    # Read the table into a DataFrame
+    df_list = pd.read_html(str(table))
+    if not df_list:
+        raise ValueError("Could not parse the 2-point conversion table with pandas.")
+    
+    df = df_list[0]
+
+    print(df.columns)
+
+    # Ensure columns 'NAME' and 'XP2' are present
+    if 'NAME' not in df.columns or 'XP2' not in df.columns:
+        raise ValueError("Required columns 'NAME' or 'XP2' are missing from the data.")
+
+    # Clean up 'Player Name' by removing duplicate name formats
+    def clean_player_name(name):
+        name = str(name).strip()
+        # Regex to detect duplicated format like 'Aaron Jones Sr. A. Jones Sr.'
+        pattern = r"^([\w'\.\-\s]+)\s([A-Z]\.[\s\w'\.\-]+)$"
+        match = re.match(pattern, name)
+        if match:
+            full_name, abbrev_name = match.groups()
+            # Check if initials in abbrev match the full name
+            full_last_name = full_name.split()[-1]
+            abbrev_last_name = abbrev_name.split()[-1]
+            if full_last_name == abbrev_last_name:
+                return full_name  # Return only the full name
+        return name
+
+    # Rename 'NAME' to 'Player Name' and clean it
+    df.rename(columns={'NAME': 'Player Name'}, inplace=True)
+    df['Player Name'] = df['Player Name'].apply(clean_player_name)
+
+    return df[['Player Name', 'XP2']]
+
+
 ##############################
 # 3) TRANSFORM FUNCTIONS (KEEP NaN)
 ##############################
@@ -840,6 +898,7 @@ def create_final_dataset(year=2022):
     time.sleep(1)
     df_adp = get_adp_stats(year=year)
     time.sleep(1)
+    df_two_point_conversion_final = get_and_transform_two_point_conversion_stats(year)
 
     # 2) Transform
     df_pass_final = transform_passing(df_pass, year)
@@ -869,6 +928,7 @@ def create_final_dataset(year=2022):
 
     points_from_points = pd.read_csv(f"Capstone/data/{year}/fantasy_points_from_points_allowed_{year}.csv")
     final_df = final_df.merge(points_from_points, on='Player Name', how='left')
+    final_df = final_df.merge(df_two_point_conversion_final, on='Player Name', how='left')
 
     # 7) Merge ADP data into final_df
     # Ensure that 'Player Name' is the column name in both dataframes
