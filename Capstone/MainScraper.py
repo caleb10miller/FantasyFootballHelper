@@ -38,17 +38,22 @@ FINAL_COLUMNS = [
     "Passing Attempts", "Passing Completions", "Passing Yards", "Passing Touchdowns", "Interceptions Thrown",
     "Rushing Attempts", "Rushing Yards", "Rushing Touchdowns",
     "Targets", "Receptions", "Receiving Yards", "Receiving Touchdowns",
-    "Fumbles",
-    "Field Goals Made", "Field Goals Attempted", "Extra Points Made", "Extra Points Attempted", 
-    "Total Yards Allowed", "Total Plays", "Takeaways", "First Downs Allowed", 
+    "Fumbles", "Fumbles Lost", "Two Point Conversions",
+    # Field Goal Attempts and Makes by Distance
+    "Field Goals Attempted 0-19", "Field Goals Made 0-19",
+    "Field Goals Attempted 20-29", "Field Goals Made 20-29",
+    "Field Goals Attempted 30-39", "Field Goals Made 30-39",
+    "Field Goals Attempted 40-49", "Field Goals Made 40-49",
+    "Field Goals Attempted 50+", "Field Goals Made 50+",
+    # Total Field Goals
+    "Field Goals Attempted", "Field Goals Made",
+    "Extra Points Made", "Extra Points Attempted",
+    "Total Yards Allowed", "Total Plays", "Takeaways", "First Downs Allowed",
     "Passing Yards Allowed", "Passing Touchdowns Allowed", "Rushing Yards Allowed", "Rushing Touchdowns Allowed",
-    "Penalties Committed", "Penalty Yards", 
+    "Penalties Committed", "Penalty Yards",
     "First Downs by Penalty", "Percent Drives Scored On", "Percent Drives Takeaway",
-    # Special Teams Columns (prefixed to avoid conflicts)
     "ST_Sacks", "ST_Interceptions", "ST_Fumble Recoveries", "ST_Forced Fumbles",
-    "ST_Safeties", "ST_Special Teams Touchdowns",
-    # "ST_Defensive Touchdowns" removed
-    # "Defensive Touchdowns Allowed" removed
+    "ST_Safeties", "ST_Special Teams Touchdowns"
 ]
 
 ##############################
@@ -187,6 +192,25 @@ def get_kicking_stats(year=2022):
     df = df_list[0]
     df = _clean_header_rows(df)
     df = _drop_multiindex(df)
+
+    # Handle duplicate FGA and FGM columns by renaming them to match distances
+    distance_ranges = ["0-19", "20-29", "30-39", "40-49", "50+", "Total"]
+    fga_count = 0
+    fgm_count = 0
+
+    new_columns = []
+    for col in df.columns:
+        if col == "FGA":
+            new_columns.append(f"FGA {distance_ranges[fga_count]}")
+            fga_count += 1
+        elif col == "FGM":
+            new_columns.append(f"FGM {distance_ranges[fgm_count]}")
+            fgm_count += 1
+        else:
+            new_columns.append(col)
+
+    # Apply the renamed columns to the DataFrame
+    df.columns = new_columns
 
     # -------------------------------------
     # The key lines to keep last duplicates
@@ -456,49 +480,52 @@ def transform_receiving(df_receiving, year=2022):
     return out
 
 def transform_kicking(df_kick, year=2022):
+    """
+    Transforms the raw kicking stats DataFrame into the standardized FINAL_COLUMNS format,
+    capturing all instances of 'FGA' and 'FGM' by distance.
+    """
     out = pd.DataFrame(columns=FINAL_COLUMNS)
+
+    # Basic player information
     out["Season"] = year
     out["Player ID"] = None
     out["Player Name"] = df_kick["Player"]
     out["Position"] = df_kick.get("Pos", pd.Series(dtype=object))
     out["Team"] = df_kick.get("Tm", pd.Series(dtype=object))
 
+    # Games played and started
     out["Games Played"] = pd.to_numeric(df_kick.get("G", pd.Series(dtype=float)), errors="coerce")
     out["Games Started"] = pd.to_numeric(df_kick.get("GS", pd.Series(dtype=float)), errors="coerce")
 
-    # Passing placeholders
-    out["Passing Attempts"] = np.nan
-    out["Passing Completions"] = np.nan
-    out["Passing Yards"] = np.nan
-    out["Passing Touchdowns"] = np.nan
-    out["Interceptions Thrown"] = np.nan
+    # Map FGA and FGM by distance
+    distances = ["0-19", "20-29", "30-39", "40-49", "50+"]
+    for distance in distances:
+        out[f"Field Goals Attempted {distance}"] = pd.to_numeric(df_kick.get(f"FGA {distance}", pd.Series(dtype=float)), errors="coerce").fillna(0)
+        out[f"Field Goals Made {distance}"] = pd.to_numeric(df_kick.get(f"FGM {distance}", pd.Series(dtype=float)), errors="coerce").fillna(0)
 
-    # Rushing placeholders
-    out["Rushing Attempts"] = np.nan
-    out["Rushing Yards"] = np.nan
-    out["Rushing Touchdowns"] = np.nan
+    # Map Total FGA and FGM
+    out["Field Goals Attempted"] = pd.to_numeric(df_kick.get("FGA Total", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    out["Field Goals Made"] = pd.to_numeric(df_kick.get("FGM Total", pd.Series(dtype=float)), errors="coerce").fillna(0)
 
-    # Receiving placeholders
-    out["Targets"] = np.nan
-    out["Receptions"] = np.nan
-    out["Receiving Yards"] = np.nan
-    out["Receiving Touchdowns"] = np.nan
+    # Extra Points
+    out["Extra Points Made"] = pd.to_numeric(df_kick.get("XPM", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    out["Extra Points Attempted"] = pd.to_numeric(df_kick.get("XPA", pd.Series(dtype=float)), errors="coerce").fillna(0)
 
-    out["Fumbles"] = np.nan
-
-    out["Field Goals Made"] = pd.to_numeric(df_kick.get("FGM", pd.Series(dtype=float)), errors="coerce")
-    out["Field Goals Attempted"] = pd.to_numeric(df_kick.get("FGA", pd.Series(dtype=float)), errors="coerce")
-    out["Extra Points Made"] = pd.to_numeric(df_kick.get("XPM", pd.Series(dtype=float)), errors="coerce")
-    out["Extra Points Attempted"] = pd.to_numeric(df_kick.get("XPA", pd.Series(dtype=float)), errors="coerce")
-
-    out["ST_Sacks"] = np.nan
-    out["ST_Interceptions"] = np.nan
-    out["ST_Fumble Recoveries"] = np.nan
-    out["ST_Forced Fumbles"] = np.nan
-    out["ST_Safeties"] = np.nan
-    out["ST_Special Teams Touchdowns"] = np.nan
-    # "ST_Defensive Touchdowns" removed
-    # "Defensive Touchdowns Allowed" removed
+    # Placeholder stats for non-kicker metrics
+    placeholder_columns = [
+        "Passing Attempts", "Passing Completions", "Passing Yards", "Passing Touchdowns", "Interceptions Thrown",
+        "Rushing Attempts", "Rushing Yards", "Rushing Touchdowns",
+        "Targets", "Receptions", "Receiving Yards", "Receiving Touchdowns",
+        "Fumbles", "Fumbles Lost", "Two Point Conversions",
+        "Total Yards Allowed", "Total Plays", "Takeaways", "First Downs Allowed",
+        "Passing Yards Allowed", "Passing Touchdowns Allowed", "Rushing Yards Allowed", "Rushing Touchdowns Allowed",
+        "Penalties Committed", "Penalty Yards",
+        "First Downs by Penalty", "Percent Drives Scored On", "Percent Drives Takeaway",
+        "ST_Sacks", "ST_Interceptions", "ST_Fumble Recoveries", "ST_Forced Fumbles",
+        "ST_Safeties", "ST_Special Teams Touchdowns"
+    ]
+    for col in placeholder_columns:
+        out[col] = np.nan
 
     return out
 
