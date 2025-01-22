@@ -33,7 +33,7 @@ import os
 ##############################
 
 FINAL_COLUMNS = [
-    "Season", "Player ID", "Player Name", "Position", "Team",
+    "Age", "Season", "Player ID", "Player Name", "Position", "Team",
     "Games Played", "Games Started",
     "Passing Attempts", "Passing Completions", "Passing Yards", "Passing Touchdowns", "Interceptions Thrown",
     "Rushing Attempts", "Rushing Yards", "Rushing Touchdowns",
@@ -400,6 +400,7 @@ def get_and_transform_two_point_conversion_stats(year):
 
 def transform_passing(df_passing, year=2022):
     out = pd.DataFrame(columns=FINAL_COLUMNS)
+    out["Age"] = pd.to_numeric(df_passing.get("Age", pd.Series(dtype=float)), errors="coerce")
     out["Season"] = year
     out["Player ID"] = None
     out["Player Name"] = df_passing["Player"]
@@ -447,6 +448,7 @@ def transform_passing(df_passing, year=2022):
 
 def transform_rushing(df_rushing, year=2022):
     out = pd.DataFrame(columns=FINAL_COLUMNS)
+    out["Age"] = pd.to_numeric(df_rushing.get("Age", pd.Series(dtype=float)), errors="coerce")
     out["Season"] = year
     out["Player ID"] = None
     out["Player Name"] = df_rushing["Player"]
@@ -493,6 +495,7 @@ def transform_rushing(df_rushing, year=2022):
 
 def transform_receiving(df_receiving, year=2022):
     out = pd.DataFrame(columns=FINAL_COLUMNS)
+    out["Age"] = pd.to_numeric(df_receiving.get("Age", pd.Series(dtype=float)), errors="coerce")
     out["Season"] = year
     out["Player ID"] = None
     out["Player Name"] = df_receiving["Player"]
@@ -545,6 +548,7 @@ def transform_kicking(df_kick, year=2022):
     out = pd.DataFrame(columns=FINAL_COLUMNS)
 
     # Basic player information
+    out["Age"] = pd.to_numeric(df_kick.get("Age", pd.Series(dtype=float)), errors="coerce")
     out["Season"] = year
     out["Player ID"] = None
     out["Player Name"] = df_kick["Player"]
@@ -885,19 +889,19 @@ def create_final_dataset(year=2022):
 
     # 1) Scrape
     df_pass = get_passing_stats(year)
-    time.sleep(1)
+    time.sleep(2)
     df_rush = get_rushing_stats(year)
-    time.sleep(1)
+    time.sleep(2)
     df_recv = get_receiving_stats(year)
-    time.sleep(1)
+    time.sleep(2)
     df_kick = get_kicking_stats(year)
-    time.sleep(1)
+    time.sleep(2)
     df_def_opp = get_team_defense_stats(year)
-    time.sleep(1)
+    time.sleep(2)
     df_st = get_special_teams_stats(year)
-    time.sleep(1)
+    time.sleep(2)
     df_adp = get_adp_stats(year=year)
-    time.sleep(1)
+    time.sleep(2)
     df_two_point_conversion_final = get_and_transform_two_point_conversion_stats(year)
 
     # 2) Transform
@@ -947,6 +951,8 @@ def create_final_dataset(year=2022):
 
     # Perform the merge
     final_df = final_df.merge(df_adp_final, on='Player Name', how='left')
+    
+    final_df = final_df[final_df['Player Name'] != 'League Average']
 
     # 8) Force Season = year
     final_df["Season"] = year
