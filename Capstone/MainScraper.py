@@ -969,6 +969,13 @@ def create_final_dataset(year=2022):
     final_df = add_positional_adp(final_df)
     final_df['Player ID'] = final_df.reset_index().index + 1
 
+    final_df['ESPN ADP'] = final_df['ESPN ADP'].fillna(301)
+    final_df['NFL ADP'] = final_df['NFL ADP'].fillna(301)
+    final_df['RTSports ADP'] = final_df['RTSports ADP'].fillna(301)
+    final_df['Sleeper ADP'] = final_df['Sleeper ADP'].fillna(301)
+    final_df['Average ADP'] = final_df['Average ADP'].fillna(301)
+
+
     # Final Cleanup: Drop any unwanted '_x', '_y', or '_dup' columns if they somehow exist
     unwanted_suffixes = ['_x', '_y', '_dup']
     for suffix in unwanted_suffixes:
@@ -983,12 +990,6 @@ def create_final_dataset(year=2022):
 def main(year=2022, save_csv=True):
 
     df_final = create_final_dataset(year=year)
-
-    df_final['ESPN ADP'] = df_final['ESPN ADP'].fillna(301)
-    df_final['NFL ADP'] = df_final['NFL ADP'].fillna(301)
-    df_final['RTSports ADP'] = df_final['RTSports ADP'].fillna(301)
-    df_final['Sleeper ADP'] = df_final['Sleeper ADP'].fillna(301)
-    df_final['Average ADP'] = df_final['Average ADP'].fillna(301)
 
     if save_csv:
         os.makedirs(f"Capstone/data/{year}", exist_ok=True)
