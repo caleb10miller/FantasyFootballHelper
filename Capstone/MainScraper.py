@@ -864,13 +864,22 @@ def pick_best_multiteam_row(df, stat_col="Rushing Attempts"):
 
     return df.groupby("Player Name", group_keys=False).apply(filter_group).reset_index(drop=True)
 
+def add_positional_adp(df):
+    """
+    Adds a 'Positional ADP' column to the DataFrame, which calculates the ADP rank within each position group.
+    """
+
+    # Group by 'Position' and rank the 'Average ADP' within each position
+    df['Positional ADP'] = df.groupby('Position')['Average ADP'].rank(method='first', ascending=True)
+
+    # Fill NaN values with a default rank (e.g., 0 or 999)
+    df['Positional ADP'] = df['Positional ADP'].fillna(301).astype(int)
+
+    return df
+
 ##############################
 # 5) CREATE FINAL DATASET
 ##############################
-
-import pandas as pd
-import re
-import time
 
 def create_final_dataset(year=2022):
     """
@@ -924,7 +933,7 @@ def create_final_dataset(year=2022):
     final_df = pd.concat([df_offense, df_def_final], ignore_index=True)
 
     # 6) Append special teams
-    # Use 'update' to merge special teams stats into team defense rows without creating suffixes
+    # Use 'update' to merge special teams stats into team defense rows 
     final_df.set_index("Player Name", inplace=True)  # Ensure consistent column name
     df_st_final.set_index("Player Name", inplace=True)
     final_df.update(df_st_final)
@@ -943,19 +952,22 @@ def create_final_dataset(year=2022):
     if 'Player Name' not in df_adp_final.columns:
         raise KeyError("df_adp_final must contain a 'Player Name' column for merging.")
 
-    # Check for duplicates in df_adp_final
     if df_adp_final['Player Name'].duplicated().any():
         print("Warning: df_adp_final contains duplicate Player Name entries. Aggregating by mean ADP.")
         # Example: Aggregate ADP by mean if duplicates exist
         df_adp_final = df_adp_final.groupby('Player Name', as_index=False).mean()
 
-    # Perform the merge
     final_df = final_df.merge(df_adp_final, on='Player Name', how='left')
     
     final_df = final_df[final_df['Player Name'] != 'League Average']
 
+    final_df = final_df[~final_df['Position'].isin(['DB', 'FS', 'LB', 'LT', 'RG', 'RT', 'S'])]
+
     # 8) Force Season = year
     final_df["Season"] = year
+
+    final_df = add_positional_adp(final_df)
+    final_df['Player ID'] = final_df.reset_index().index + 1
 
     # Final Cleanup: Drop any unwanted '_x', '_y', or '_dup' columns if they somehow exist
     unwanted_suffixes = ['_x', '_y', '_dup']
