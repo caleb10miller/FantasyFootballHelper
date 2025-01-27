@@ -27,6 +27,7 @@ import numpy as np
 from collections import defaultdict
 import re
 import os
+import regex as re
 
 ##############################
 # 0) GLOBAL SETTINGS
@@ -877,6 +878,29 @@ def add_positional_adp(df):
 
     return df
 
+def clean_names(names):
+    """
+    Removes specific suffixes ('Jr.', 'Sr.', 'II', 'III', 'O', 'II O', 'Jr. O', 'Sr. O', 'III O') 
+    from the end of names. Also incorporates custom logic to rename players like 'DJ Moore' to 'D.J. Moore'.
+    """
+    # Define a regex pattern to match all unwanted suffixes
+    pattern = r"( Jr\. O| Sr\. O| III O| Jr\.| Sr\.| II O| II| III| O)$"
+    
+    # Remove the suffixes from each name
+    cleaned_names = [re.sub(pattern, '', name) for name in names]
+
+    for i in range(len(cleaned_names)):
+        if cleaned_names[i] == "DJ Moore":
+            cleaned_names[i] = "D.J. Moore"
+        elif cleaned_names[i] == "DK Metcalf":
+            cleaned_names[i] = "D.K. Metcalf"
+        elif cleaned_names[i] == "Gabe Davis":
+            cleaned_names[i] = "Gabriel Davis"
+        elif cleaned_names[i] == "Joshiua Palmer":
+            cleaned_names[i] = "Josh Palmer"
+    
+    return cleaned_names
+
 ##############################
 # 5) CREATE FINAL DATASET
 ##############################
@@ -956,6 +980,11 @@ def create_final_dataset(year=2022):
         print("Warning: df_adp_final contains duplicate Player Name entries. Aggregating by mean ADP.")
         # Example: Aggregate ADP by mean if duplicates exist
         df_adp_final = df_adp_final.groupby('Player Name', as_index=False).mean()
+
+    names_to_clean = ~df_adp_final['Player Name'].isin(final_df['Player Name'])
+
+    # Apply the clean_names function only to the filtered names
+    df_adp_final.loc[names_to_clean, 'Player Name'] = clean_names(df_adp_final.loc[names_to_clean, 'Player Name'])
 
     final_df = final_df.merge(df_adp_final, on='Player Name', how='left')
     
