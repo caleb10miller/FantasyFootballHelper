@@ -878,28 +878,43 @@ def add_positional_adp(df):
 
     return df
 
-def clean_names(names):
+def clean_names(names, reference_names):
     """
-    Removes specific suffixes ('Jr.', 'Sr.', 'II', 'III', 'O', 'II O', 'Jr. O', 'Sr. O', 'III O') 
-    from the end of names. Also incorporates custom logic to rename players like 'DJ Moore' to 'D.J. Moore'.
+    Cleans and standardizes player names by removing suffixes and dynamically formatting initials.
+    
+    Parameters:
+        names (list): List of player names to be cleaned.
+        reference_names (set): Set of reference names to check for matches after cleaning.
+    
+    Returns:
+        list: List of cleaned and standardized player names.
     """
-    # Define a regex pattern to match all unwanted suffixes
+    # Define a regex pattern to match unwanted suffixes
     pattern = r"( Jr\. O| Sr\. O| III O| Jr\.| Sr\.| II O| II| III| O)$"
     
-    # Remove the suffixes from each name
+    # Remove suffixes
     cleaned_names = [re.sub(pattern, '', name) for name in names]
 
+    def format_initials(name):
+        """
+        Adds periods between uppercase letters if they are initials (e.g., 'JK Dobbins' -> 'J.K. Dobbins').
+        """
+        return re.sub(r'\b([A-Z])([A-Z])\b', r'\1.\2.', name)
+    
     for i in range(len(cleaned_names)):
-        if cleaned_names[i] == "DJ Moore":
-            cleaned_names[i] = "D.J. Moore"
-        elif cleaned_names[i] == "DK Metcalf":
-            cleaned_names[i] = "D.K. Metcalf"
-        elif cleaned_names[i] == "Gabe Davis":
+        # Apply custom replacements for known mismatches
+        if cleaned_names[i] == "Gabe Davis":
             cleaned_names[i] = "Gabriel Davis"
         elif cleaned_names[i] == "Joshiua Palmer":
             cleaned_names[i] = "Josh Palmer"
+        else:
+            # Dynamically format initials and check against reference names
+            formatted_name = format_initials(cleaned_names[i])
+            if formatted_name in reference_names:
+                cleaned_names[i] = formatted_name
     
     return cleaned_names
+
 
 ##############################
 # 5) CREATE FINAL DATASET
@@ -984,7 +999,8 @@ def create_final_dataset(year=2022):
     names_to_clean = ~df_adp_final['Player Name'].isin(final_df['Player Name'])
 
     # Apply the clean_names function only to the filtered names
-    df_adp_final.loc[names_to_clean, 'Player Name'] = clean_names(df_adp_final.loc[names_to_clean, 'Player Name'])
+    reference_names = set(final_df['Player Name'])
+    df_adp_final.loc[names_to_clean, 'Player Name'] = clean_names(df_adp_final.loc[names_to_clean, 'Player Name'], reference_names)
 
     final_df = final_df.merge(df_adp_final, on='Player Name', how='left')
     
