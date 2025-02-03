@@ -28,6 +28,7 @@ from collections import defaultdict
 import re
 import os
 import regex as re
+from defense_points_allowed import points_from_points_allowed
 
 ##############################
 # 0) GLOBAL SETTINGS
@@ -554,7 +555,7 @@ def transform_kicking(df_kick, year=2022):
     out["Player ID"] = None
     out["Player Name"] = df_kick["Player"]
     out["Position"] = df_kick.get("Pos", pd.Series(dtype=object))
-    out["Team"] = df_kick.get("Tm", pd.Series(dtype=object))
+    out["Team"] = df_kick.get("Team", pd.Series(dtype=object))
 
     # Games played and started
     out["Games Played"] = pd.to_numeric(df_kick.get("G", pd.Series(dtype=float)), errors="coerce")
@@ -978,6 +979,7 @@ def create_final_dataset(year=2022):
     final_df.update(df_st_final)
     final_df.reset_index(inplace=True)
 
+    points_from_points_allowed(year)
     points_from_points = pd.read_csv(f"Capstone/data/{year}/fantasy_points_from_points_allowed_{year}.csv")
     final_df = final_df.merge(points_from_points, on='Player Name', how='left')
     final_df = final_df.merge(df_two_point_conversion_final, on='Player Name', how='left')
@@ -1028,6 +1030,16 @@ def create_final_dataset(year=2022):
         if cols_to_drop:
             final_df.drop(columns=cols_to_drop, inplace=True)
             print(f"\nDropped unwanted '{suffix}' suffixed columns: {cols_to_drop}")
+
+    final_df = final_df.drop(columns=['Two Point Conversions'])
+
+    final_df['Position']
+
+    final_df['Position'] = final_df['Position'].replace('FB', 'RB')
+
+    final_df['Position'] = final_df['Position'].replace('P', 'K')
+
+    final_df = final_df.drop(columns=['Player ID'])
 
     return final_df
 

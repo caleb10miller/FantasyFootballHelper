@@ -133,8 +133,8 @@ def scrape_all_teams(year: int) -> pd.DataFrame:
         df_all = pd.concat([df_all, df_team_summed], ignore_index=True)
         
         # Sleep to avoid rate-limiting
-        print("Sleeping for 5 seconds...")
-        time.sleep(5)
+        print("Sleeping for 2 seconds...")
+        time.sleep(2)
 
     TEAM_NAME_MAP = {
         "sfo": "San Francisco 49ers DST",
@@ -175,14 +175,16 @@ def scrape_all_teams(year: int) -> pd.DataFrame:
     
     return df_all
 
-if __name__ == "__main__":
-    YEAR = 2022
-    df_final = scrape_all_teams(YEAR)
+def points_from_points_allowed(year=2022):
+    df_final = scrape_all_teams(year)
     print("\nPreview of final DataFrame:")
     print(df_final.head(10))
     
     # write to CSV
-    os.makedirs(f"Capstone/data/{YEAR}", exist_ok=True)
-    csv_filename = f"Capstone/data/{YEAR}/fantasy_points_from_points_allowed_{YEAR}.csv"
+    os.makedirs(f"Capstone/data/{year}", exist_ok=True)
+    csv_filename = f"Capstone/data/{year}/fantasy_points_from_points_allowed_{year}.csv"
     df_final.to_csv(csv_filename, index=False)
     print(f"\nSaved to {csv_filename}")
+
+if __name__ == "__main__":
+    points_from_points_allowed(2022)

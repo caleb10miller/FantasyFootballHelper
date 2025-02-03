@@ -1,6 +1,6 @@
 import pandas as pd
 
-def calculate_fantasy_points(input_file='nfl_2022_final_data.csv', output_file='nfl_2022_fantasy_points.csv'):
+def calculate_fantasy_points(input_file='data/2022/nfl_2022_final_data.csv', output_file='data/2022/nfl_2022_fantasy_points.csv'):
     df = pd.read_csv(input_file)
     
     df.fillna(0, inplace=True)
