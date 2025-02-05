@@ -395,6 +395,89 @@ def get_and_transform_two_point_conversion_stats(year):
 
     return df[['Player Name', 'XP2']]
 
+def get_and_transform_defensive_touchdown_stats(year):
+    """
+    Fetches NFL defensive touchdown stats for a given year from NFL.com.
+
+    Args:
+        year (int): The season year to fetch data for.
+
+    Returns:
+        pd.DataFrame: A DataFrame with columns ['Player Name', 'DefTD'].
+    """
+    url = f"https://www.nfl.com/stats/team-stats/defense/scoring/{year}/reg/all"
+    print(f"[Scrape] Defensive Touchdown stats: {url}")
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    # Locate the table on the page
+    table = soup.find('table')
+    if table is None:
+        raise ValueError("Could not find the defensive touchdown table on NFL.com.")
+    
+    # Read the table into a DataFrame
+    df_list = pd.read_html(str(table))
+    if not df_list:
+        raise ValueError("Could not parse the defensive touchdown table with pandas.")
+    
+    df = df_list[0]
+
+    df.to_csv('defensive_touchdowns.csv')
+
+    # Ensure columns 'NAME' and 'XP2' are present
+    if 'Team' not in df.columns or 'FR TD' not in df.columns or 'INT TD' not in df.columns:
+        raise ValueError("Required columns 'NAME' or 'XP2' are missing from the data.")
+    
+    team_mapping = {
+        "Cowboys  Cowboys": "Dallas Cowboys DST",
+        "Browns  Browns": "Cleveland Browns DST",
+        "Jaguars  Jaguars": "Jacksonville Jaguars DST",
+        "Raiders  Raiders": "Las Vegas Raiders DST",
+        "Dolphins  Dolphins": "Miami Dolphins DST",
+        "Patriots  Patriots": "New England Patriots DST",
+        "Cardinals  Cardinals": "Arizona Cardinals DST",
+        "Panthers  Panthers": "Carolina Panthers DST",
+        "Bengals  Bengals": "Cincinnati Bengals DST",
+        "Vikings  Vikings": "Minnesota Vikings DST",
+        "Giants  Giants": "New York Giants DST",
+        "49ers  49ers": "San Francisco 49ers DST",
+        "Commanders  Commanders": "Washington Commanders DST",
+        "Falcons  Falcons": "Atlanta Falcons DST",
+        "Ravens  Ravens": "Baltimore Ravens DST",
+        "Bills  Bills": "Buffalo Bills DST",
+        "Bears  Bears": "Chicago Bears DST",
+        "Broncos  Broncos": "Denver Broncos DST",
+        "Lions  Lions": "Detroit Lions DST",
+        "Packers  Packers": "Green Bay Packers DST",
+        "Titans  Titans": "Tennessee Titans DST",
+        "Texans  Texans": "Houston Texans DST",
+        "Colts  Colts": "Indianapolis Colts DST",
+        "Chiefs  Chiefs": "Kansas City Chiefs DST",
+        "Rams  Rams": "Los Angeles Rams DST",
+        "Saints  Saints": "New Orleans Saints DST",
+        "Jets  Jets": "New York Jets DST",
+        "Eagles  Eagles": "Philadelphia Eagles DST",
+        "Steelers  Steelers": "Pittsburgh Steelers DST",
+        "Chargers  Chargers": "Los Angeles Chargers DST",
+        "Seahawks  Seahawks": "Seattle Seahawks DST",
+        "Buccaneers  Buccaneers": "Tampa Bay Buccaneers DST",
+    }
+
+    # Rename the Team column
+    df["Team"] = df["Team"].map(team_mapping)
+
+    # Rename 'Team' to 'Player Name' and clean it
+    df.rename(columns={'Team': 'Player Name'}, inplace=True)
+
+    df['DefTD'] = df['FR TD'] + df['INT TD']
+
+    df = df[['Player Name', 'DefTD']]
+
+    return df[['Player Name', 'DefTD']]
+
 
 ##############################
 # 3) TRANSFORM FUNCTIONS (KEEP NaN)
@@ -952,6 +1035,8 @@ def create_final_dataset(year=2022):
     df_adp = get_adp_stats(year=year)
     time.sleep(2)
     df_two_point_conversion_final = get_and_transform_two_point_conversion_stats(year)
+    time.sleep(2)
+    df_def_td = get_and_transform_defensive_touchdown_stats(year)
 
     # 2) Transform
     df_pass_final = transform_passing(df_pass, year)
@@ -983,6 +1068,11 @@ def create_final_dataset(year=2022):
     points_from_points = pd.read_csv(f"Capstone/data/{year}/fantasy_points_from_points_allowed_{year}.csv")
     final_df = final_df.merge(points_from_points, on='Player Name', how='left')
     final_df = final_df.merge(df_two_point_conversion_final, on='Player Name', how='left')
+
+    final_df = final_df.merge(df_def_td, on='Player Name', how='left')
+
+    final_df['ST_Special Teams Touchdowns'] = final_df['ST_Special Teams Touchdowns'] + final_df['DefTD']
+    final_df.drop(columns=['DefTD'], inplace=True)
 
     # 7) Merge ADP data into final_df
     # Ensure that 'Player Name' is the column name in both dataframes
