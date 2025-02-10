@@ -51,6 +51,9 @@ def calculate_fantasy_points(input_file='data/2022/nfl_2022_final_data.csv', out
         df['ST_Special Teams Touchdowns'] * 6 +
         df['Fantasy Points From Points'] * 1
     )
+
+    df['PPR Fantasy Points Scored'] = df['PPR Fantasy Points Scored'].round(2)
+    df['Standard Fantasy Points Scored'] = df['Standard Fantasy Points Scored'].round(2)
     
     df.to_csv(output_file, index=False)
     print(f"Fantasy points calculated and saved to {output_file}")

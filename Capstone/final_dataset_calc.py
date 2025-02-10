@@ -39,6 +39,9 @@ def merge_datasets(years = [2022, 2023, 2024]):
         else:
             merged_df = pd.merge(merged_df, df, on=["Player Name"], how="outer")
 
+    merged_df[f"{year} PPR Fantasy Points Scored"] = merged_df[f"{year} PPR Fantasy Points Scored"].round(2)
+    merged_df[f"{year} Standard Fantasy Points Scored"] = merged_df[f"{year} Standard Fantasy Points Scored"].round(2)
+
     if merged_df is not None:
         merged_df.to_csv(output_file, index=False)
         print(f"Data merged and saved to {output_file}")
