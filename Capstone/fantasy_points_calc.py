@@ -17,7 +17,7 @@ def calculate_fantasy_points(input_file='data/2022/nfl_2022_final_data.csv', out
         df['Receptions'] * 1 +  # PPR only
         df['Receiving Yards'] * 0.1 +
         df['Receiving Touchdowns'] * 6 +
-        df['Fumbles Lost'] * -2 +
+        df['Fumbles'] * -2 +
         df['XP2'] * 2
     )
     
@@ -29,15 +29,13 @@ def calculate_fantasy_points(input_file='data/2022/nfl_2022_final_data.csv', out
         df['Rushing Touchdowns'] * 6 +
         df['Receiving Yards'] * 0.1 +
         df['Receiving Touchdowns'] * 6 +
-        df['Fumbles Lost'] * -2 +
+        df['Fumbles'] * -2 +
         df['XP2'] * 2
     )
     
     # Fantasy Points for Kickers (K) - Same for both formats
     df.loc[df['Position'] == 'K', ['PPR Fantasy Points Scored', 'Standard Fantasy Points Scored']] = (
-        df['Field Goals Made 0-19'] * 3 +
-        df['Field Goals Made 20-29'] * 3 +
-        df['Field Goals Made 30-39'] * 3 +
+        df['Field Goals Made 0-39'] * 3 +
         df['Field Goals Made 40-49'] * 4 +
         df['Field Goals Made 50+'] * 5 +
         df['Extra Points Made'] * 1 +

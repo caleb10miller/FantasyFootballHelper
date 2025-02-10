@@ -1129,7 +1129,27 @@ def create_final_dataset(year=2022):
 
     final_df['Position'] = final_df['Position'].replace('P', 'K')
 
+    final_df['Position'] = final_df['Position'].replace('TE/QB', 'TE')
+
+    final_df = final_df[final_df['Position'] != 'C']
+    final_df = final_df[final_df['Position'] != 'CB']
+    final_df = final_df[final_df['Position'] != 'DT']
+    final_df = final_df[final_df['Position'] != 'G']
+    final_df = final_df[final_df['Position'] != 'OL']
+    final_df = final_df[final_df['Position'] != 'DL']
+    final_df = final_df[final_df['Position'] != 'DE']
+    final_df = final_df[final_df['Position'] != 'OT']
+    final_df = final_df[final_df['Position'] != 'T']
+
     final_df = final_df.drop(columns=['Player ID'])
+
+    final_df['Field Goals Made 0-39'] = final_df['Field Goals Made 0-19'] + final_df['Field Goals Made 20-29'] + final_df['Field Goals Made 30-39']
+    final_df.drop(['Field Goals Made 0-19', 'Field Goals Made 20-29', 'Field Goals Made 30-39'], axis=1, inplace=True)
+    final_df['Field Goals Attempted 0-39'] = final_df['Field Goals Attempted 0-19'] + final_df['Field Goals Attempted 20-29'] + final_df['Field Goals Attempted 30-39']
+    final_df.drop(['Field Goals Attempted 0-19', 'Field Goals Attempted 20-29', 'Field Goals Attempted 30-39'], axis=1, inplace=True)
+
+    column_order = ['Player Name', 'Age', 'Season', 'Position', 'Team', 'Games Played', 'Games Started', 'Passing Attempts', 'Passing Completions', 'Passing Yards', 'Passing Touchdowns', 'Interceptions Thrown', 'Rushing Attempts', 'Rushing Yards', 'Rushing Touchdowns', 'Targets', 'Receptions', 'Receiving Yards', 'Receiving Touchdowns', 'Fumbles', 'Field Goals Attempted 0-39', 'Field Goals Made 0-39', 'Field Goals Attempted 40-49', 'Field Goals Made 40-49', 'Field Goals Attempted 50+', 'Field Goals Made 50+', 'Field Goals Attempted', 'Field Goals Made', 'Extra Points Attempted', 'Extra Points Made', 'Total Yards Allowed', 'Total Plays', 'Takeaways', 'First Downs Allowed', 'Passing Yards Allowed', 'Passing Touchdowns Allowed', 'Rushing Yards Allowed', 'Rushing Touchdowns Allowed', 'Penalties Committed', 'Penalty Yards', 'First Downs by Penalty', 'Percent Drives Scored On', 'Percent Drives Takeaway', 'ST_Sacks', 'ST_Interceptions', 'ST_Fumble Recoveries', 'ST_Forced Fumbles', 'ST_Safeties', 'ST_Special Teams Touchdowns', 'Fantasy Points From Points', 'XP2', 'ESPN ADP', 'Sleeper ADP', 'NFL ADP', 'RTSports ADP', 'Average ADP', 'Positional ADP']
+    final_df = final_df[column_order]
 
     return final_df
 
