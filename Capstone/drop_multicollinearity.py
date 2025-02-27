@@ -1,14 +1,16 @@
+import pandas as pd
+import numpy as np
+
 def drop_multicollinearity(path="/Users/calebmiller/Library/CloudStorage/OneDrive-Personal/School/MSDS/Q6/DSCI 591/Capstone/data/final_data/nfl_merged_wide_format.csv",years=[2022,2023,2024]):
-    import pandas as pd
 
     df = pd.read_csv(path)
 
     for year in years:
 
-        df[f"{year} Total Passing"] = df[f"{year} Passing Yards"] * df[f"{year} Passing Touchdowns"]
+        df[f"{year} Total Passing"] = df[f"{year} Passing Yards"] * (df[f"{year} Passing Touchdowns"] + 1)
         df[f"{year} Touchdowns Allowed"] = df[f"{year} Passing Touchdowns Allowed"] + df[f"{year} Rushing Touchdowns Allowed"]
-        df[f"{year} Receptions*Yards"] = df[f"{year} Receptions"] * df[f"{year} Receiving Yards"]
-        df[f"{year} Carries*Yards"] = df[f"{year} Rushing Yards"] * df[f"{year} Rushing Attempts"]
+        df[f"{year} Receptions*Yards"] = df[f"{year} Receptions"] * (df[f"{year} Receiving Yards"] + 1)
+        df[f"{year} Carries*Yards"] = (df[f"{year} Rushing Yards"] + 1) * df[f"{year} Rushing Attempts"]
 
         df.drop(columns=[
             f"{year} ESPN ADP", 
@@ -50,6 +52,17 @@ def drop_multicollinearity(path="/Users/calebmiller/Library/CloudStorage/OneDriv
             f"{year} Receiving Yards", 
             f"{year} Rushing Yards"
         ], inplace=True)
+
+        for index, row in df.iterrows():
+                if row[f"{year} Total Passing"] == 0 and row[f"{year} Interceptions Thrown"] == 0:
+                    df.at[index, f"{year} Interceptions Thrown"] = np.nan
+                    df.at[index, f"{year} Total Passing"] = np.nan
+                if row[f"{year} Carries*Yards"] == 0 and row[f"{year} Rushing Touchdowns"] == 0:
+                    df.at[index, f"{year} Rushing Touchdowns"] = np.nan
+                    df.at[index, f"{year} Carries*Yards"] = np.nan
+                if row[f"{year} Receptions*Yards"] == 0 and row[f"{year} Receiving Touchdowns"] == 0:
+                    df.at[index, f"{year} Receiving Touchdowns"] = np.nan
+                    df.at[index, f"{year} Receptions*Yards"] = np.nan
 
     ordered_columns = [
         "Player Name",  

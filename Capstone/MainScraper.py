@@ -957,9 +957,6 @@ def add_positional_adp(df):
     # Group by 'Position' and rank the 'Average ADP' within each position
     df['Positional ADP'] = df.groupby('Position')['Average ADP'].rank(method='first', ascending=True)
 
-    # Fill NaN values with a default rank (e.g., 0 or 999)
-    df['Positional ADP'] = df['Positional ADP'].fillna(301).astype(int)
-
     return df
 
 def clean_names(names, reference_names):
@@ -1106,12 +1103,6 @@ def create_final_dataset(year=2022):
     final_df = add_positional_adp(final_df)
     final_df['Player ID'] = final_df.reset_index().index + 1
 
-    final_df['ESPN ADP'] = final_df['ESPN ADP'].fillna(301)
-    final_df['NFL ADP'] = final_df['NFL ADP'].fillna(301)
-    final_df['RTSports ADP'] = final_df['RTSports ADP'].fillna(301)
-    final_df['Sleeper ADP'] = final_df['Sleeper ADP'].fillna(301)
-    final_df['Average ADP'] = final_df['Average ADP'].fillna(301)
-
 
     # Final Cleanup: Drop any unwanted '_x', '_y', or '_dup' columns if they somehow exist
     unwanted_suffixes = ['_x', '_y', '_dup']
@@ -1123,13 +1114,21 @@ def create_final_dataset(year=2022):
 
     final_df = final_df.drop(columns=['Two Point Conversions'])
 
-    final_df['Position']
-
     final_df['Position'] = final_df['Position'].replace('FB', 'RB')
 
     final_df['Position'] = final_df['Position'].replace('P', 'K')
 
     final_df['Position'] = final_df['Position'].replace('TE/QB', 'TE')
+
+    if year == 2022:
+        final_df["Average ADP"] = final_df["Average ADP"].fillna(301)
+        final_df["Positional ADP"] = final_df["Positional ADP"].fillna(97)
+    elif year == 2023:
+        final_df["Average ADP"] = final_df["Average ADP"].fillna(500)
+        final_df["Positional ADP"] = final_df["Positional ADP"].fillna(154)
+    elif year == 2024:
+        final_df["Average ADP"] = final_df["Average ADP"].fillna(900)
+        final_df["Positional ADP"] = final_df["Positional ADP"].fillna(211)
 
     final_df = final_df[final_df['Position'] != 'C']
     final_df = final_df[final_df['Position'] != 'CB']
