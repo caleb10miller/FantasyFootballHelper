@@ -101,7 +101,7 @@ def drop_multicollinearity(path="/Users/calebmiller/Library/CloudStorage/OneDriv
 
     df = df[ordered_columns]
 
-    df.to_csv("/Users/calebmiller/Library/CloudStorage/OneDrive-Personal/School/MSDS/Q6/DSCI 591/Capstone/data/final_data/nfl_merged_wide_format_no_multicollinearity.csv", index=False)
+    df.to_csv("Capstone/data/final_data/nfl_merged_wide_format_no_multicollinearity.csv", index=False)
 
     return "File saved as nfl_merged_wide_format_no_multicollinearity.csv"
 
