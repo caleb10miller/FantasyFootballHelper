@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def drop_multicollinearity(path="/Users/calebmiller/Library/CloudStorage/OneDrive-Personal/School/MSDS/Q6/DSCI 591/Capstone/data/final_data/nfl_merged_wide_format.csv",years=[2022,2023,2024]):
+def drop_multicollinearity(path="Capstone/data/final_data/nfl_merged_wide_format.csv",years=[2022,2023,2024]):
 
     df = pd.read_csv(path)
 
