@@ -87,8 +87,8 @@ python Capstone/drop_multicollinearity.py
 **Machine Learning Models**  
 - Initial Model Training & Evaluation (MLP Regression, XGBoost, Linear Regression).  
 - Pipeline Adjustments & Feature Weighting.  
-- **Winsorization** to handle extreme outliers.  
-- **Season Weighting** to prioritize recent performances.  
+  - **Consider Winsorization** to handle extreme outliers.  
+  - **Adjust Season Weighting** to prioritize recent performances.  
 
 **Recommender System Construction**  
 - Implementing **custom draft logic** (e.g., "If no QB in round 1, prioritize WR/RB").  
