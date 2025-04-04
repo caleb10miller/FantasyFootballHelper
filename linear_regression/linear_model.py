@@ -1,0 +1,342 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
+import joblib
+
+def load_data(data_path):
+    """
+    Load the long format data from CSV file.
+    
+    Args:
+        data_path (str): Path to the data file
+        
+    Returns:
+        pandas.DataFrame: Loaded data
+    """
+    print(f"Loading data from {data_path}...")
+    df = pd.read_csv(data_path)
+    print(f"Data loaded with shape: {df.shape}")
+    return df
+
+def split_data(df):
+    """
+    Split data into train (2022-2023) and test (2024) sets.
+    
+    Args:
+        df (pandas.DataFrame): Input data
+        
+    Returns:
+        tuple: (train_df, test_df)
+    """
+    print("Splitting data into train (2022-2023) and test (2024) sets...")
+    train_df = df[df['Season'].isin([2022, 2023])]
+    test_df = df[df['Season'] == 2024]
+    
+    # Remove rows where target is NaN from training data
+    train_df = train_df[train_df['Target_PPR'].notna()]
+    
+    print(f"Training data shape: {train_df.shape}")
+    print(f"Test data shape: {test_df.shape}")
+    
+    return train_df, test_df
+
+def prepare_features(df, train_df, test_df, scoring_type):
+    """
+    Prepare features for model training and prediction.
+    
+    Args:
+        df (pandas.DataFrame): Original data
+        train_df (pandas.DataFrame): Training data
+        test_df (pandas.DataFrame): Test data
+        scoring_type (int): 0 for standard, 1 for PPR
+        
+    Returns:
+        tuple: (X_train, y_train, X_test, y_test, feature_cols)
+    """
+    print("Preparing features...")
+    
+    # Prepare features (excluding target variables, non-feature columns, and Standard Fantasy Points)
+    feature_cols = [col for col in df.columns if col not in 
+                    ['Player Name', 'Season', 'Target_PPR', 'Target_Standard', 
+                     'PPR Fantasy Points Scored', 'Standard Fantasy Points Scored']]
+    
+    # Split into features and target based on scoring type
+    X_train = train_df[feature_cols]
+    y_train = train_df['Target_PPR'] if scoring_type == 1 else train_df['Target_Standard']
+    X_test = test_df[feature_cols]
+    y_test = test_df['Target_PPR'] if scoring_type == 1 else test_df['Target_Standard']
+    
+    # Fill NaN values with 0 (since NaN in football stats typically means 0)
+    X_train = X_train.fillna(0)
+    X_test = X_test.fillna(0)
+    
+    # Handle categorical variables
+    categorical_cols = ['Position', 'Team']
+    X_train = pd.get_dummies(X_train, columns=categorical_cols)
+    X_test = pd.get_dummies(X_test, columns=categorical_cols)
+    
+    # Ensure test set has all columns from training set
+    missing_cols = set(X_train.columns) - set(X_test.columns)
+    for col in missing_cols:
+        X_test[col] = 0
+    X_test = X_test[X_train.columns]
+    
+    print(f"Training features shape: {X_train.shape}")
+    print(f"Test features shape: {X_test.shape}")
+    
+    return X_train, y_train, X_test, y_test, feature_cols
+
+def scale_features(X_train, X_test):
+    """
+    Scale the features using StandardScaler.
+    
+    Args:
+        X_train (pandas.DataFrame): Training features
+        X_test (pandas.DataFrame): Test features
+        
+    Returns:
+        tuple: (X_train_scaled, X_test_scaled, scaler)
+    """
+    print("Scaling features...")
+    
+    # Scale the features
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+    
+    return X_train_scaled, X_test_scaled, scaler
+
+def train_model(X_train_scaled, y_train):
+    """
+    Train the Linear Regression model.
+    
+    Args:
+        X_train_scaled (numpy.ndarray): Scaled training features
+        y_train (pandas.Series): Training target
+        
+    Returns:
+        LinearRegression: Trained model
+    """
+    print("Training Linear Regression model...")
+    
+    # Train the model
+    model = LinearRegression()
+    model.fit(X_train_scaled, y_train)
+    
+    return model
+
+def evaluate_model(model, X_train_scaled, y_train):
+    """
+    Evaluate the model on training data.
+    
+    Args:
+        model (LinearRegression): Trained model
+        X_train_scaled (numpy.ndarray): Scaled training features
+        y_train (pandas.Series): Training target
+        
+    Returns:
+        tuple: (y_pred_train, mse_train, rmse_train, r2_train)
+    """
+    print("Evaluating model on training data...")
+    
+    # Evaluate on training data
+    y_pred_train = model.predict(X_train_scaled)
+    mse_train = mean_squared_error(y_train, y_pred_train)
+    rmse_train = np.sqrt(mse_train)
+    r2_train = r2_score(y_train, y_pred_train)
+    
+    print("\nModel Performance on Training Data (2022-2023):")
+    print(f"Mean Squared Error: {mse_train:.2f}")
+    print(f"Root Mean Squared Error: {rmse_train:.2f}")
+    print(f"R² Score: {r2_train:.2f}")
+    
+    return y_pred_train, mse_train, rmse_train, r2_train
+
+def make_predictions(model, X_test_scaled, test_df, scoring_type):
+    """
+    Make predictions for test data.
+    
+    Args:
+        model (LinearRegression): Trained model
+        X_test_scaled (numpy.ndarray): Scaled test features
+        test_df (pandas.DataFrame): Test data
+        scoring_type (int): 0 for standard, 1 for PPR
+        
+    Returns:
+        tuple: (y_pred, predictions_df)
+    """
+    print("Making predictions for 2024 data (to predict 2025)...")
+    
+    # Make predictions for 2024 data (to predict 2025)
+    y_pred = model.predict(X_test_scaled)
+    
+    # Create a copy of test_df to avoid SettingWithCopyWarning
+    predictions_df = test_df.copy()
+    predictions_df['Predicted_2025_PPR' if scoring_type == 1 else 'Predicted_2025_Standard'] = y_pred
+    
+    # Sort by predicted points and show top 10
+    top_10_predicted = predictions_df.sort_values('Predicted_2025_PPR' if scoring_type == 1 else 'Predicted_2025_Standard', ascending=False).head(10)
+    print("\nTop 10 Predicted Fantasy Points for 2025:")
+    print(top_10_predicted[['Player Name', 'Position', 'Team', 'PPR Fantasy Points Scored' if scoring_type == 1 else 'Standard Fantasy Points Scored', 'Predicted_2025_PPR' if scoring_type == 1 else 'Predicted_2025_Standard']].to_string(index=False))
+    
+    return y_pred, predictions_df
+
+def get_feature_importance(model, X_train):
+    """
+    Get feature importance from the model.
+    
+    Args:
+        model (LinearRegression): Trained model
+        X_train (pandas.DataFrame): Training features
+        
+    Returns:
+        pandas.DataFrame: Feature importance
+    """
+    print("Calculating feature importance...")
+    
+    # Get feature importance (coefficients for linear regression)
+    feature_importance = pd.DataFrame({
+        'Feature': X_train.columns,
+        'Importance': np.abs(model.coef_)
+    })
+    feature_importance = feature_importance.sort_values('Importance', ascending=False)
+    
+    print("\nTop 10 Most Important Features:")
+    print(feature_importance.head(10))
+    
+    return feature_importance
+
+def create_visualizations(y_train, y_pred_train, y_pred, feature_importance, output_dir, scoring_type):
+    """
+    Create visualizations for model evaluation and predictions.
+    
+    Args:
+        y_train (pandas.Series): Training target
+        y_pred_train (numpy.ndarray): Training predictions
+        y_pred (numpy.ndarray): Test predictions
+        feature_importance (pandas.DataFrame): Feature importance
+        output_dir (str): Output directory for visualizations
+        scoring_type (int): 0 for standard, 1 for PPR
+    """
+    print(f"Creating visualizations in {output_dir}...")
+    
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Set scoring type string for filenames
+    scoring_str = "ppr" if scoring_type == 1 else "standard"
+    
+    # Plot training predictions distribution
+    plt.figure(figsize=(10, 6))
+    plt.hist(y_pred_train, bins=50, alpha=0.75)
+    plt.xlabel('Predicted Fantasy Points')
+    plt.ylabel('Number of Players')
+    plt.title('Distribution of Predicted Fantasy Points (Training Data)')
+    plt.tight_layout()
+    plt.savefig(f'{output_dir}/linear_predictions_training_{scoring_str}.png')
+    plt.close()
+    
+    # Plot predicted vs actual for training data
+    plt.figure(figsize=(10, 8))
+    plt.scatter(y_train, y_pred_train, alpha=0.5)
+    plt.plot([y_train.min(), y_train.max()], [y_train.min(), y_train.max()], 'r--', lw=2)
+    plt.xlabel('Actual Fantasy Points')
+    plt.ylabel('Predicted Fantasy Points')
+    plt.title('Predicted vs Actual Fantasy Points (Training Data)')
+    plt.tight_layout()
+    plt.savefig(f'{output_dir}/linear_predicted_vs_actual_training_{scoring_str}.png')
+    plt.close()
+    
+    # Plot predictions distribution
+    plt.figure(figsize=(10, 6))
+    plt.hist(y_pred, bins=50, alpha=0.75)
+    plt.xlabel('Predicted 2025 Fantasy Points')
+    plt.ylabel('Number of Players')
+    plt.title('Distribution of Predicted 2025 Fantasy Points')
+    plt.tight_layout()
+    plt.savefig(f'{output_dir}/linear_predictions_test_{scoring_str}.png')
+    plt.close()
+    
+    # Plot top 10 most important features
+    plt.figure(figsize=(12, 6))
+    sns.barplot(data=feature_importance.head(10), x='Importance', y='Feature')
+    plt.title('Top 10 Most Important Features for Fantasy Points Prediction')
+    plt.tight_layout()
+    plt.savefig(f'{output_dir}/linear_feature_importance_2025_{scoring_str}.png')
+    plt.close()
+    
+    print("Visualizations created successfully.")
+
+def save_model(model, scaler, output_dir, scoring_type):
+    """
+    Save the model and scaler.
+    
+    Args:
+        model (LinearRegression): Trained model
+        scaler (StandardScaler): Fitted scaler
+        output_dir (str): Output directory for model files
+        scoring_type (int): 0 for standard, 1 for PPR
+    """
+    print(f"Saving model and scaler to {output_dir}...")
+    
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Set scoring type string for filenames
+    scoring_str = "ppr" if scoring_type == 1 else "standard"
+    
+    # Save the model and scaler
+    joblib.dump(model, f'{output_dir}/linear_model_2025_{scoring_str}.joblib')
+    joblib.dump(scaler, f'{output_dir}/linear_scaler_2025_{scoring_str}.joblib')
+    
+    print("Model and scaler saved successfully.")
+
+def main():
+    """
+    Main function to run the Linear Regression model pipeline.
+    """
+    # Get user input for scoring type
+    while True:
+        try:
+            scoring_type = int(input("Enter scoring type (0 for standard, 1 for PPR): "))
+            if scoring_type in [0, 1]:
+                break
+            else:
+                print("Please enter 0 for standard or 1 for PPR.")
+        except ValueError:
+            print("Please enter a valid integer (0 or 1).")
+    
+    # Set scoring type string for messages
+    scoring_str = "PPR" if scoring_type == 1 else "Standard"
+    print(f"\nRunning Linear Regression model pipeline for {scoring_str} scoring...")
+    
+    # Set paths
+    data_path = 'data/final_data/nfl_stats_long_format.csv'
+    graphs_dir = 'graphs/linear_regression'
+    model_dir = 'linear_regression/joblib_files'
+    
+    # Create graphs directory if it doesn't exist
+    os.makedirs(graphs_dir, exist_ok=True)
+    
+    # Run pipeline
+    df = load_data(data_path)
+    train_df, test_df = split_data(df)
+    X_train, y_train, X_test, y_test, feature_cols = prepare_features(df, train_df, test_df, scoring_type)
+    X_train_scaled, X_test_scaled, scaler = scale_features(X_train, X_test)
+    model = train_model(X_train_scaled, y_train)
+    y_pred_train, mse_train, rmse_train, r2_train = evaluate_model(model, X_train_scaled, y_train)
+    y_pred, predictions_df = make_predictions(model, X_test_scaled, test_df, scoring_type)
+    feature_importance = get_feature_importance(model, X_train)
+    create_visualizations(y_train, y_pred_train, y_pred, feature_importance, graphs_dir, scoring_type)
+    save_model(model, scaler, model_dir, scoring_type)
+    
+    print(f"\nLinear Regression model pipeline for {scoring_str} scoring completed successfully.")
+
+if __name__ == "__main__":
+    main() 
