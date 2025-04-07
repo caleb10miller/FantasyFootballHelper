@@ -37,9 +37,6 @@ for year in years:
     # Add year column
     subset['Season'] = int(year)
     
-    # Only keep rows where the player has actual stats (using Games Played as indicator)
-    subset = subset[~pd.isna(subset['Games Played'])]
-    
     dfs.append(subset)
 
 # Combine all dataframes
@@ -77,7 +74,7 @@ long_df = pd.concat(targets_df, axis=0).reset_index(drop=True)
 
 # Reorder columns to put Season and targets in desired positions
 cols = ['Player Name', 'Season', 'Target_PPR', 'Target_Standard'] + [col for col in long_df.columns 
-      if col not in ['Player Name', 'Season', 'Target_PPR', 'Target_Standard']]
+      if col not in ['Player Name', 'Season', 'Target_PPR', 'Target_Standard', 'PPR Fantasy Points Scored', 'Standard Fantasy Points Scored']]
 long_df = long_df[cols]
 
 # Save the long format data
@@ -90,4 +87,4 @@ print(long_df.columns.tolist())
 
 # Print some example rows to verify the target variables
 print("\nExample rows showing current and target fantasy points:")
-print(long_df[['Player Name', 'Season', 'PPR Fantasy Points Scored', 'Target_PPR']].head(10)) 
+print(long_df[['Player Name', 'Season', 'Target_PPR', 'Target_Standard']].head(10)) 

@@ -63,8 +63,7 @@ def prepare_features(df, train_df, test_df, scoring_type):
     
     # Prepare features (excluding target variables, non-feature columns, and Standard Fantasy Points)
     feature_cols = [col for col in df.columns if col not in 
-                    ['Player Name', 'Season', 'Target_PPR', 'Target_Standard', 
-                     'PPR Fantasy Points Scored', 'Standard Fantasy Points Scored']]
+                    ['Player Name', 'Season', 'Target_PPR', 'Target_Standard']]
     
     # Split into features and target based on scoring type
     X_train = train_df[feature_cols]
@@ -183,7 +182,7 @@ def make_predictions(model, X_test_scaled, test_df, scoring_type):
     # Sort by predicted points and show top 10
     top_10_predicted = predictions_df.sort_values('Predicted_2025_PPR' if scoring_type == 1 else 'Predicted_2025_Standard', ascending=False).head(10)
     print("\nTop 10 Predicted Fantasy Points for 2025:")
-    print(top_10_predicted[['Player Name', 'Position', 'Team', 'PPR Fantasy Points Scored' if scoring_type == 1 else 'Standard Fantasy Points Scored', 'Predicted_2025_PPR' if scoring_type == 1 else 'Predicted_2025_Standard']].to_string(index=False))
+    print(top_10_predicted[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2025_PPR' if scoring_type == 1 else 'Predicted_2025_Standard']].to_string(index=False))
     
     return y_pred, predictions_df
 
