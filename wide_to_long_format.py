@@ -16,7 +16,7 @@ consistent_stats = [
 ]
 
 # Years to process
-years = ['2022', '2023', '2024']
+years = ['2018', '2019', '2020', '2021', '2022', '2023', '2024']
 
 # Melt each stat column per year into long format
 dfs = []
@@ -45,12 +45,28 @@ long_df = pd.concat(dfs, axis=0).reset_index(drop=True)
 # Sort by Player Name and Season
 long_df = long_df.sort_values(by=['Player Name', 'Season'])
 
+# Identify players who did not play in each season
+# We'll use a few key stats that would indicate the player played
+key_stats = ['Games Played', 'Total Passing', 'Carries*Yards', 'Receptions*Yards', 
+             'Field Goals Made', 'Extra Points Made', 'Touchdowns Allowed']
+
+# Create a mask for rows where the player did not play
+did_not_play_mask = pd.Series(True, index=long_df.index)
+
+# For each key stat, check if it has a non-null value
+for stat in key_stats:
+    if stat in long_df.columns:
+        # If any stat has a non-null value, the player played
+        did_not_play_mask = did_not_play_mask & pd.isna(long_df[stat])
+
+# Remove rows where the player did not play
+long_df = long_df[~did_not_play_mask].reset_index(drop=True)
+
 # Initialize target columns
 long_df['Target_PPR'] = np.nan
 long_df['Target_Standard'] = np.nan
 
 # Create target variables for next season's fantasy points
-# We'll do this by player to ensure we're not creating targets for players who didn't play
 targets_df = []
 for name, group in long_df.groupby('Player Name'):
     # Sort by season to ensure correct order
@@ -62,10 +78,9 @@ for name, group in long_df.groupby('Player Name'):
             current_season = group.iloc[i]
             next_season = group.iloc[i + 1]
             
-            # Only set target if next season has actual stats
-            if not pd.isna(next_season['PPR Fantasy Points Scored']):
-                group.iloc[i, group.columns.get_loc('Target_PPR')] = next_season['PPR Fantasy Points Scored']
-                group.iloc[i, group.columns.get_loc('Target_Standard')] = next_season['Standard Fantasy Points Scored']
+            # Set target for next season's fantasy points
+            group.iloc[i, group.columns.get_loc('Target_PPR')] = next_season['PPR Fantasy Points Scored']
+            group.iloc[i, group.columns.get_loc('Target_Standard')] = next_season['Standard Fantasy Points Scored']
     
     targets_df.append(group)
 
@@ -87,4 +102,8 @@ print(long_df.columns.tolist())
 
 # Print some example rows to verify the target variables
 print("\nExample rows showing current and target fantasy points:")
-print(long_df[['Player Name', 'Season', 'Target_PPR', 'Target_Standard']].head(10)) 
+print(long_df[['Player Name', 'Season', 'Target_PPR', 'Target_Standard']].head(10))
+
+# Print count of players per season
+print("\nCount of players per season:")
+print(long_df.groupby('Season').size()) 
