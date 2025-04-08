@@ -113,7 +113,7 @@ def scale_features(X_train, X_test):
 
 def train_model(X_train_scaled, y_train):
     """
-    Train the XGBoost model.
+    Train the Linear Regression model.
     
     Args:
         X_train_scaled (numpy.ndarray): Scaled training features
@@ -122,7 +122,7 @@ def train_model(X_train_scaled, y_train):
     Returns:
         MLPRegressor: Trained model
     """
-    print("Training XGBoost model...")
+    print("Training Linear Regression model...")
     
     model = LinearRegression()
     model.fit(X_train_scaled, y_train)
@@ -198,11 +198,11 @@ def make_predictions(model, X_test_scaled, test_df, scoring_type):
     # Sort by predicted points and show top 10
     top_10_predicted = predictions_df.sort_values('Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2024_Standard', ascending=False).head(10)
     print("\nTop 10 Predicted Fantasy Points for 2024:")
-    print(top_10_predicted[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2025_Standard']].to_string(index=False))
+    print(top_10_predicted[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2024_Standard']].to_string(index=False))
 
     top_10_actual = predictions_df.sort_values('Target_PPR' if scoring_type == 1 else 'Target_Standard', ascending=False).head(10)
     print("\nTop 10 Actual Fantasy Points for 2024:")
-    print(top_10_actual[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2025_Standard']].to_string(index=False))
+    print(top_10_actual[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2024_Standard']].to_string(index=False))
     
 
     return y_pred, predictions_df
@@ -212,7 +212,7 @@ def get_feature_importance(model, X_train):
     Get feature importance from the model.
 
     Args:
-        model: Trained model (XGBoost or LinearRegression)
+        model: Trained model - linear regression
         X_train (pandas.DataFrame): Training features
 
     Returns:
@@ -224,7 +224,7 @@ def get_feature_importance(model, X_train):
         "Feature": X_train.columns,
         "Importance": np.abs(model.coef_)  # use absolute value of coefficients
     })
-    
+
     importance_df = importance_df.sort_values("Importance", ascending=False)
 
     print("\nTop 10 Most Important Features:")
@@ -260,7 +260,7 @@ def create_visualizations(y_train, y_pred_train, y_pred, feature_importance, out
     plt.ylabel('Number of Players')
     plt.title('Distribution of Predicted Fantasy Points (Training Data)')
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/xgboost_predictions_training_{scoring_str}.png')
+    plt.savefig(f'{output_dir}/linear_predictions_training_{scoring_str}.png')
     plt.close()
     
     # Plot predicted vs actual for training data
@@ -271,17 +271,17 @@ def create_visualizations(y_train, y_pred_train, y_pred, feature_importance, out
     plt.ylabel('Predicted Fantasy Points')
     plt.title('Predicted vs Actual Fantasy Points (Training Data)')
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/xgboost_predicted_vs_actual_training_{scoring_str}.png')
+    plt.savefig(f'{output_dir}/linear_predicted_vs_actual_training_{scoring_str}.png')
     plt.close()
     
     # Plot predictions distribution
     plt.figure(figsize=(10, 6))
     plt.hist(y_pred, bins=50, alpha=0.75)
-    plt.xlabel('Predicted 2025 Fantasy Points')
+    plt.xlabel('Predicted 2024 Fantasy Points')
     plt.ylabel('Number of Players')
-    plt.title('Distribution of Predicted 2025 Fantasy Points')
+    plt.title('Distribution of Predicted 2024 Fantasy Points')
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/xgboost_predictions_test_{scoring_str}.png')
+    plt.savefig(f'{output_dir}/linear_predictions_test_{scoring_str}.png')
     plt.close()
     
     # Plot top 10 most important features
@@ -289,7 +289,7 @@ def create_visualizations(y_train, y_pred_train, y_pred, feature_importance, out
     sns.barplot(data=feature_importance.head(10), x='Importance', y='Feature')
     plt.title('Top 10 Most Important Features for Fantasy Points Prediction')
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/xgboost_feature_importance_2025_{scoring_str}.png')
+    plt.savefig(f'{output_dir}/linear_feature_importance_2024_{scoring_str}.png')
     plt.close()
     
     print("Visualizations created successfully.")
@@ -313,14 +313,14 @@ def save_model(model, scaler, output_dir, scoring_type):
     scoring_str = "ppr" if scoring_type == 1 else "standard"
     
     # Save the model and scaler
-    joblib.dump(model, f'{output_dir}/xgboost_model_2025_{scoring_str}.joblib')
-    joblib.dump(scaler, f'{output_dir}/xgboost_scaler_2025_{scoring_str}.joblib')
+    joblib.dump(model, f'{output_dir}/linear_model_2024_{scoring_str}.joblib')
+    joblib.dump(scaler, f'{output_dir}/linear_scaler_2024_{scoring_str}.joblib')
     
     print("Model and scaler saved successfully.")
 
 def main():
     """
-    Main function to run the XGBoost model pipeline.
+    Main function to run the Linear Regression model pipeline.
     """
     # Get user input for scoring type
     while True:
@@ -335,12 +335,12 @@ def main():
     
     # Set scoring type string for messages
     scoring_str = "PPR" if scoring_type == 1 else "Standard"
-    print(f"\nRunning XGBoost model pipeline for {scoring_str} scoring...")
+    print(f"\nRunning Linear Regression model pipeline for {scoring_str} scoring...")
     
     # Set paths
     data_path = 'data/final_data/nfl_stats_long_format.csv'
-    graphs_dir = 'graphs/xgboost_regression'
-    model_dir = 'xgboost_regression/joblib_files'
+    graphs_dir = 'graphs/linear_regression'
+    model_dir = 'linear_regression/joblib_files'
     
     # Create graphs directory if it doesn't exist
     os.makedirs(graphs_dir, exist_ok=True)
@@ -357,7 +357,7 @@ def main():
     create_visualizations(y_train, y_pred_train, y_pred, feature_importance, graphs_dir, scoring_type)
     save_model(model, scaler, model_dir, scoring_type)
     
-    print(f"\nXGBoost model pipeline for {scoring_str} scoring completed successfully.")
+    print(f"\nLinear Regression model pipeline for {scoring_str} scoring completed successfully.")
 
 if __name__ == "__main__":
     main()

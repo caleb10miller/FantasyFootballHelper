@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import Normalizer
 from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 import matplotlib.pyplot as plt
@@ -105,7 +105,7 @@ def scale_features(X_train, X_test):
     print("Scaling features...")
     
     # Scale the features
-    scaler = StandardScaler()
+    scaler = Normalizer()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
     
@@ -213,11 +213,11 @@ def make_predictions(model, X_test_scaled, test_df, scoring_type):
     # Sort by predicted points and show top 10
     top_10_predicted = predictions_df.sort_values('Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2024_Standard', ascending=False).head(10)
     print("\nTop 10 Predicted Fantasy Points for 2024:")
-    print(top_10_predicted[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2025_Standard']].to_string(index=False))
+    print(top_10_predicted[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2024_Standard']].to_string(index=False))
 
     top_10_actual = predictions_df.sort_values('Target_PPR' if scoring_type == 1 else 'Target_Standard', ascending=False).head(10)
     print("\nTop 10 Actual Fantasy Points for 2024:")
-    print(top_10_actual[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2025_Standard']].to_string(index=False))
+    print(top_10_actual[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2024_Standard']].to_string(index=False))
     
 
     return y_pred, predictions_df
@@ -291,9 +291,9 @@ def create_visualizations(y_train, y_pred_train, y_pred, feature_importance, out
     # Plot predictions distribution
     plt.figure(figsize=(10, 6))
     plt.hist(y_pred, bins=50, alpha=0.75)
-    plt.xlabel('Predicted 2025 Fantasy Points')
+    plt.xlabel('Predicted 2024 Fantasy Points')
     plt.ylabel('Number of Players')
-    plt.title('Distribution of Predicted 2025 Fantasy Points')
+    plt.title('Distribution of Predicted 2024 Fantasy Points')
     plt.tight_layout()
     plt.savefig(f'{output_dir}/dnn_predictions_test_{scoring_str}.png')
     plt.close()
@@ -303,7 +303,7 @@ def create_visualizations(y_train, y_pred_train, y_pred, feature_importance, out
     sns.barplot(data=feature_importance.head(10), x='Importance', y='Feature')
     plt.title('Top 10 Most Important Features for Fantasy Points Prediction')
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/dnn_feature_importance_2025_{scoring_str}.png')
+    plt.savefig(f'{output_dir}/dnn_feature_importance_2024_{scoring_str}.png')
     plt.close()
     
     print("Visualizations created successfully.")
@@ -327,8 +327,8 @@ def save_model(model, scaler, output_dir, scoring_type):
     scoring_str = "ppr" if scoring_type == 1 else "standard"
     
     # Save the model and scaler
-    joblib.dump(model, f'{output_dir}/dnn_model_2025_{scoring_str}.joblib')
-    joblib.dump(scaler, f'{output_dir}/dnn_scaler_2025_{scoring_str}.joblib')
+    joblib.dump(model, f'{output_dir}/dnn_model_2024_{scoring_str}.joblib')
+    joblib.dump(scaler, f'{output_dir}/dnn_scaler_2024_{scoring_str}.joblib')
     
     print("Model and scaler saved successfully.")
 
