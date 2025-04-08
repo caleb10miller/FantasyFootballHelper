@@ -126,15 +126,20 @@ def train_model(X_train_scaled, y_train):
     
     # Train the model with a deeper architecture
     model = MLPRegressor(
-        hidden_layer_sizes=(200, 100, 50, 25),
-        activation='relu',
+        hidden_layer_sizes=(128, 64, 32),   # Slightly shallower but still deep
+        activation='relu',                 # Good default; consider 'tanh' if instability persists
         solver='adam',
-        alpha=0.0001,
-        batch_size='auto',
+        alpha=0.001,                       # Increase regularization
+        batch_size=64,                     # Manual batch size for stability
         learning_rate='adaptive',
-        max_iter=2000,
-        random_state=42
+        learning_rate_init=0.001,          # Could try 0.0005 too
+        max_iter=3000,                     # More training cycles
+        early_stopping=True,              # Automatically stops when test score plateaus
+        validation_fraction=0.1,           # Hold out 10% of training data for early stopping
+        random_state=42,
+        verbose=True                       # Helps monitor training
     )
+
     model.fit(X_train_scaled, y_train)
     
     return model

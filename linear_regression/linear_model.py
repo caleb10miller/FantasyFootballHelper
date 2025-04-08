@@ -26,7 +26,7 @@ def load_data(data_path):
 
 def split_data(df):
     """
-    Split data into train (2022-2023) and test (2024) sets.
+    Split data into train (2018-2022) and test (2023) sets.
     
     Args:
         df (pandas.DataFrame): Input data
@@ -34,9 +34,9 @@ def split_data(df):
     Returns:
         tuple: (train_df, test_df)
     """
-    print("Splitting data into train (2022-2023) and test (2024) sets...")
-    train_df = df[df['Season'].isin([2022, 2023])]
-    test_df = df[df['Season'] == 2024]
+    print("Splitting data into train (2018-2022) and test (2023) sets...")
+    train_df = df[df['Season'].isin([2018, 2019, 2020, 2021, 2022])]
+    test_df = df[df['Season'] == 2023]
     
     # Remove rows where target is NaN from training data
     train_df = train_df[train_df['Target_PPR'].notna()]
@@ -113,34 +113,35 @@ def scale_features(X_train, X_test):
 
 def train_model(X_train_scaled, y_train):
     """
-    Train the Linear Regression model.
+    Train the XGBoost model.
     
     Args:
         X_train_scaled (numpy.ndarray): Scaled training features
         y_train (pandas.Series): Training target
         
     Returns:
-        LinearRegression: Trained model
+        MLPRegressor: Trained model
     """
-    print("Training Linear Regression model...")
+    print("Training XGBoost model...")
     
-    # Train the model
     model = LinearRegression()
     model.fit(X_train_scaled, y_train)
     
     return model
 
-def evaluate_model(model, X_train_scaled, y_train):
+def evaluate_model(model, X_train_scaled, y_train, X_test_scaled, y_test):
     """
-    Evaluate the model on training data.
+    Evaluate the model on training data and test data.
     
     Args:
-        model (LinearRegression): Trained model
+        model (MLPRegressor): Trained model
         X_train_scaled (numpy.ndarray): Scaled training features
         y_train (pandas.Series): Training target
+        X_test_scaled (numpy.ndarray): Scaled test features
+        y_test (pandas.Series): Test target
         
     Returns:
-        tuple: (y_pred_train, mse_train, rmse_train, r2_train)
+        tuple: (y_pred_train, mse_train, rmse_train, r2_train, y_pred_test, mse_test, rmse_test, r2_test)
     """
     print("Evaluating model on training data...")
     
@@ -150,19 +151,35 @@ def evaluate_model(model, X_train_scaled, y_train):
     rmse_train = np.sqrt(mse_train)
     r2_train = r2_score(y_train, y_pred_train)
     
-    print("\nModel Performance on Training Data (2022-2023):")
+    print("\nModel Performance on Training Data (2018-2022):")
     print(f"Mean Squared Error: {mse_train:.2f}")
     print(f"Root Mean Squared Error: {rmse_train:.2f}")
     print(f"R² Score: {r2_train:.2f}")
+
+    # Handle NaN values in test data
+    if np.isnan(y_test).any():
+        print("Warning: NaN values found in test target. Filling with 0.")
+        y_test = y_test.fillna(0)
     
-    return y_pred_train, mse_train, rmse_train, r2_train
+    # Evaluate on test set
+    y_pred_test = model.predict(X_test_scaled)
+    mse_test = mean_squared_error(y_test, y_pred_test)
+    rmse_test = np.sqrt(mse_test)
+    r2_test = r2_score(y_test, y_pred_test)
+    
+    print("\nModel Performance on Test Set:")
+    print(f"Mean Squared Error: {mse_test:.2f}")
+    print(f"Root Mean Squared Error: {rmse_test:.2f}")
+    print(f"R² Score: {r2_test:.2f}")
+    
+    return y_pred_train, mse_train, rmse_train, r2_train, y_pred_test, mse_test, rmse_test, r2_test
 
 def make_predictions(model, X_test_scaled, test_df, scoring_type):
     """
     Make predictions for test data.
     
     Args:
-        model (LinearRegression): Trained model
+        model (MLPRegressor): Trained model
         X_test_scaled (numpy.ndarray): Scaled test features
         test_df (pandas.DataFrame): Test data
         scoring_type (int): 0 for standard, 1 for PPR
@@ -170,46 +187,51 @@ def make_predictions(model, X_test_scaled, test_df, scoring_type):
     Returns:
         tuple: (y_pred, predictions_df)
     """
-    print("Making predictions for 2024 data (to predict 2025)...")
     
-    # Make predictions for 2024 data (to predict 2025)
+    # Make predictions for 2023 data (to predict 2024)
     y_pred = model.predict(X_test_scaled)
     
     # Create a copy of test_df to avoid SettingWithCopyWarning
     predictions_df = test_df.copy()
-    predictions_df['Predicted_2025_PPR' if scoring_type == 1 else 'Predicted_2025_Standard'] = y_pred
+    predictions_df['Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2024_Standard'] = y_pred
     
     # Sort by predicted points and show top 10
-    top_10_predicted = predictions_df.sort_values('Predicted_2025_PPR' if scoring_type == 1 else 'Predicted_2025_Standard', ascending=False).head(10)
-    print("\nTop 10 Predicted Fantasy Points for 2025:")
-    print(top_10_predicted[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2025_PPR' if scoring_type == 1 else 'Predicted_2025_Standard']].to_string(index=False))
+    top_10_predicted = predictions_df.sort_values('Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2024_Standard', ascending=False).head(10)
+    print("\nTop 10 Predicted Fantasy Points for 2024:")
+    print(top_10_predicted[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2025_Standard']].to_string(index=False))
+
+    top_10_actual = predictions_df.sort_values('Target_PPR' if scoring_type == 1 else 'Target_Standard', ascending=False).head(10)
+    print("\nTop 10 Actual Fantasy Points for 2024:")
+    print(top_10_actual[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2025_Standard']].to_string(index=False))
     
+
     return y_pred, predictions_df
 
 def get_feature_importance(model, X_train):
     """
     Get feature importance from the model.
-    
+
     Args:
-        model (LinearRegression): Trained model
+        model: Trained model (XGBoost or LinearRegression)
         X_train (pandas.DataFrame): Training features
-        
+
     Returns:
         pandas.DataFrame: Feature importance
     """
     print("Calculating feature importance...")
-    
-    # Get feature importance (coefficients for linear regression)
-    feature_importance = pd.DataFrame({
-        'Feature': X_train.columns,
-        'Importance': np.abs(model.coef_)
+
+    importance_df = pd.DataFrame({
+        "Feature": X_train.columns,
+        "Importance": np.abs(model.coef_)  # use absolute value of coefficients
     })
-    feature_importance = feature_importance.sort_values('Importance', ascending=False)
     
+    importance_df = importance_df.sort_values("Importance", ascending=False)
+
     print("\nTop 10 Most Important Features:")
-    print(feature_importance.head(10))
-    
-    return feature_importance
+    print(importance_df.head(10))
+
+    return importance_df
+
 
 def create_visualizations(y_train, y_pred_train, y_pred, feature_importance, output_dir, scoring_type):
     """
@@ -238,7 +260,7 @@ def create_visualizations(y_train, y_pred_train, y_pred, feature_importance, out
     plt.ylabel('Number of Players')
     plt.title('Distribution of Predicted Fantasy Points (Training Data)')
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/linear_predictions_training_{scoring_str}.png')
+    plt.savefig(f'{output_dir}/xgboost_predictions_training_{scoring_str}.png')
     plt.close()
     
     # Plot predicted vs actual for training data
@@ -249,7 +271,7 @@ def create_visualizations(y_train, y_pred_train, y_pred, feature_importance, out
     plt.ylabel('Predicted Fantasy Points')
     plt.title('Predicted vs Actual Fantasy Points (Training Data)')
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/linear_predicted_vs_actual_training_{scoring_str}.png')
+    plt.savefig(f'{output_dir}/xgboost_predicted_vs_actual_training_{scoring_str}.png')
     plt.close()
     
     # Plot predictions distribution
@@ -259,7 +281,7 @@ def create_visualizations(y_train, y_pred_train, y_pred, feature_importance, out
     plt.ylabel('Number of Players')
     plt.title('Distribution of Predicted 2025 Fantasy Points')
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/linear_predictions_test_{scoring_str}.png')
+    plt.savefig(f'{output_dir}/xgboost_predictions_test_{scoring_str}.png')
     plt.close()
     
     # Plot top 10 most important features
@@ -267,7 +289,7 @@ def create_visualizations(y_train, y_pred_train, y_pred, feature_importance, out
     sns.barplot(data=feature_importance.head(10), x='Importance', y='Feature')
     plt.title('Top 10 Most Important Features for Fantasy Points Prediction')
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/linear_feature_importance_2025_{scoring_str}.png')
+    plt.savefig(f'{output_dir}/xgboost_feature_importance_2025_{scoring_str}.png')
     plt.close()
     
     print("Visualizations created successfully.")
@@ -277,7 +299,7 @@ def save_model(model, scaler, output_dir, scoring_type):
     Save the model and scaler.
     
     Args:
-        model (LinearRegression): Trained model
+        model (MLPRegressor): Trained model
         scaler (StandardScaler): Fitted scaler
         output_dir (str): Output directory for model files
         scoring_type (int): 0 for standard, 1 for PPR
@@ -291,14 +313,14 @@ def save_model(model, scaler, output_dir, scoring_type):
     scoring_str = "ppr" if scoring_type == 1 else "standard"
     
     # Save the model and scaler
-    joblib.dump(model, f'{output_dir}/linear_model_2025_{scoring_str}.joblib')
-    joblib.dump(scaler, f'{output_dir}/linear_scaler_2025_{scoring_str}.joblib')
+    joblib.dump(model, f'{output_dir}/xgboost_model_2025_{scoring_str}.joblib')
+    joblib.dump(scaler, f'{output_dir}/xgboost_scaler_2025_{scoring_str}.joblib')
     
     print("Model and scaler saved successfully.")
 
 def main():
     """
-    Main function to run the Linear Regression model pipeline.
+    Main function to run the XGBoost model pipeline.
     """
     # Get user input for scoring type
     while True:
@@ -313,12 +335,12 @@ def main():
     
     # Set scoring type string for messages
     scoring_str = "PPR" if scoring_type == 1 else "Standard"
-    print(f"\nRunning Linear Regression model pipeline for {scoring_str} scoring...")
+    print(f"\nRunning XGBoost model pipeline for {scoring_str} scoring...")
     
     # Set paths
     data_path = 'data/final_data/nfl_stats_long_format.csv'
-    graphs_dir = 'graphs/linear_regression'
-    model_dir = 'linear_regression/joblib_files'
+    graphs_dir = 'graphs/xgboost_regression'
+    model_dir = 'xgboost_regression/joblib_files'
     
     # Create graphs directory if it doesn't exist
     os.makedirs(graphs_dir, exist_ok=True)
@@ -329,13 +351,13 @@ def main():
     X_train, y_train, X_test, y_test, feature_cols = prepare_features(df, train_df, test_df, scoring_type)
     X_train_scaled, X_test_scaled, scaler = scale_features(X_train, X_test)
     model = train_model(X_train_scaled, y_train)
-    y_pred_train, mse_train, rmse_train, r2_train = evaluate_model(model, X_train_scaled, y_train)
+    y_pred_train, mse_train, rmse_train, r2_train, y_pred_test, mse_test, rmse_test, r2_test = evaluate_model(model, X_train_scaled, y_train, X_test_scaled, y_test)
     y_pred, predictions_df = make_predictions(model, X_test_scaled, test_df, scoring_type)
     feature_importance = get_feature_importance(model, X_train)
     create_visualizations(y_train, y_pred_train, y_pred, feature_importance, graphs_dir, scoring_type)
     save_model(model, scaler, model_dir, scoring_type)
     
-    print(f"\nLinear Regression model pipeline for {scoring_str} scoring completed successfully.")
+    print(f"\nXGBoost model pipeline for {scoring_str} scoring completed successfully.")
 
 if __name__ == "__main__":
-    main() 
+    main()
