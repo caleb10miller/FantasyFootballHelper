@@ -64,7 +64,7 @@ def scrape_team_schedule(team_abbr: str, year: int) -> pd.DataFrame:
     soup = BeautifulSoup(response.text, "html.parser")
     
     # Locate the 'games' table
-    games_table = soup.find("table", {"id": "games"})
+    games_table = soup.find("table", {"id": "table_pfr_team-year_game-logs_team-year-regular-season-game-log"})
     if not games_table:
         print(f"WARNING: No schedule table found for {team_abbr} in {year}.")
         return pd.DataFrame()  # Return empty DataFrame if not found
@@ -181,8 +181,8 @@ def points_from_points_allowed(year=2022):
     print(df_final.head(10))
     
     # write to CSV
-    os.makedirs(f"Capstone/data/{year}", exist_ok=True)
-    csv_filename = f"Capstone/data/{year}/fantasy_points_from_points_allowed_{year}.csv"
+    os.makedirs(f"data/{year}", exist_ok=True)
+    csv_filename = f"data/{year}/fantasy_points_from_points_allowed_{year}.csv"
     df_final.to_csv(csv_filename, index=False)
     print(f"\nSaved to {csv_filename}")
 

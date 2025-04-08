@@ -6,22 +6,22 @@ import os
 def pull_all_years(years = [2022, 2023, 2024]):
     for year in years:
         main(year=year)
-        calculate_fantasy_points(input_file = f"Capstone/data/{year}/nfl_{year}_final_data.csv", output_file = f"Capstone/data/{year}/nfl_{year}_fantasy_points.csv")
-        main_df = pd.read_csv(f"Capstone/data/{year}/nfl_{year}_final_data.csv")
-        fantasy_df = pd.read_csv(f"Capstone/data/{year}/nfl_{year}_fantasy_points.csv")
+        calculate_fantasy_points(input_file = f"data/{year}/nfl_{year}_final_data.csv", output_file = f"data/{year}/nfl_{year}_fantasy_points.csv")
+        main_df = pd.read_csv(f"data/{year}/nfl_{year}_final_data.csv")
+        fantasy_df = pd.read_csv(f"data/{year}/nfl_{year}_fantasy_points.csv")
         fantasy_df = fantasy_df[['Player Name', 'PPR Fantasy Points Scored', 'Standard Fantasy Points Scored']]
         merged_df = pd.merge(main_df, fantasy_df, on='Player Name', how='outer')
-        merged_df.to_csv(f"Capstone/data/{year}/{year}_finalized_data.csv", index=False)
+        merged_df.to_csv(f"data/{year}/{year}_finalized_data.csv", index=False)
 
 def merge_datasets(years = [2022, 2023, 2024]):
     merged_df = None
-    output_dir = "Capstone/data/final_data"  
+    output_dir = "data/final_data"  
     output_file = os.path.join(output_dir, "nfl_merged_wide_format.csv")
 
     os.makedirs(output_dir, exist_ok=True)
 
     for year in years:
-        file_path = f"Capstone/data/{year}/{year}_finalized_data.csv"
+        file_path = f"data/{year}/{year}_finalized_data.csv"
         
         if not os.path.exists(file_path):
             print(f"File not found: {file_path}")
@@ -49,5 +49,5 @@ def merge_datasets(years = [2022, 2023, 2024]):
         print("No data to merge")
 
 if __name__ == '__main__':
-    pull_all_years([2022, 2023, 2024])
-    merge_datasets([2022, 2023, 2024])
+    pull_all_years([2018, 2019, 2020, 2021, 2022, 2023, 2024])
+    merge_datasets([2018, 2019, 2020, 2021, 2022, 2023, 2024])

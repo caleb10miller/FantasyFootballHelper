@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def drop_multicollinearity(path="Capstone/data/final_data/nfl_merged_wide_format.csv",years=[2022,2023,2024]):
+def drop_multicollinearity(path="data/final_data/nfl_merged_wide_format.csv",years=[2022,2023,2024]):
 
     df = pd.read_csv(path)
 
@@ -67,6 +67,46 @@ def drop_multicollinearity(path="Capstone/data/final_data/nfl_merged_wide_format
     ordered_columns = [
         "Player Name",  
 
+        # 2018 Stats
+        "2018 Age", "2018 Position", "2018 Team", "2018 Games Played", "2018 Games Started",
+        "2018 Total Passing", "2018 Interceptions Thrown",  
+        "2018 Rushing Touchdowns", "2018 Carries*Yards",  
+        "2018 Receiving Touchdowns", "2018 Receptions*Yards",  
+        "2018 Fumbles", "2018 Field Goals Made", "2018 Extra Points Made",  
+        "2018 ST_Interceptions", "2018 ST_Safeties", "2018 ST_Special Teams Touchdowns", "2018 XP2",  
+        "2018 Touchdowns Allowed", "2018 Average ADP", "2018 Positional ADP",   
+        "2018 PPR Fantasy Points Scored", "2018 Standard Fantasy Points Scored",  
+
+        # 2019 Stats
+        "2019 Age", "2019 Position", "2019 Team", "2019 Games Played", "2019 Games Started",
+        "2019 Total Passing", "2019 Interceptions Thrown",  
+        "2019 Rushing Touchdowns", "2019 Carries*Yards",  
+        "2019 Receiving Touchdowns", "2019 Receptions*Yards",  
+        "2019 Fumbles", "2019 Field Goals Made", "2019 Extra Points Made",  
+        "2019 ST_Interceptions", "2019 ST_Safeties", "2019 ST_Special Teams Touchdowns", "2019 XP2",  
+        "2019 Touchdowns Allowed", "2019 Average ADP", "2019 Positional ADP",   
+        "2019 PPR Fantasy Points Scored", "2019 Standard Fantasy Points Scored",  
+
+        # 2020 Stats
+        "2020 Age", "2020 Position", "2020 Team", "2020 Games Played", "2020 Games Started",
+        "2020 Total Passing", "2020 Interceptions Thrown",  
+        "2020 Rushing Touchdowns", "2020 Carries*Yards",  
+        "2020 Receiving Touchdowns", "2020 Receptions*Yards",  
+        "2020 Fumbles", "2020 Field Goals Made", "2020 Extra Points Made",  
+        "2020 ST_Interceptions", "2020 ST_Safeties", "2020 ST_Special Teams Touchdowns", "2020 XP2",  
+        "2020 Touchdowns Allowed", "2020 Average ADP", "2020 Positional ADP",   
+        "2020 PPR Fantasy Points Scored", "2020 Standard Fantasy Points Scored",  
+
+        # 2021 Stats
+        "2021 Age", "2021 Position", "2021 Team", "2021 Games Played", "2021 Games Started",
+        "2021 Total Passing", "2021 Interceptions Thrown",  
+        "2021 Rushing Touchdowns", "2021 Carries*Yards",  
+        "2021 Receiving Touchdowns", "2021 Receptions*Yards",  
+        "2021 Fumbles", "2021 Field Goals Made", "2021 Extra Points Made",  
+        "2021 ST_Interceptions", "2021 ST_Safeties", "2021 ST_Special Teams Touchdowns", "2021 XP2",  
+        "2021 Touchdowns Allowed", "2021 Average ADP", "2021 Positional ADP",   
+        "2021 PPR Fantasy Points Scored", "2021 Standard Fantasy Points Scored",  
+
         # 2022 Stats 
         "2022 Age", "2022 Position", "2022 Team", "2022 Games Played", "2022 Games Started",
         "2022 Total Passing", "2022 Interceptions Thrown",  
@@ -86,7 +126,6 @@ def drop_multicollinearity(path="Capstone/data/final_data/nfl_merged_wide_format
         "2023 ST_Interceptions", "2023 ST_Safeties", "2023 ST_Special Teams Touchdowns", "2023 XP2",  
         "2023 Touchdowns Allowed", "2023 Average ADP", "2023 Positional ADP",  
         "2023 PPR Fantasy Points Scored", "2023 Standard Fantasy Points Scored",  
-          
 
         # 2024 Stats
         "2024 Age", "2024 Position", "2024 Team", "2024 Games Played", "2024 Games Started",  
@@ -101,9 +140,9 @@ def drop_multicollinearity(path="Capstone/data/final_data/nfl_merged_wide_format
 
     df = df[ordered_columns]
 
-    df.to_csv("Capstone/data/final_data/nfl_merged_wide_format_no_multicollinearity.csv", index=False)
+    df.to_csv("data/final_data/nfl_merged_wide_format_no_multicollinearity.csv", index=False)
 
     return "File saved as nfl_merged_wide_format_no_multicollinearity.csv"
 
 if __name__ == "__main__":
-    drop_multicollinearity()
+    drop_multicollinearity('data/final_data/nfl_merged_wide_format.csv', [2018, 2019, 2020, 2021, 2022, 2023, 2024])

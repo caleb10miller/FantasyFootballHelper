@@ -861,7 +861,7 @@ def transform_ADP_stats(df_adp, year=2022):
     df.drop(['Player_Name_NoTeam', 'Other', 'Bye_Week', 'Team', 'Player Team (Bye)', 'Rank', 'POS', 'FFC'], axis=1, inplace=True)
 
     pattern = r'\(.*\)$'
-    mask = df['Player_Name'].str.contains(pattern, regex=True)
+    mask = df['Player_Name'].str.contains(pattern, regex=True, na=False)
     players_with_parentheses = df[mask]
     df.loc[mask, 'Player_Name'] = df.loc[mask, 'Player_Name'].str.replace(r'\s*\(.*\)$', '', regex=True)
 
@@ -970,6 +970,9 @@ def clean_names(names, reference_names):
     Returns:
         list: List of cleaned and standardized player names.
     """
+    # Convert all names to strings first
+    names = [str(name) if pd.notnull(name) else '' for name in names]
+    
     # Define a regex pattern to match unwanted suffixes
     pattern = r"( Jr\. O| Sr\. O| III O| Jr\.| Sr\.| II O| II| III| O)$"
     
@@ -1062,7 +1065,7 @@ def create_final_dataset(year=2022):
     final_df.reset_index(inplace=True)
 
     points_from_points_allowed(year)
-    points_from_points = pd.read_csv(f"Capstone/data/{year}/fantasy_points_from_points_allowed_{year}.csv")
+    points_from_points = pd.read_csv(f"data/{year}/fantasy_points_from_points_allowed_{year}.csv")
     final_df = final_df.merge(points_from_points, on='Player Name', how='left')
     final_df = final_df.merge(df_two_point_conversion_final, on='Player Name', how='left')
 
@@ -1158,8 +1161,8 @@ def main(year=2022, save_csv=True):
     df_final = create_final_dataset(year=year)
 
     if save_csv:
-        os.makedirs(f"Capstone/data/{year}", exist_ok=True)
-        out_file = f"Capstone/data/{year}/nfl_{year}_final_data.csv"
+        os.makedirs(f"data/{year}", exist_ok=True)
+        out_file = f"data/{year}/nfl_{year}_final_data.csv"
         df_final.to_csv(out_file, index=False)
         print(f"\nSaved final dataset to {out_file}")
 
