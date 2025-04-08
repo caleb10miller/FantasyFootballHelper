@@ -87,6 +87,18 @@ for name, group in long_df.groupby('Player Name'):
 # Combine back into single dataframe
 long_df = pd.concat(targets_df, axis=0).reset_index(drop=True)
 
+# Drop rows with null target values for all seasons except 2024
+initial_rows = len(long_df)
+long_df = long_df[
+    (long_df['Season'] == 2024) |  # Keep all 2024 rows
+    ((long_df['Target_PPR'].notna()) & (long_df['Target_Standard'].notna()))  # For other years, require non-null targets
+].reset_index(drop=True)
+
+# Print information about dropped rows
+dropped_rows = initial_rows - len(long_df)
+print(f"\nDropped {dropped_rows} rows with null target values for seasons before 2024")
+print(f"Remaining rows: {len(long_df)}")
+
 # Reorder columns to put Season and targets in desired positions
 cols = ['Player Name', 'Season', 'Target_PPR', 'Target_Standard'] + [col for col in long_df.columns 
       if col not in ['Player Name', 'Season', 'Target_PPR', 'Target_Standard', 'PPR Fantasy Points Scored', 'Standard Fantasy Points Scored']]
