@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 1.0
+xgb__gamma: 0
+xgb__learning_rate: 0.05
+xgb__max_depth: 4
+xgb__min_child_weight: 2
+xgb__n_estimators: 200
+xgb__reg_alpha: 0.1
+xgb__reg_lambda: 10
+xgb__subsample: 0.9
+
+Test Set Performance:
+R^2: 0.540
+RMSE: 49.5
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Josh Allen  | QB       | BUF  | 325.4
+   2 | Jayden Daniels | QB       | WAS  | 285.7
+   3 | Jalen Hurts | QB       | PHI  | 282.1
+   4 | Lamar Jackson | QB       | BAL  | 278.7
+   5 | Anthony Richardson | QB       | IND  | 260.1
+   6 | Joe Burrow  | QB       | CIN  | 256.1
+   7 | Jordan Love | QB       | GNB  | 255.2
+   8 | C.J. Stroud | QB       | HOU  | 249.1
+   9 | Brock Purdy | QB       | SFO  | 246.3
+  10 | Justin Herbert | QB       | LAC  | 238.0
+  11 | Patrick Mahomes | QB       | KAN  | 219.2
+  12 | Caleb Williams | QB       | CHI  | 210.4
+  13 | Aaron Rodgers | QB       | NYJ  | 202.8
+  14 | Kyler Murray | QB       | ARI  | 195.9
+  15 | Jared Goff  | QB       | DET  | 193.6
+  16 | Matthew Stafford | QB       | LAR  | 193.1
+  17 | Tua Tagovailoa | QB       | MIA  | 191.6
+  18 | Bo Nix      | QB       | DEN  | 187.5
+  19 | Jonathan Taylor | RB       | IND  | 186.7
+  20 | Sam Darnold | QB       | MIN  | 183.5

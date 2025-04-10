@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: tanh
+mlp__alpha: 0.1
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (150,)
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 1000
+mlp__n_iter_no_change: 10
+mlp__validation_fraction: 0.1
+
+Test Set Performance:
+R^2: 0.524
+RMSE: 59.0
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 280.0
+   2 | Josh Allen  | QB       | BUF  | 276.7
+   3 | Jalen Hurts | QB       | PHI  | 272.1
+   4 | Jayden Daniels | QB       | WAS  | 268.3
+   5 | Joe Burrow  | QB       | CIN  | 260.3
+   6 | Justin Herbert | QB       | LAC  | 256.4
+   7 | CeeDee Lamb | WR       | DAL  | 256.3
+   8 | Baker Mayfield | QB       | TAM  | 252.0
+   9 | Ja'Marr Chase | WR       | CIN  | 248.8
+  10 | Bo Nix      | QB       | DEN  | 247.6
+  11 | Sam Darnold | QB       | MIN  | 246.7
+  12 | Jared Goff  | QB       | DET  | 240.7
+  13 | Kyler Murray | QB       | ARI  | 240.3
+  14 | Patrick Mahomes | QB       | KAN  | 230.0
+  15 | Malik Nabers | WR       | NYG  | 229.6
+  16 | Jordan Addison | WR       | MIN  | 228.8
+  17 | Brock Bowers | TE       | LVR  | 227.4
+  18 | Puka Nacua  | WR       | LAR  | 227.2
+  19 | Tee Higgins | WR       | CIN  | 221.6
+  20 | Caleb Williams | QB       | CHI  | 221.5

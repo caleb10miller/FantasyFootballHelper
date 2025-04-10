@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 1.0
+xgb__gamma: 0
+xgb__learning_rate: 0.05
+xgb__max_depth: 4
+xgb__min_child_weight: 2
+xgb__n_estimators: 200
+xgb__reg_alpha: 0.1
+xgb__reg_lambda: 10
+xgb__subsample: 0.9
+
+Test Set Performance:
+R^2: 0.517
+RMSE: 59.3
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Jalen Hurts | QB       | PHI  | 324.2
+   2 | Lamar Jackson | QB       | BAL  | 314.9
+   3 | Jayden Daniels | QB       | WAS  | 299.4
+   4 | Justin Jefferson | WR       | MIN  | 296.6
+   5 | CeeDee Lamb | WR       | DAL  | 276.7
+   6 | Josh Allen  | QB       | BUF  | 274.4
+   7 | Garrett Wilson | WR       | NYJ  | 272.0
+   8 | Patrick Mahomes | QB       | KAN  | 270.5
+   9 | Amon-Ra St. Brown | WR       | DET  | 267.0
+  10 | Ja'Marr Chase | WR       | CIN  | 264.6
+  11 | Joe Burrow  | QB       | CIN  | 254.7
+  12 | Justin Herbert | QB       | LAC  | 247.5
+  13 | Caleb Williams | QB       | CHI  | 245.7
+  14 | Drake London | WR       | ATL  | 243.5
+  15 | Anthony Richardson | QB       | IND  | 235.3
+  16 | Marvin Harrison Jr. | WR       | ARI  | 230.7
+  17 | Dak Prescott | QB       | DAL  | 226.8
+  18 | Kyler Murray | QB       | ARI  | 225.7
+  19 | De'Von Achane | RB       | MIA  | 222.3
+  20 | Derrick Henry | RB       | BAL  | 221.7

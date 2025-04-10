@@ -1,0 +1,40 @@
+Grid Search Results
+==================
+
+Best Parameters:
+linear__fit_intercept: True
+linear__positive: False
+
+Test Set Performance:
+R^2: 0.519
+RMSE: 59.2
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 371.6
+   2 | Joe Burrow  | QB       | CIN  | 337.3
+   3 | Baker Mayfield | QB       | TAM  | 313.2
+   4 | Ja'Marr Chase | WR       | CIN  | 293.7
+   5 | Josh Allen  | QB       | BUF  | 290.6
+   6 | Sam Darnold | QB       | MIN  | 278.8
+   7 | Jared Goff  | QB       | DET  | 267.7
+   8 | Jalen Hurts | QB       | PHI  | 253.2
+   9 | Jayden Daniels | QB       | WAS  | 250.5
+  10 | Justin Jefferson | WR       | MIN  | 247.9
+  11 | Amon-Ra St. Brown | WR       | DET  | 240.6
+  12 | Bijan Robinson | RB       | ATL  | 238.9
+  13 | Bo Nix      | QB       | DEN  | 237.4
+  14 | CeeDee Lamb | WR       | DAL  | 234.4
+  15 | Jahmyr Gibbs | RB       | DET  | 234.2
+  16 | Kyren Williams | RB       | LAR  | 229.6
+  17 | Malik Nabers | WR       | NYG  | 229.1
+  18 | De'Von Achane | RB       | MIA  | 227.3
+  19 | Justin Herbert | QB       | LAC  | 225.8
+  20 | Josh Jacobs | RB       | GNB  | 224.1

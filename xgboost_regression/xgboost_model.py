@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import Normalizer, OneHotEncoder
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_squared_error, r2_score
@@ -13,7 +13,7 @@ import os
 # === CONFIGURATION ===
 input = input("Enter the scoring type (1 for PPR, 0 for Standard): ")
 scoring_type = "PPR" if input == "1" else "Standard"
-input_file = "data/final_data/nfl_stats_long_format.csv"   
+input_file = "data/final_data/nfl_stats_long_format_filtered.csv"   
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # Create directories if they don't exist
@@ -35,7 +35,7 @@ df_test = df[df["Season"] == 2023].copy()
 df_test = df_test[df_test[target_col].notna()]
 
 # === DEFINE FEATURES ===
-exclude_cols = ["Player Name", "Season", "Target_PPR", "Target_Standard"]
+exclude_cols = ["Player Name", "Season", "Target_PPR", "Target_Standard", "PPR Fantasy Points Scored", "Standard Fantasy Points Scored"]
 feature_cols = [col for col in df.columns if col not in exclude_cols]
 
 X_train = df_train[feature_cols].copy()
@@ -58,7 +58,7 @@ for col in categorical_cols:
 
 preprocessor = ColumnTransformer(
     transformers=[
-        ("num", Normalizer(), numerical_cols),
+        ("num", StandardScaler(), numerical_cols),
         ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), categorical_cols)
     ]
 )
@@ -71,14 +71,14 @@ pipeline = Pipeline([
 
 # === PARAMETER GRID ===
 param_grid = {
-    'xgb__n_estimators': [100],  
-    'xgb__max_depth': [3],  
-    'xgb__learning_rate': [0.1],  
-    'xgb__subsample': [1.0],  
-    'xgb__colsample_bytree': [0.8],  
-    'xgb__min_child_weight': [3],  
+    'xgb__n_estimators': [200],  
+    'xgb__max_depth': [4],  
+    'xgb__learning_rate': [0.05],  
+    'xgb__subsample': [0.9],  
+    'xgb__colsample_bytree': [1.0],  
+    'xgb__min_child_weight': [2],  
     'xgb__gamma': [0],  
-    'xgb__reg_alpha': [0],  
+    'xgb__reg_alpha': [0.1],  
     'xgb__reg_lambda': [10]  
 }
 

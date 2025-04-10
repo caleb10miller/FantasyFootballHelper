@@ -1,0 +1,67 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.530
+RMSE: 58.6
+
+MinMaxScaler:
+R^2: 0.530
+RMSE: 58.6
+
+RobustScaler:
+R^2: 0.530
+RMSE: 58.6
+
+Normalizer:
+R^2: 0.515
+RMSE: 59.5
+
+
+Best Scaler: StandardScaler
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 1.0
+xgb__gamma: 0
+xgb__learning_rate: 0.05
+xgb__max_depth: 4
+xgb__min_child_weight: 2
+xgb__n_estimators: 200
+xgb__reg_alpha: 0.1
+xgb__reg_lambda: 10
+xgb__subsample: 0.9
+
+Test Set Performance:
+R^2: 0.530
+RMSE: 58.6
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Josh Allen  | QB       | BUF  | 326.3
+   2 | Jalen Hurts | QB       | PHI  | 291.9
+   3 | Jayden Daniels | QB       | WAS  | 291.2
+   4 | Anthony Richardson | QB       | IND  | 278.8
+   5 | Lamar Jackson | QB       | BAL  | 277.7
+   6 | Brock Purdy | QB       | SFO  | 273.4
+   7 | Ja'Marr Chase | WR       | CIN  | 272.2
+   8 | Justin Jefferson | WR       | MIN  | 271.7
+   9 | Joe Burrow  | QB       | CIN  | 265.8
+  10 | Garrett Wilson | WR       | NYJ  | 262.5
+  11 | Amon-Ra St. Brown | WR       | DET  | 258.0
+  12 | Marvin Harrison Jr. | WR       | ARI  | 256.9
+  13 | Jordan Love | QB       | GNB  | 251.3
+  14 | Drake London | WR       | ATL  | 247.6
+  15 | CeeDee Lamb | WR       | DAL  | 242.5
+  16 | Puka Nacua  | WR       | LAR  | 240.9
+  17 | Davante Adams | WR       | 2TM  | 240.7
+  18 | Tyreek Hill | WR       | MIA  | 239.9
+  19 | Justin Herbert | QB       | LAC  | 238.0
+  20 | C.J. Stroud | QB       | HOU  | 235.6
