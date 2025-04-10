@@ -36,6 +36,31 @@ columns_to_keep = [
     "PPR Fantasy Points Scored","Standard Fantasy Points Scored"
 ]
 
-df_filtered = df[columns_to_keep].copy()
+long_df = df[columns_to_keep].copy()
 
-df_filtered.to_csv("data/final_data/nfl_stats_long_format_filtered.csv", index=False)
+# Initialize target columns
+long_df['Target_PPR'] = np.nan
+long_df['Target_Standard'] = np.nan
+
+# Create target variables for next season's fantasy points
+targets_df = []
+for name, group in long_df.groupby('Player Name'):
+    # Sort by season to ensure correct order
+    group = group.sort_values('Season')
+    
+    # Only set target if there's a next season's data
+    if len(group) > 1:
+        for i in range(len(group) - 1):
+            current_season = group.iloc[i]
+            next_season = group.iloc[i + 1]
+            
+            # Set target for next season's fantasy points
+            group.iloc[i, group.columns.get_loc('Target_PPR')] = next_season['PPR Fantasy Points Scored']
+            group.iloc[i, group.columns.get_loc('Target_Standard')] = next_season['Standard Fantasy Points Scored']
+    
+    targets_df.append(group)
+
+# Combine back into single dataframe
+long_df = pd.concat(targets_df, axis=0).reset_index(drop=True)
+
+long_df.to_csv("data/final_data/nfl_stats_long_format_filtered.csv", index=False)
