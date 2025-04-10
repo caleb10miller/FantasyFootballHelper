@@ -1,0 +1,61 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.471
+RMSE: 62.1
+
+MinMaxScaler:
+R^2: 0.471
+RMSE: 62.1
+
+RobustScaler:
+R^2: 0.481
+RMSE: 61.5
+
+Normalizer:
+R^2: 0.127
+RMSE: 79.8
+
+
+Best Scaler: RobustScaler
+==================
+
+Best Parameters:
+linear__fit_intercept: False
+linear__n_jobs: -1
+linear__positive: False
+
+Test Set Performance:
+R^2: 0.481
+RMSE: 61.5
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Ja'Marr Chase | WR       | CIN  | 367.5
+   2 | Joe Burrow  | QB       | CIN  | 348.4
+   3 | Lamar Jackson | QB       | BAL  | 339.6
+   4 | Baker Mayfield | QB       | TAM  | 311.9
+   5 | Josh Allen  | QB       | BUF  | 288.2
+   6 | Amon-Ra St. Brown | WR       | DET  | 286.7
+   7 | Justin Jefferson | WR       | MIN  | 284.1
+   8 | Jared Goff  | QB       | DET  | 267.2
+   9 | Jalen Hurts | QB       | PHI  | 263.1
+  10 | Sam Darnold | QB       | MIN  | 260.5
+  11 | Derrick Henry | RB       | BAL  | 254.7
+  12 | Josh Jacobs | RB       | GNB  | 252.3
+  13 | Kyren Williams | RB       | LAR  | 251.5
+  14 | Bijan Robinson | RB       | ATL  | 242.3
+  15 | Saquon Barkley | RB       | PHI  | 241.0
+  16 | Jahmyr Gibbs | RB       | DET  | 240.9
+  17 | Drake London | WR       | ATL  | 238.8
+  18 | CeeDee Lamb | WR       | DAL  | 238.2
+  19 | Jayden Daniels | QB       | WAS  | 236.2
+  20 | Malik Nabers | WR       | NYG  | 229.5
