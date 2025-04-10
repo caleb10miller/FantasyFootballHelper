@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 0.8
+xgb__gamma: 0
+xgb__learning_rate: 0.01
+xgb__max_depth: 3
+xgb__min_child_weight: 3
+xgb__n_estimators: 100
+xgb__reg_alpha: 0.1
+xgb__reg_lambda: 10
+xgb__subsample: 0.8
+
+Test Set Performance:
+R^2: 0.024
+RMSE: 84.4
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Geno Smith  | QB       | SEA  | 107.5
+   2 | Sam Howell  | QB       | SEA  | 107.5
+   3 | Trey Lance  | QB       | DAL  | 107.0
+   4 | Dak Prescott | QB       | DAL  | 107.0
+   5 | Cooper Rush | QB       | DAL  | 107.0
+   6 | Chris Oladokun | QB       | KAN  | 103.1
+   7 | Carson Wentz | QB       | KAN  | 103.1
+   8 | Patrick Mahomes | QB       | KAN  | 103.1
+   9 | Jordan Love | QB       | GNB  | 102.7
+  10 | Malik Willis | QB       | GNB  | 102.7
+  11 | Sam Darnold | QB       | MIN  | 102.6
+  12 | Nick Mullens | QB       | MIN  | 102.6
+  13 | Taylor Heinicke | QB       | LAC  | 102.1
+  14 | Justin Herbert | QB       | LAC  | 102.1
+  15 | Jalen Hurts | QB       | PHI  | 101.8
+  16 | Kenny Pickett | QB       | PHI  | 101.8
+  17 | Tanner McKee | QB       | PHI  | 101.8
+  18 | Mitchell Trubisky | QB       | BUF  | 101.4
+  19 | Mike White  | QB       | BUF  | 101.4
+  20 | Josh Allen  | QB       | BUF  | 101.4

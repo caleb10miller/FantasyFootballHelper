@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: relu
+mlp__alpha: 0.0001
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (64, 32, 16, 8)
+mlp__learning_rate: adaptive
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 2000
+mlp__validation_fraction: 0.1
+
+Test Set Performance:
+R^2: 0.479
+RMSE: 61.7
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Ja'Marr Chase | WR       | CIN  | 341.1
+   2 | Lamar Jackson | QB       | BAL  | 328.6
+   3 | Josh Allen  | QB       | BUF  | 320.2
+   4 | Joe Burrow  | QB       | CIN  | 318.0
+   5 | Baker Mayfield | QB       | TAM  | 313.9
+   6 | Jalen Hurts | QB       | PHI  | 309.9
+   7 | Justin Jefferson | WR       | MIN  | 280.1
+   8 | Amon-Ra St. Brown | WR       | DET  | 278.6
+   9 | Josh Jacobs | RB       | GNB  | 265.2
+  10 | Jared Goff  | QB       | DET  | 260.6
+  11 | Sam Darnold | QB       | MIN  | 256.9
+  12 | CeeDee Lamb | WR       | DAL  | 247.6
+  13 | Derrick Henry | RB       | BAL  | 238.8
+  14 | Patrick Mahomes | QB       | KAN  | 238.2
+  15 | Geno Smith  | QB       | SEA  | 233.5
+  16 | Terry McLaurin | WR       | WAS  | 228.4
+  17 | Garrett Wilson | WR       | NYJ  | 227.4
+  18 | De'Von Achane | RB       | MIA  | 226.5
+  19 | James Cook  | RB       | BUF  | 225.1
+  20 | Ladd McConkey | WR       | LAC  | 224.8

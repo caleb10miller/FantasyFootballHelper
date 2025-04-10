@@ -1,0 +1,48 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: relu
+mlp__alpha: 0.00025
+mlp__batch_size: 24
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (56, 28, 14, 7)
+mlp__learning_rate: adaptive
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 2000
+mlp__n_iter_no_change: 10
+mlp__validation_fraction: 0.1
+
+Test Set Performance:
+R^2: 0.488
+RMSE: 61.1
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Ja'Marr Chase | WR       | CIN  | 328.2
+   2 | Baker Mayfield | QB       | TAM  | 313.6
+   3 | Joe Burrow  | QB       | CIN  | 299.1
+   4 | Josh Allen  | QB       | BUF  | 295.8
+   5 | Lamar Jackson | QB       | BAL  | 290.1
+   6 | Amon-Ra St. Brown | WR       | DET  | 282.4
+   7 | Justin Jefferson | WR       | MIN  | 274.9
+   8 | Jalen Hurts | QB       | PHI  | 273.8
+   9 | Josh Jacobs | RB       | GNB  | 267.5
+  10 | Jared Goff  | QB       | DET  | 257.7
+  11 | Derrick Henry | RB       | BAL  | 257.3
+  12 | Saquon Barkley | RB       | PHI  | 256.6
+  13 | Sam Darnold | QB       | MIN  | 249.3
+  14 | Kyren Williams | RB       | LAR  | 246.7
+  15 | CeeDee Lamb | WR       | DAL  | 246.0
+  16 | Terry McLaurin | WR       | WAS  | 240.5
+  17 | James Cook  | RB       | BUF  | 237.2
+  18 | Jayden Daniels | QB       | WAS  | 231.4
+  19 | Geno Smith  | QB       | SEA  | 229.8
+  20 | Jaxon Smith-Njigba | WR       | SEA  | 228.6

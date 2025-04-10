@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: tanh
+mlp__alpha: 0.1
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (150,)
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 1000
+mlp__n_iter_no_change: 10
+mlp__validation_fraction: 0.1
+
+Test Set Performance:
+R^2: 0.518
+RMSE: 59.3
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Ja'Marr Chase | WR       | CIN  | 270.1
+   2 | Joe Burrow  | QB       | CIN  | 265.6
+   3 | Lamar Jackson | QB       | BAL  | 264.0
+   4 | Baker Mayfield | QB       | TAM  | 262.9
+   5 | Justin Jefferson | WR       | MIN  | 262.2
+   6 | Amon-Ra St. Brown | WR       | DET  | 261.7
+   7 | Josh Allen  | QB       | BUF  | 259.7
+   8 | Jared Goff  | QB       | DET  | 254.9
+   9 | Sam Darnold | QB       | MIN  | 250.0
+  10 | Jalen Hurts | QB       | PHI  | 247.3
+  11 | CeeDee Lamb | WR       | DAL  | 245.9
+  12 | Jahmyr Gibbs | RB       | DET  | 243.1
+  13 | Josh Jacobs | RB       | GNB  | 241.1
+  14 | Derrick Henry | RB       | BAL  | 237.7
+  15 | Kyren Williams | RB       | LAR  | 235.6
+  16 | Jayden Daniels | QB       | WAS  | 232.8
+  17 | Saquon Barkley | RB       | PHI  | 229.2
+  18 | Drake London | WR       | ATL  | 228.3
+  19 | Jaxon Smith-Njigba | WR       | SEA  | 226.6
+  20 | Garrett Wilson | WR       | NYJ  | 226.1

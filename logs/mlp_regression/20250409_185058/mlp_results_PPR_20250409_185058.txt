@@ -1,0 +1,48 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: tanh
+mlp__alpha: 0.03
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (110,)
+mlp__learning_rate: constant
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 1000
+mlp__n_iter_no_change: 20
+mlp__validation_fraction: 0.2
+
+Test Set Performance:
+R^2: 0.505
+RMSE: 60.1
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Ja'Marr Chase | WR       | CIN  | 228.0
+   2 | Baker Mayfield | QB       | TAM  | 225.3
+   3 | Amon-Ra St. Brown | WR       | DET  | 225.3
+   4 | Justin Jefferson | WR       | MIN  | 224.8
+   5 | Joe Burrow  | QB       | CIN  | 224.6
+   6 | Derrick Henry | RB       | BAL  | 224.6
+   7 | Lamar Jackson | QB       | BAL  | 223.7
+   8 | Saquon Barkley | RB       | PHI  | 222.9
+   9 | Kyren Williams | RB       | LAR  | 222.8
+  10 | Josh Jacobs | RB       | GNB  | 222.6
+  11 | Jahmyr Gibbs | RB       | DET  | 221.8
+  12 | Josh Allen  | QB       | BUF  | 221.4
+  13 | Jalen Hurts | QB       | PHI  | 220.0
+  14 | Jared Goff  | QB       | DET  | 218.6
+  15 | Bijan Robinson | RB       | ATL  | 218.4
+  16 | CeeDee Lamb | WR       | DAL  | 216.8
+  17 | Sam Darnold | QB       | MIN  | 216.0
+  18 | De'Von Achane | RB       | MIA  | 215.9
+  19 | Terry McLaurin | WR       | WAS  | 215.7
+  20 | Malik Nabers | WR       | NYG  | 214.8

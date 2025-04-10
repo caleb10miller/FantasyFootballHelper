@@ -1,370 +1,182 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import Normalizer
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import Normalizer, OneHotEncoder
+from sklearn.compose import ColumnTransformer
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_squared_error, r2_score
-import matplotlib.pyplot as plt
-import seaborn as sns
-import os
 import joblib
+from datetime import datetime
+import os
 
-def load_data(data_path):
-    """
-    Load the long format data from CSV file.
+# === CONFIGURATION ===
+input = input("Enter the scoring type (1 for PPR, 0 for Standard): ")
+scoring_type = "PPR" if input == "1" else "Standard"
+input_file = "data/final_data/nfl_stats_long_format.csv"   
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+# Create directories if they don't exist
+os.makedirs("logs", exist_ok=True)
+os.makedirs("logs/xgboost_regression", exist_ok=True)  
+os.makedirs(f"logs/xgboost_regression/{timestamp}", exist_ok=True)  
+os.makedirs("xgboost_regression/joblib_files", exist_ok=True)  
+
+# === LOAD DATA ===
+df = pd.read_csv(input_file)
+
+# === SELECT TARGET ===
+target_col = "Target_PPR" if scoring_type == "PPR" else "Target_Standard"
+
+# === FILTER TRAIN AND TEST ===
+df_train = df[df["Season"].between(2018, 2022)].copy()
+df_train = df_train[df_train[target_col].notna()]
+df_test = df[df["Season"] == 2023].copy()
+df_test = df_test[df_test[target_col].notna()]
+
+# === DEFINE FEATURES ===
+exclude_cols = ["Player Name", "Season", "Target_PPR", "Target_Standard"]
+feature_cols = [col for col in df.columns if col not in exclude_cols]
+
+X_train = df_train[feature_cols].copy()
+X_test = df_test[feature_cols].copy()
+y_train = df_train[target_col]
+y_test = df_test[target_col]
+
+# === FILL NA ===
+X_train = X_train.fillna(0)
+X_test = X_test.fillna(0)
+
+# === ONE-HOT ENCODING for categorical columns ===
+categorical_cols = ["Team", "Position"]
+numerical_cols = [col for col in feature_cols if col not in categorical_cols]
+
+# Convert categorical columns to string type to ensure consistent data types
+for col in categorical_cols:
+    X_train[col] = X_train[col].astype(str)
+    X_test[col] = X_test[col].astype(str)
+
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("num", Normalizer(), numerical_cols),
+        ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), categorical_cols)
+    ]
+)
+
+# === CREATE PIPELINE ===
+pipeline = Pipeline([
+    ("preprocessor", preprocessor),
+    ("xgb", XGBRegressor(random_state=42))
+])
+
+# === PARAMETER GRID ===
+param_grid = {
+    'xgb__n_estimators': [100],  
+    'xgb__max_depth': [3],  
+    'xgb__learning_rate': [0.1],  
+    'xgb__subsample': [1.0],  
+    'xgb__colsample_bytree': [0.8],  
+    'xgb__min_child_weight': [3],  
+    'xgb__gamma': [0],  
+    'xgb__reg_alpha': [0],  
+    'xgb__reg_lambda': [10]  
+}
+
+# === GRID SEARCH ===
+grid_search = GridSearchCV(
+    pipeline,
+    param_grid,
+    cv=5,
+    scoring='r2',
+    n_jobs=-1,  
+    verbose=0  
+)
+
+grid_search.fit(X_train, y_train)
+
+# === PRINT BEST PARAMETERS ===
+print("\nBest parameters found:")
+for param, value in grid_search.best_params_.items():
+    print(f"{param}: {value}")
+
+# === EVALUATE BEST MODEL ===
+best_model = grid_search.best_estimator_
+y_pred = best_model.predict(X_test)
+
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+r2 = r2_score(y_test, y_pred)
+
+print("\nBest Model Performance:")
+print(f"R^2: {r2:.3f}")
+print(f"RMSE: {rmse:.1f}")
+
+# === GENERATE PREDICTIONS FOR 2024 SEASON ===
+print("\nGenerating predictions for 2024 season...")
+
+# Filter data for 2024 season
+df_next_season = df[df["Season"] == 2024].copy()
+
+# === SAVE RESULTS ===
+results_file = f"logs/xgboost_regression/{timestamp}/xgb_results_{scoring_type}_{timestamp}.txt"
+
+with open(results_file, 'w') as f:
+    f.write("Grid Search Results\n")
+    f.write("==================\n\n")
+    f.write("Best Parameters:\n")
+    for param, value in grid_search.best_params_.items():
+        f.write(f"{param}: {value}\n")
     
-    Args:
-        data_path (str): Path to the data file
+    f.write("\nTest Set Performance:\n")
+    f.write(f"R^2: {r2:.3f}\n")
+    f.write(f"RMSE: {rmse:.1f}\n")
+    
+    # Add 2024 season predictions to the log file
+    f.write("\n\n2024 Season Predictions\n")
+    f.write("=====================\n\n")
+    
+    if len(df_next_season) == 0:
+        f.write("No data found for 2024 season. Please check your data.\n")
+        print("No data found for 2024 season. Please check your data.")
+    else:
+        # Prepare features for prediction
+        X_next_season = df_next_season[feature_cols].copy()
+        X_next_season = X_next_season.fillna(0)
         
-    Returns:
-        pandas.DataFrame: Loaded data
-    """
-    print(f"Loading data from {data_path}...")
-    df = pd.read_csv(data_path)
-    print(f"Data loaded with shape: {df.shape}")
-    return df
-
-def split_data(df):
-    """
-    Split data into train (2018-2022) and test (2023) sets.
-    
-    Args:
-        df (pandas.DataFrame): Input data
+        # Convert categorical columns to string type
+        for col in categorical_cols:
+            X_next_season[col] = X_next_season[col].astype(str)
         
-    Returns:
-        tuple: (train_df, test_df)
-    """
-    print("Splitting data into train (2018-2022) and test (2023) sets...")
-    train_df = df[df['Season'].isin([2018, 2019, 2020, 2021, 2022])]
-    test_df = df[df['Season'] == 2023]
-    
-    # Remove rows where target is NaN from training data
-    train_df = train_df[train_df['Target_PPR'].notna()]
-    
-    print(f"Training data shape: {train_df.shape}")
-    print(f"Test data shape: {test_df.shape}")
-    
-    return train_df, test_df
-
-def prepare_features(df, train_df, test_df, scoring_type):
-    """
-    Prepare features for model training and prediction.
-    
-    Args:
-        df (pandas.DataFrame): Original data
-        train_df (pandas.DataFrame): Training data
-        test_df (pandas.DataFrame): Test data
-        scoring_type (int): 0 for standard, 1 for PPR
+        # Generate predictions
+        next_season_predictions = best_model.predict(X_next_season)
         
-    Returns:
-        tuple: (X_train, y_train, X_test, y_test, feature_cols)
-    """
-    print("Preparing features...")
-    
-    # Prepare features (excluding target variables, non-feature columns, and Standard Fantasy Points)
-    feature_cols = [col for col in df.columns if col not in 
-                    ['Player Name', 'Season', 'Target_PPR', 'Target_Standard']]
-    
-    # Split into features and target based on scoring type
-    X_train = train_df[feature_cols]
-    y_train = train_df['Target_PPR'] if scoring_type == 1 else train_df['Target_Standard']
-    X_test = test_df[feature_cols]
-    y_test = test_df['Target_PPR'] if scoring_type == 1 else test_df['Target_Standard']
-    
-    # Fill NaN values with 0 (since NaN in football stats typically means 0)
-    X_train = X_train.fillna(0)
-    X_test = X_test.fillna(0)
-    
-    # Handle categorical variables
-    categorical_cols = ['Position', 'Team']
-    X_train = pd.get_dummies(X_train, columns=categorical_cols)
-    X_test = pd.get_dummies(X_test, columns=categorical_cols)
-    
-    # Ensure test set has all columns from training set
-    missing_cols = set(X_train.columns) - set(X_test.columns)
-    for col in missing_cols:
-        X_test[col] = 0
-    X_test = X_test[X_train.columns]
-    
-    print(f"Training features shape: {X_train.shape}")
-    print(f"Test features shape: {X_test.shape}")
-    
-    return X_train, y_train, X_test, y_test, feature_cols
-
-def scale_features(X_train, X_test):
-    """
-    Scale the features using StandardScaler.
-    
-    Args:
-        X_train (pandas.DataFrame): Training features
-        X_test (pandas.DataFrame): Test features
+        # Create a DataFrame with predictions
+        df_next_season_predictions = df_next_season[["Player Name", "Position", "Team", target_col]].copy()
+        df_next_season_predictions["Predicted_Target"] = next_season_predictions
         
-    Returns:
-        tuple: (X_train_scaled, X_test_scaled, scaler)
-    """
-    print("Scaling features...")
-    
-    # Scale the features
-    scaler = Normalizer()
-    X_train_scaled = scaler.fit_transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
-    
-    return X_train_scaled, X_test_scaled, scaler
-
-def train_model(X_train_scaled, y_train):
-    """
-    Train the XGBoost model.
-    
-    Args:
-        X_train_scaled (numpy.ndarray): Scaled training features
-        y_train (pandas.Series): Training target
+        # Sort by predicted target in descending order
+        df_next_season_predictions = df_next_season_predictions.sort_values("Predicted_Target", ascending=False)
         
-    Returns:
-        MLPRegressor: Trained model
-    """
-    print("Training XGBoost model...")
-    
-    model = XGBRegressor(
-        n_estimators=100,
-        learning_rate=0.1,
-        max_depth=5,
-        random_state=42
-    )
-    model.fit(X_train_scaled, y_train)
-    
-    return model
-
-def evaluate_model(model, X_train_scaled, y_train, X_test_scaled, y_test):
-    """
-    Evaluate the model on training data and test data.
-    
-    Args:
-        model (MLPRegressor): Trained model
-        X_train_scaled (numpy.ndarray): Scaled training features
-        y_train (pandas.Series): Training target
-        X_test_scaled (numpy.ndarray): Scaled test features
-        y_test (pandas.Series): Test target
+        # Get top 20 players
+        top_20_players = df_next_season_predictions.head(20)
         
-    Returns:
-        tuple: (y_pred_train, mse_train, rmse_train, r2_train, y_pred_test, mse_test, rmse_test, r2_test)
-    """
-    print("Evaluating model on training data...")
-    
-    # Evaluate on training data
-    y_pred_train = model.predict(X_train_scaled)
-    mse_train = mean_squared_error(y_train, y_pred_train)
-    rmse_train = np.sqrt(mse_train)
-    r2_train = r2_score(y_train, y_pred_train)
-    
-    print("\nModel Performance on Training Data (2018-2022):")
-    print(f"Mean Squared Error: {mse_train:.2f}")
-    print(f"Root Mean Squared Error: {rmse_train:.2f}")
-    print(f"R² Score: {r2_train:.2f}")
-
-    # Handle NaN values in test data
-    if np.isnan(y_test).any():
-        print("Warning: NaN values found in test target. Filling with 0.")
-        y_test = y_test.fillna(0)
-    
-    # Evaluate on test set
-    y_pred_test = model.predict(X_test_scaled)
-    mse_test = mean_squared_error(y_test, y_pred_test)
-    rmse_test = np.sqrt(mse_test)
-    r2_test = r2_score(y_test, y_pred_test)
-    
-    print("\nModel Performance on Test Set:")
-    print(f"Mean Squared Error: {mse_test:.2f}")
-    print(f"Root Mean Squared Error: {rmse_test:.2f}")
-    print(f"R² Score: {r2_test:.2f}")
-    
-    return y_pred_train, mse_train, rmse_train, r2_train, y_pred_test, mse_test, rmse_test, r2_test
-
-def make_predictions(model, X_test_scaled, test_df, scoring_type):
-    """
-    Make predictions for test data.
-    
-    Args:
-        model (MLPRegressor): Trained model
-        X_test_scaled (numpy.ndarray): Scaled test features
-        test_df (pandas.DataFrame): Test data
-        scoring_type (int): 0 for standard, 1 for PPR
+        # Write top 20 players to log file
+        f.write("Top 20 Players for 2024 Season:\n")
+        f.write("==============================\n\n")
+        f.write("Rank | Player Name | Position | Team | Predicted Target\n")
+        f.write("-----|-------------|----------|------|-----------------\n")
         
-    Returns:
-        tuple: (y_pred, predictions_df)
-    """
-    
-    # Make predictions for 2023 data (to predict 2024)
-    y_pred = model.predict(X_test_scaled)
-    
-    # Create a copy of test_df to avoid SettingWithCopyWarning
-    predictions_df = test_df.copy()
-    predictions_df['Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2024_Standard'] = y_pred
-    
-    # Sort by predicted points and show top 10
-    top_10_predicted = predictions_df.sort_values('Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2024_Standard', ascending=False).head(10)
-    print("\nTop 10 Predicted Fantasy Points for 2024:")
-    print(top_10_predicted[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2024_Standard']].to_string(index=False))
-
-    top_10_actual = predictions_df.sort_values('Target_PPR' if scoring_type == 1 else 'Target_Standard', ascending=False).head(10)
-    print("\nTop 10 Actual Fantasy Points for 2024:")
-    print(top_10_actual[['Player Name', 'Position', 'Team', 'Target_PPR' if scoring_type == 1 else 'Target_Standard', 'Predicted_2024_PPR' if scoring_type == 1 else 'Predicted_2024_Standard']].to_string(index=False))
-    
-
-    return y_pred, predictions_df
-
-def get_feature_importance(model, X_train):
-    """
-    Get feature importance from the XGBoost model.
-    
-    Args:
-        model (XGBRegressor): Trained XGBoost model
-        X_train (pandas.DataFrame): Training features
+        for i, (_, row) in enumerate(top_20_players.iterrows(), 1):
+            f.write(f"{i:4d} | {row['Player Name']:11s} | {row['Position']:8s} | {row['Team']:4s} | {row['Predicted_Target']:.1f}\n")
         
-    Returns:
-        pandas.DataFrame: Feature importance
-    """
-    print("Calculating feature importance...")
-    
-    importance_dict = model.get_booster().get_score(importance_type='gain')
-    
-    # Map feature names to original column names
-    importance_df = pd.DataFrame([
-        {'Feature': X_train.columns[int(feat[1:])], 'Importance': importance}
-        for feat, importance in importance_dict.items()
-    ])
+        # Save all predictions to a CSV file
+        predictions_file = f"logs/xgboost_regression/{timestamp}/predictions_{scoring_type}_{timestamp}.csv"
+        df_next_season_predictions.to_csv(predictions_file, index=False)
+        print(f"All predictions saved to {predictions_file}")
 
-    importance_df = importance_df.sort_values('Importance', ascending=False)
-    
-    print("\nTop 10 Most Important Features:")
-    print(importance_df.head(10))
-    
-    return importance_df
+# === SAVE BEST MODEL ===
+model_file = f"xgboost_regression/joblib_files/xgb_pipeline_{scoring_type}_{timestamp}.pkl"
+joblib.dump(best_model, model_file)
 
-def create_visualizations(y_train, y_pred_train, y_pred, feature_importance, output_dir, scoring_type):
-    """
-    Create visualizations for model evaluation and predictions.
-    
-    Args:
-        y_train (pandas.Series): Training target
-        y_pred_train (numpy.ndarray): Training predictions
-        y_pred (numpy.ndarray): Test predictions
-        feature_importance (pandas.DataFrame): Feature importance
-        output_dir (str): Output directory for visualizations
-        scoring_type (int): 0 for standard, 1 for PPR
-    """
-    print(f"Creating visualizations in {output_dir}...")
-    
-    # Create output directory if it doesn't exist
-    os.makedirs(output_dir, exist_ok=True)
-    
-    # Set scoring type string for filenames
-    scoring_str = "ppr" if scoring_type == 1 else "standard"
-    
-    # Plot training predictions distribution
-    plt.figure(figsize=(10, 6))
-    plt.hist(y_pred_train, bins=50, alpha=0.75)
-    plt.xlabel('Predicted Fantasy Points')
-    plt.ylabel('Number of Players')
-    plt.title('Distribution of Predicted Fantasy Points (Training Data)')
-    plt.tight_layout()
-    plt.savefig(f'{output_dir}/xgboost_predictions_training_{scoring_str}.png')
-    plt.close()
-    
-    # Plot predicted vs actual for training data
-    plt.figure(figsize=(10, 8))
-    plt.scatter(y_train, y_pred_train, alpha=0.5)
-    plt.plot([y_train.min(), y_train.max()], [y_train.min(), y_train.max()], 'r--', lw=2)
-    plt.xlabel('Actual Fantasy Points')
-    plt.ylabel('Predicted Fantasy Points')
-    plt.title('Predicted vs Actual Fantasy Points (Training Data)')
-    plt.tight_layout()
-    plt.savefig(f'{output_dir}/xgboost_predicted_vs_actual_training_{scoring_str}.png')
-    plt.close()
-    
-    # Plot predictions distribution
-    plt.figure(figsize=(10, 6))
-    plt.hist(y_pred, bins=50, alpha=0.75)
-    plt.xlabel('Predicted 2024 Fantasy Points')
-    plt.ylabel('Number of Players')
-    plt.title('Distribution of Predicted 2024 Fantasy Points')
-    plt.tight_layout()
-    plt.savefig(f'{output_dir}/xgboost_predictions_test_{scoring_str}.png')
-    plt.close()
-    
-    # Plot top 10 most important features
-    plt.figure(figsize=(12, 6))
-    sns.barplot(data=feature_importance.head(10), x='Importance', y='Feature')
-    plt.title('Top 10 Most Important Features for Fantasy Points Prediction')
-    plt.tight_layout()
-    plt.savefig(f'{output_dir}/xgboost_feature_importance_2024_{scoring_str}.png')
-    plt.close()
-    
-    print("Visualizations created successfully.")
-
-def save_model(model, scaler, output_dir, scoring_type):
-    """
-    Save the model and scaler.
-    
-    Args:
-        model (MLPRegressor): Trained model
-        scaler (StandardScaler): Fitted scaler
-        output_dir (str): Output directory for model files
-        scoring_type (int): 0 for standard, 1 for PPR
-    """
-    print(f"Saving model and scaler to {output_dir}...")
-    
-    # Create output directory if it doesn't exist
-    os.makedirs(output_dir, exist_ok=True)
-    
-    # Set scoring type string for filenames
-    scoring_str = "ppr" if scoring_type == 1 else "standard"
-    
-    # Save the model and scaler
-    joblib.dump(model, f'{output_dir}/xgboost_model_2024_{scoring_str}.joblib')
-    joblib.dump(scaler, f'{output_dir}/xgboost_scaler_2024_{scoring_str}.joblib')
-    
-    print("Model and scaler saved successfully.")
-
-def main():
-    """
-    Main function to run the XGBoost model pipeline.
-    """
-    # Get user input for scoring type
-    while True:
-        try:
-            scoring_type = int(input("Enter scoring type (0 for standard, 1 for PPR): "))
-            if scoring_type in [0, 1]:
-                break
-            else:
-                print("Please enter 0 for standard or 1 for PPR.")
-        except ValueError:
-            print("Please enter a valid integer (0 or 1).")
-    
-    # Set scoring type string for messages
-    scoring_str = "PPR" if scoring_type == 1 else "Standard"
-    print(f"\nRunning XGBoost model pipeline for {scoring_str} scoring...")
-    
-    # Set paths
-    data_path = 'data/final_data/nfl_stats_long_format.csv'
-    graphs_dir = 'graphs/xgboost_regression'
-    model_dir = 'xgboost_regression/joblib_files'
-    
-    # Create graphs directory if it doesn't exist
-    os.makedirs(graphs_dir, exist_ok=True)
-    
-    # Run pipeline
-    df = load_data(data_path)
-    train_df, test_df = split_data(df)
-    X_train, y_train, X_test, y_test, feature_cols = prepare_features(df, train_df, test_df, scoring_type)
-    X_train_scaled, X_test_scaled, scaler = scale_features(X_train, X_test)
-    model = train_model(X_train_scaled, y_train)
-    y_pred_train, mse_train, rmse_train, r2_train, y_pred_test, mse_test, rmse_test, r2_test = evaluate_model(model, X_train_scaled, y_train, X_test_scaled, y_test)
-    y_pred, predictions_df = make_predictions(model, X_test_scaled, test_df, scoring_type)
-    feature_importance = get_feature_importance(model, X_train)
-    create_visualizations(y_train, y_pred_train, y_pred, feature_importance, graphs_dir, scoring_type)
-    save_model(model, scaler, model_dir, scoring_type)
-    
-    print(f"\nXGBoost model pipeline for {scoring_str} scoring completed successfully.")
-
-if __name__ == "__main__":
-    main() 
+print(f"\nResults saved to {results_file}")
+print(f"Best model saved to {model_file}")

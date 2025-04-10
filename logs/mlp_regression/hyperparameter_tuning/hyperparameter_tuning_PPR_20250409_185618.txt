@@ -1,0 +1,67 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.502
+RMSE: 60.3
+
+MinMaxScaler:
+R^2: 0.489
+RMSE: 61.0
+
+RobustScaler:
+R^2: 0.442
+RMSE: 63.8
+
+Normalizer:
+R^2: 0.453
+RMSE: 63.1
+
+
+Best Scaler: StandardScaler
+==================
+
+Best Parameters:
+mlp__activation: tanh
+mlp__alpha: 0.1
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (100,)
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 1000
+mlp__n_iter_no_change: 10
+mlp__validation_fraction: 0.1
+
+Test Set Performance:
+R^2: 0.502
+RMSE: 60.3
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Ja'Marr Chase | WR       | CIN  | 177.5
+   2 | Joe Burrow  | QB       | CIN  | 177.5
+   3 | Lamar Jackson | QB       | BAL  | 177.5
+   4 | Justin Jefferson | WR       | MIN  | 177.5
+   5 | Baker Mayfield | QB       | TAM  | 177.5
+   6 | Amon-Ra St. Brown | WR       | DET  | 177.4
+   7 | Jared Goff  | QB       | DET  | 177.4
+   8 | Sam Darnold | QB       | MIN  | 177.3
+   9 | Malik Nabers | WR       | NYG  | 177.3
+  10 | Brock Bowers | TE       | LVR  | 177.3
+  11 | Drake London | WR       | ATL  | 177.2
+  12 | Jayden Daniels | QB       | WAS  | 177.2
+  13 | Josh Allen  | QB       | BUF  | 177.1
+  14 | CeeDee Lamb | WR       | DAL  | 177.1
+  15 | Trey McBride | TE       | ARI  | 176.8
+  16 | Bo Nix      | QB       | DEN  | 176.7
+  17 | Jaxon Smith-Njigba | WR       | SEA  | 176.6
+  18 | Brian Thomas | WR       | JAX  | 176.6
+  19 | Garrett Wilson | WR       | NYJ  | 176.6
+  20 | Jahmyr Gibbs | RB       | DET  | 176.2

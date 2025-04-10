@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 0.8
+xgb__gamma: 0
+xgb__learning_rate: 0.1
+xgb__max_depth: 3
+xgb__min_child_weight: 3
+xgb__n_estimators: 100
+xgb__reg_alpha: 0
+xgb__reg_lambda: 10
+xgb__subsample: 1.0
+
+Test Set Performance:
+R^2: 0.524
+RMSE: 58.9
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Jayden Daniels | QB       | WAS  | 287.8
+   2 | Lamar Jackson | QB       | BAL  | 272.3
+   3 | Garrett Wilson | WR       | NYJ  | 270.2
+   4 | Patrick Mahomes | QB       | KAN  | 270.0
+   5 | Amon-Ra St. Brown | WR       | DET  | 269.4
+   6 | Ja'Marr Chase | WR       | CIN  | 263.3
+   7 | Josh Allen  | QB       | BUF  | 262.9
+   8 | CeeDee Lamb | WR       | DAL  | 262.0
+   9 | Marvin Harrison Jr. | WR       | ARI  | 260.3
+  10 | Jalen Hurts | QB       | PHI  | 258.7
+  11 | Caleb Williams | QB       | CHI  | 257.8
+  12 | Justin Jefferson | WR       | MIN  | 255.1
+  13 | Joe Burrow  | QB       | CIN  | 250.8
+  14 | Anthony Richardson | QB       | IND  | 243.8
+  15 | Bo Nix      | QB       | DEN  | 241.2
+  16 | Drake London | WR       | ATL  | 239.9
+  17 | Puka Nacua  | WR       | LAR  | 239.6
+  18 | A.J. Brown  | WR       | PHI  | 236.4
+  19 | Davante Adams | WR       | 2TM  | 233.5
+  20 | Brock Purdy | QB       | SFO  | 231.8

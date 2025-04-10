@@ -1,0 +1,48 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: relu
+mlp__alpha: 1e-05
+mlp__batch_size: 64
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (64, 32, 16, 8)
+mlp__learning_rate: adaptive
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 2000
+mlp__n_iter_no_change: 15
+mlp__validation_fraction: 0.15
+
+Test Set Performance:
+R^2: 0.466
+RMSE: 62.4
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Ja'Marr Chase | WR       | CIN  | 363.6
+   2 | Baker Mayfield | QB       | TAM  | 320.8
+   3 | Josh Allen  | QB       | BUF  | 313.1
+   4 | Joe Burrow  | QB       | CIN  | 311.4
+   5 | Amon-Ra St. Brown | WR       | DET  | 303.1
+   6 | Justin Jefferson | WR       | MIN  | 295.6
+   7 | Jalen Hurts | QB       | PHI  | 291.3
+   8 | Lamar Jackson | QB       | BAL  | 283.0
+   9 | Josh Jacobs | RB       | GNB  | 270.5
+  10 | Jared Goff  | QB       | DET  | 262.3
+  11 | Sam Darnold | QB       | MIN  | 259.3
+  12 | James Cook  | RB       | BUF  | 253.7
+  13 | CeeDee Lamb | WR       | DAL  | 253.0
+  14 | Derrick Henry | RB       | BAL  | 249.9
+  15 | Terry McLaurin | WR       | WAS  | 248.8
+  16 | Kyren Williams | RB       | LAR  | 248.6
+  17 | De'Von Achane | RB       | MIA  | 241.1
+  18 | Saquon Barkley | RB       | PHI  | 240.2
+  19 | Drake London | WR       | ATL  | 236.7
+  20 | Geno Smith  | QB       | SEA  | 235.9

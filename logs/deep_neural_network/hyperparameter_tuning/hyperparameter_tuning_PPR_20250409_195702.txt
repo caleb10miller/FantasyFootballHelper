@@ -1,0 +1,68 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.501
+RMSE: 60.4
+
+MinMaxScaler:
+R^2: 0.496
+RMSE: 60.6
+
+RobustScaler:
+R^2: 0.466
+RMSE: 62.4
+
+Normalizer:
+R^2: 0.429
+RMSE: 64.6
+
+
+Best Scaler: StandardScaler
+==================
+
+Best Parameters:
+mlp__activation: relu
+mlp__alpha: 0.125
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (150, 150, 150)
+mlp__learning_rate: adaptive
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 2500
+mlp__n_iter_no_change: 15
+mlp__validation_fraction: 0.1
+
+Test Set Performance:
+R^2: 0.501
+RMSE: 60.4
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 341.6
+   2 | Josh Allen  | QB       | BUF  | 324.2
+   3 | Joe Burrow  | QB       | CIN  | 323.4
+   4 | Jalen Hurts | QB       | PHI  | 284.8
+   5 | Jared Goff  | QB       | DET  | 259.3
+   6 | Ja'Marr Chase | WR       | CIN  | 256.5
+   7 | Justin Herbert | QB       | LAC  | 255.1
+   8 | Amon-Ra St. Brown | WR       | DET  | 253.4
+   9 | Baker Mayfield | QB       | TAM  | 249.8
+  10 | CeeDee Lamb | WR       | DAL  | 246.1
+  11 | Justin Jefferson | WR       | MIN  | 235.5
+  12 | Patrick Mahomes | QB       | KAN  | 231.1
+  13 | Puka Nacua  | WR       | LAR  | 228.2
+  14 | Jerry Jeudy | WR       | CLE  | 226.6
+  15 | Jaxon Smith-Njigba | WR       | SEA  | 222.3
+  16 | Sam Darnold | QB       | MIN  | 220.9
+  17 | James Cook  | RB       | BUF  | 218.1
+  18 | Caleb Williams | QB       | CHI  | 213.3
+  19 | Jayden Daniels | QB       | WAS  | 211.8
+  20 | Tua Tagovailoa | QB       | MIA  | 209.8

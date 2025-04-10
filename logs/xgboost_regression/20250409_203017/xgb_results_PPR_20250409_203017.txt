@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 0.8
+xgb__gamma: 0
+xgb__learning_rate: 0.1
+xgb__max_depth: 3
+xgb__min_child_weight: 3
+xgb__n_estimators: 100
+xgb__reg_alpha: 0
+xgb__reg_lambda: 10
+xgb__subsample: 1.0
+
+Test Set Performance:
+R^2: 0.540
+RMSE: 58.0
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 296.5
+   2 | Josh Allen  | QB       | BUF  | 295.5
+   3 | Jalen Hurts | QB       | PHI  | 273.3
+   4 | Justin Jefferson | WR       | MIN  | 266.1
+   5 | CeeDee Lamb | WR       | DAL  | 265.4
+   6 | Joe Burrow  | QB       | CIN  | 262.3
+   7 | Amon-Ra St. Brown | WR       | DET  | 259.9
+   8 | Patrick Mahomes | QB       | KAN  | 249.7
+   9 | Sam Darnold | QB       | MIN  | 245.6
+  10 | Jared Goff  | QB       | DET  | 244.4
+  11 | Jayden Daniels | QB       | WAS  | 242.3
+  12 | De'Von Achane | RB       | MIA  | 237.9
+  13 | Kyler Murray | QB       | ARI  | 237.7
+  14 | Garrett Wilson | WR       | NYJ  | 235.9
+  15 | Puka Nacua  | WR       | LAR  | 230.0
+  16 | Bo Nix      | QB       | DEN  | 228.9
+  17 | Baker Mayfield | QB       | TAM  | 224.0
+  18 | Brock Bowers | TE       | LVR  | 219.5
+  19 | Ja'Marr Chase | WR       | CIN  | 219.5
+  20 | Brock Purdy | QB       | SFO  | 219.1

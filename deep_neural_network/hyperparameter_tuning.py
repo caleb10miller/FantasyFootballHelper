@@ -17,9 +17,9 @@ input_file = "data/final_data/nfl_stats_long_format.csv"
 
 # Create directories if they don't exist
 os.makedirs("logs", exist_ok=True)
-os.makedirs("logs/mlp_regression", exist_ok=True)  
-os.makedirs("logs/mlp_regression/scaler_comparison", exist_ok=True)  
-os.makedirs("mlp_regression/joblib_files", exist_ok=True)  
+os.makedirs("logs/deep_neural_network", exist_ok=True)  
+os.makedirs("logs/deep_neural_network/hyperparameter_tuning", exist_ok=True)  
+os.makedirs("deep_neural_network/joblib_files", exist_ok=True)  
 
 # === LOAD DATA ===
 df = pd.read_csv(input_file)
@@ -57,13 +57,21 @@ for col in categorical_cols:
 
 # === PARAMETER GRID ===
 param_grid = {
-    'mlp__hidden_layer_sizes': [(50,), (100,), (50, 25), (100, 50)],
-    'mlp__alpha': [0.001, 0.01, 0.1],
-    'mlp__learning_rate_init': [0.001, 0.01],
-    'mlp__max_iter': [1000, 2000],  
+    'mlp__hidden_layer_sizes': [
+        (200, 100, 50),          
+        (256, 128, 64),          
+        (150, 150, 150),         
+        (300, 150, 75)           
+    ],
+    'mlp__activation': ['tanh', 'relu'],  
+    'mlp__alpha': [0.075, 0.1, 0.125],   
+    'mlp__batch_size': [32],             
+    'mlp__learning_rate': ['adaptive'],  
+    'mlp__learning_rate_init': [0.001],  
+    'mlp__max_iter': [2000],             
     'mlp__early_stopping': [True],
     'mlp__validation_fraction': [0.1],
-    'mlp__n_iter_no_change': [10] 
+    'mlp__n_iter_no_change': [15]         
 }
 
 # === TRY DIFFERENT SCALERS ===
@@ -92,7 +100,7 @@ for scaler_name, scaler in scalers.items():
     # Create pipeline
     pipeline = Pipeline([
         ("preprocessor", preprocessor),
-        ("mlp", MLPRegressor(random_state=42))
+        ("mlp", MLPRegressor(random_state=42, solver='adam'))
     ])
     
     # Grid search
@@ -147,7 +155,7 @@ df_next_season = df[df["Season"] == 2024].copy()
 
 # === SAVE RESULTS ===
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-results_file = f"logs/mlp_regression/scaler_comparison/scaler_comparison_{scoring_type}_{timestamp}.txt"
+results_file = f"logs/deep_neural_network/hyperparameter_tuning/hyperparameter_tuning_{scoring_type}_{timestamp}.txt"
 
 with open(results_file, 'w') as f:
     f.write("Scaler Comparison Results\n")
@@ -207,12 +215,12 @@ with open(results_file, 'w') as f:
             f.write(f"{i:4d} | {row['Player Name']:11s} | {row['Position']:8s} | {row['Team']:4s} | {row['Predicted_Target']:.1f}\n")
         
         # Save all predictions to a CSV file
-        predictions_file = f"logs/mlp_regression/scaler_comparison/predictions_{scoring_type}_{timestamp}.csv"
+        predictions_file = f"logs/deep_neural_network/hyperparameter_tuning/predictions_{scoring_type}_{timestamp}.csv"
         df_next_season_predictions.to_csv(predictions_file, index=False)
         print(f"All predictions saved to {predictions_file}")
 
 # === SAVE BEST MODEL ===
-model_file = f"mlp_regression/joblib_files/mlp_pipeline_{best_scaler_name}_{scoring_type}_{timestamp}.pkl"
+model_file = f"deep_neural_network/joblib_files/dnn_pipeline_{best_scaler_name}_{scoring_type}_{timestamp}.pkl"
 joblib.dump(best_model, model_file)
 
 print(f"\nResults saved to {results_file}")
