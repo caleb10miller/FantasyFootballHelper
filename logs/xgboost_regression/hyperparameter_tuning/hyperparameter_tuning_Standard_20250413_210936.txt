@@ -1,0 +1,67 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.539
+RMSE: 49.6
+
+MinMaxScaler:
+R^2: 0.539
+RMSE: 49.6
+
+RobustScaler:
+R^2: 0.539
+RMSE: 49.6
+
+Normalizer:
+R^2: 0.539
+RMSE: 49.6
+
+
+Best Scaler: Normalizer
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 0.9
+xgb__gamma: 0.05
+xgb__learning_rate: 0.05
+xgb__max_depth: 4
+xgb__min_child_weight: 1
+xgb__n_estimators: 200
+xgb__reg_alpha: 0.05
+xgb__reg_lambda: 10
+xgb__subsample: 0.8
+
+Test Set Performance:
+R^2: 0.539
+RMSE: 49.6
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Jalen Hurts | QB       | PHI  | 323.7
+   2 | Lamar Jackson | QB       | BAL  | 302.9
+   3 | Patrick Mahomes | QB       | KAN  | 295.3
+   4 | Josh Allen  | QB       | BUF  | 294.1
+   5 | Jayden Daniels | QB       | WAS  | 282.4
+   6 | Joe Burrow  | QB       | CIN  | 260.5
+   7 | Caleb Williams | QB       | CHI  | 250.6
+   8 | Justin Herbert | QB       | LAC  | 237.1
+   9 | Brock Purdy | QB       | SFO  | 228.6
+  10 | Dak Prescott | QB       | DAL  | 228.4
+  11 | C.J. Stroud | QB       | HOU  | 221.9
+  12 | Kyler Murray | QB       | ARI  | 220.1
+  13 | Aaron Rodgers | QB       | NYJ  | 211.7
+  14 | Sam Darnold | QB       | MIN  | 211.2
+  15 | Anthony Richardson | QB       | IND  | 209.5
+  16 | Matthew Stafford | QB       | LAR  | 208.7
+  17 | Baker Mayfield | QB       | TAM  | 202.4
+  18 | Bo Nix      | QB       | DEN  | 200.5
+  19 | Trevor Lawrence | QB       | JAX  | 200.3
+  20 | Jared Goff  | QB       | DET  | 199.4
