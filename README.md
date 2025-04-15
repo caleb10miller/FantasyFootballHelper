@@ -22,7 +22,7 @@ Our dataset consists of **NFL player statistics from the 2022-2024 seasons**, co
 ## Repository Structure  
 Our repository is structured into two primary branches, each with its own focus:
 
-### `web-scraping` Branch  
+### `acquisition-and-preprocessing` Branch  
 This branch contains all scripts related to **data acquisition** and **initial dataset preparation**.  
 **Main Files & Folders**:  
 - `/Capstone/` – Main directory for data acquisition and preprocessing.  
@@ -32,7 +32,7 @@ This branch contains all scripts related to **data acquisition** and **initial d
   - `fantasy_points_calc.py` – Computes fantasy points based on various scoring methods.  
   - `final_dataset_calc.py` – Merges and cleans the final dataset.  
   - `data/` – Folder containing the cleaned datasets.  
-- `README.md` – Documentation for the web-scraping process.  
+- `README.md` – Documentation for the acquisition-and-preprocessing process.  
 - `requirements.txt` – Project requirements
 
 ### `EDA` Branch  
@@ -47,7 +47,7 @@ This branch is dedicated to **data analysis, feature engineering, and preprocess
 - `New Visualizations.ipynb` – Various data visualizations.  
 - `Tommy EDA.ipynb` / `Tommy EDAv2.ipynb` – Additional exploratory analysis.  
 - `investigate_3tm_2tm.ipynb` – Handling of multi-team player transfers.  
-- `README.md` – Documentation for the web-scraping process.  
+- `README.md` – Documentation for the acquisition-and-preprocessing process.  
 - `requirements.txt` – Project requirements
 
 ## Steps in Part 1  
@@ -107,7 +107,7 @@ cd FantasyFootballHelper
 **2. Switch to the desired branch**  
 - **For Data Acquisition (Web Scraping):**  
   ```sh
-  git checkout web-scraping
+  git checkout acquisition-and-preprocessing
   ```  
 - **For EDA & Feature Engineering:**  
   ```sh
