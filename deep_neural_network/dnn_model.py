@@ -73,10 +73,10 @@ pipeline = Pipeline([
 # === PARAMETER GRID ===
 param_grid = {
     'mlp__hidden_layer_sizes': [
-        (300, 150, 75),         
+        (256, 128, 64),         
     ],
     'mlp__activation': ['relu'],  
-    'mlp__alpha': [0.1],  
+    'mlp__alpha': [0.125],  
     'mlp__batch_size': [32],     
     'mlp__learning_rate': ['adaptive'],  
     'mlp__learning_rate_init': [0.001],  

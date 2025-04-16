@@ -1,0 +1,67 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.524
+RMSE: 58.9
+
+MinMaxScaler:
+R^2: 0.524
+RMSE: 58.9
+
+RobustScaler:
+R^2: 0.524
+RMSE: 58.9
+
+Normalizer:
+R^2: 0.515
+RMSE: 59.5
+
+
+Best Scaler: StandardScaler
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 1.0
+xgb__gamma: 0.01
+xgb__learning_rate: 0.05
+xgb__max_depth: 4
+xgb__min_child_weight: 2
+xgb__n_estimators: 200
+xgb__reg_alpha: 0.05
+xgb__reg_lambda: 10
+xgb__subsample: 0.5
+
+Test Set Performance:
+R^2: 0.524
+RMSE: 58.9
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Josh Allen  | QB       | BUF  | 346.6
+   2 | Jalen Hurts | QB       | PHI  | 295.2
+   3 | Lamar Jackson | QB       | BAL  | 288.7
+   4 | Ja'Marr Chase | WR       | CIN  | 273.9
+   5 | Joe Burrow  | QB       | CIN  | 269.7
+   6 | Brock Purdy | QB       | SFO  | 267.7
+   7 | Puka Nacua  | WR       | LAR  | 267.0
+   8 | Garrett Wilson | WR       | NYJ  | 265.4
+   9 | Jayden Daniels | QB       | WAS  | 262.8
+  10 | Caleb Williams | QB       | CHI  | 258.1
+  11 | Justin Jefferson | WR       | MIN  | 258.1
+  12 | Anthony Richardson | QB       | IND  | 257.1
+  13 | Amon-Ra St. Brown | WR       | DET  | 249.4
+  14 | C.J. Stroud | QB       | HOU  | 246.8
+  15 | CeeDee Lamb | WR       | DAL  | 245.6
+  16 | Justin Herbert | QB       | LAC  | 244.6
+  17 | Drake London | WR       | ATL  | 243.9
+  18 | A.J. Brown  | WR       | PHI  | 236.4
+  19 | Jaxon Smith-Njigba | WR       | SEA  | 232.9
+  20 | Jordan Love | QB       | GNB  | 232.6

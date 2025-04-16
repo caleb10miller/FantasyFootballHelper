@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import RobustScaler, OneHotEncoder
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error, r2_score
@@ -59,7 +59,7 @@ for col in categorical_cols:
 
 preprocessor = ColumnTransformer(
     transformers=[
-        ("num", RobustScaler(), numerical_cols),
+        ("num", StandardScaler(), numerical_cols),
         ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), categorical_cols)
     ]
 )
@@ -73,10 +73,10 @@ pipeline = Pipeline([
 # === PARAMETER GRID ===
 param_grid = {
     'mlp__activation': ['tanh'],
-    'mlp__alpha': [0.075],
+    'mlp__alpha': [0.125],
     'mlp__batch_size': [32],
     'mlp__early_stopping': [True],
-    'mlp__hidden_layer_sizes': [(175,)],
+    'mlp__hidden_layer_sizes': [(125,)],
     'mlp__learning_rate_init': [0.001],
     'mlp__max_iter': [1000],
     'mlp__n_iter_no_change': [10],

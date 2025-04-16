@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import RobustScaler, OneHotEncoder
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
@@ -58,7 +58,7 @@ for col in categorical_cols:
 
 preprocessor = ColumnTransformer(
     transformers=[
-        ("num", RobustScaler(), numerical_cols),
+        ("num", MinMaxScaler(), numerical_cols),
         ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), categorical_cols)
     ]
 )
