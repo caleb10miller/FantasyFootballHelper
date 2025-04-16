@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv("data/final_data/nfl_stats_long_format.csv") 
+df = pd.read_csv("data/final_data/nfl_stats_long_format_with_context.csv") 
 
 df['Yards per Completion'] = df['Passing Yards'] / df['Passing Completions']
 
@@ -54,7 +54,13 @@ columns_to_keep = [
     "Catch Percentage", "Receiving Touchdowns", "Fumbles", "Field Goals Made", "Field Goal Percentage",
     "Total Touchdowns Allowed","Special Teams Impact","ST_Safeties",
     "ST_Special Teams Touchdowns","XP2","Average ADP","Positional ADP",
-    "PPR Fantasy Points Scored","Standard Fantasy Points Scored"
+    "PPR Fantasy Points Scored","Standard Fantasy Points Scored",
+    # "Delta_PPR_Fantasy_Points","Delta_Standard_Fantasy_Points",
+    # "Delta_Passing_Yards","Delta_Rushing_Yards","Delta_Receiving_Yards",
+    # "Delta_Passing_Touchdowns","Delta_Rushing_Touchdowns",
+    # "Delta_Receiving_Touchdowns","Rolling_2_Year_PPR_Fantasy_Points",
+    # "Rolling_2_Year_Standard_Fantasy_Points","Rolling_3_Year_PPR_Fantasy_Points",
+    # "Rolling_3_Year_Standard_Fantasy_Points"
 ]
 
 long_df = df[columns_to_keep].copy()
@@ -84,4 +90,4 @@ for name, group in long_df.groupby('Player Name'):
 # Combine back into single dataframe
 long_df = pd.concat(targets_df, axis=0).reset_index(drop=True)
 
-long_df.to_csv("data/final_data/nfl_stats_long_format_filtered.csv", index=False)
+long_df.to_csv("data/final_data/nfl_stats_long_format_with_context_filtered.csv", index=False)
