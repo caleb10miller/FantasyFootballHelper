@@ -16,7 +16,11 @@ delta_columns = [
     'Delta_Receiving_Yards',
     'Delta_Passing_Touchdowns',
     'Delta_Rushing_Touchdowns',
-    'Delta_Receiving_Touchdowns'
+    'Delta_Receiving_Touchdowns',
+    'Delta_Interceptions_Thrown',
+    'Delta_Fumbles',
+    'Delta_Field_Goals_Made',
+    'Delta_Extra_Points_Made'
 ]
 
 # Initialize new columns for rolling averages
@@ -46,6 +50,10 @@ for player in df['Player Name'].unique():
         df.loc[player_mask, 'Delta_Passing_Touchdowns'] = player_data['Passing Touchdowns'].diff()
         df.loc[player_mask, 'Delta_Rushing_Touchdowns'] = player_data['Rushing Touchdowns'].diff()
         df.loc[player_mask, 'Delta_Receiving_Touchdowns'] = player_data['Receiving Touchdowns'].diff()
+        df.loc[player_mask, 'Delta_Interceptions_Thrown'] = player_data['Interceptions Thrown'].diff()
+        df.loc[player_mask, 'Delta_Fumbles'] = player_data['Fumbles'].diff()
+        df.loc[player_mask, 'Delta_Field_Goals_Made'] = player_data['Field Goals Made'].diff()
+        df.loc[player_mask, 'Delta_Extra_Points_Made'] = player_data['Extra Points Made'].diff()
         
         # Calculate rolling averages
         df.loc[player_mask, 'Rolling_2_Year_PPR_Fantasy_Points'] = player_data['PPR Fantasy Points Scored'].rolling(window=2, min_periods=1).mean()
