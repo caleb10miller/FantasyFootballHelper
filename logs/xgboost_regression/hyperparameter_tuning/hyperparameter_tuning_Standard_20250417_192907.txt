@@ -1,0 +1,67 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.588
+RMSE: 46.8
+
+MinMaxScaler:
+R^2: 0.588
+RMSE: 46.8
+
+RobustScaler:
+R^2: 0.588
+RMSE: 46.8
+
+Normalizer:
+R^2: 0.556
+RMSE: 48.6
+
+
+Best Scaler: StandardScaler
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 0.95
+xgb__gamma: 0.01
+xgb__learning_rate: 0.03
+xgb__max_depth: 3
+xgb__min_child_weight: 2
+xgb__n_estimators: 300
+xgb__reg_alpha: 0.05
+xgb__reg_lambda: 20
+xgb__subsample: 0.85
+
+Test Set Performance:
+R^2: 0.588
+RMSE: 46.8
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 302.6
+   2 | Josh Allen  | QB       | BUF  | 269.4
+   3 | Brock Purdy | QB       | SFO  | 259.3
+   4 | Joe Burrow  | QB       | CIN  | 254.0
+   5 | Jalen Hurts | QB       | PHI  | 253.3
+   6 | Justin Herbert | QB       | LAC  | 243.0
+   7 | C.J. Stroud | QB       | HOU  | 226.2
+   8 | Baker Mayfield | QB       | TAM  | 222.4
+   9 | Patrick Mahomes | QB       | KAN  | 218.0
+  10 | Jared Goff  | QB       | DET  | 217.4
+  11 | Kyler Murray | QB       | ARI  | 208.9
+  12 | Jordan Love | QB       | GNB  | 199.5
+  13 | Justin Jefferson | WR       | MIN  | 195.5
+  14 | Jahmyr Gibbs | RB       | DET  | 191.8
+  15 | Dak Prescott | QB       | DAL  | 187.9
+  16 | Matthew Stafford | QB       | LAR  | 187.6
+  17 | Geno Smith  | QB       | SEA  | 183.6
+  18 | Bijan Robinson | RB       | ATL  | 182.6
+  19 | CeeDee Lamb | WR       | DAL  | 182.0
+  20 | Ja'Marr Chase | WR       | CIN  | 178.8

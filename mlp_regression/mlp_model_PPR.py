@@ -2,25 +2,26 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
-from sklearn.linear_model import LinearRegression
+from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 import joblib
 from datetime import datetime
 import os
 
 # === CONFIGURATION ===
-input = input("Enter the scoring type (1 for PPR, 0 for Standard): ")
+input = "1"
 scoring_type = "PPR" if input == "1" else "Standard"
 input_file = "data/final_data/nfl_stats_long_format_with_context_filtered.csv"   
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
+
 # Create directories if they don't exist
 os.makedirs("logs", exist_ok=True)
-os.makedirs("logs/linear_regression", exist_ok=True)  
-os.makedirs(f"logs/linear_regression/{timestamp}", exist_ok=True)  
-os.makedirs("linear_regression/joblib_files", exist_ok=True)  
+os.makedirs("logs/mlp_regression", exist_ok=True)  
+os.makedirs(f"logs/mlp_regression/{timestamp}", exist_ok=True)  
+os.makedirs("mlp_regression/joblib_files", exist_ok=True)  
 
 # === LOAD DATA ===
 df = pd.read_csv(input_file)
@@ -35,15 +36,8 @@ df_test = df[df["Season"] == 2023].copy()
 df_test = df_test[df_test[target_col].notna()]
 
 # === DEFINE FEATURES ===
-exclude_cols = [
-    "Player Name", 
-    "Season", 
-    "Target_PPR", 
-    "Target_Standard", 
-    "PPR Fantasy Points Scored", 
-    "Standard Fantasy Points Scored",
-    "Delta_PPR_Fantasy_Points" if scoring_type == "Standard" else "Delta_Standard_Fantasy_Points"
-]
+exclude_cols = ["Player Name", "Season", "Target_PPR", "Target_Standard", "PPR Fantasy Points Scored", "Standard Fantasy Points Scored",
+                "Delta_PPR_Fantasy_Points" if scoring_type == "Standard" else "Delta_Standard_Fantasy_Points"]
 feature_cols = [col for col in df.columns if col not in exclude_cols]
 
 X_train = df_train[feature_cols].copy()
@@ -66,7 +60,7 @@ for col in categorical_cols:
 
 preprocessor = ColumnTransformer(
     transformers=[
-        ("num", MinMaxScaler(), numerical_cols),
+        ("num", StandardScaler(), numerical_cols),
         ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), categorical_cols)
     ]
 )
@@ -74,13 +68,20 @@ preprocessor = ColumnTransformer(
 # === CREATE PIPELINE ===
 pipeline = Pipeline([
     ("preprocessor", preprocessor),
-    ("linear", LinearRegression())
+    ("mlp", MLPRegressor(random_state=42))
 ])
 
 # === PARAMETER GRID ===
 param_grid = {
-    'linear__fit_intercept': [False],
-    'linear__positive': [False]
+    'mlp__activation': ['tanh'],
+    'mlp__alpha': [0.075],
+    'mlp__batch_size': [32],
+    'mlp__early_stopping': [True],
+    'mlp__hidden_layer_sizes': [(175,)],
+    'mlp__learning_rate_init': [0.001],
+    'mlp__max_iter': [1000],
+    'mlp__n_iter_no_change': [10],
+    'mlp__validation_fraction': [0.1]
 }
 
 # === GRID SEARCH ===
@@ -119,7 +120,7 @@ print("\nGenerating predictions for 2024 season...")
 df_next_season = df[df["Season"] == 2024].copy()
 
 # === SAVE RESULTS ===
-results_file = f"logs/linear_regression/{timestamp}/linear_results_{scoring_type}_{timestamp}.txt"
+results_file = f"logs/mlp_regression/{timestamp}/mlp_results_{scoring_type}_{timestamp}.txt"
 
 with open(results_file, 'w') as f:
     f.write("Grid Search Results\n")
@@ -171,12 +172,12 @@ with open(results_file, 'w') as f:
             f.write(f"{i:4d} | {row['Player Name']:11s} | {row['Position']:8s} | {row['Team']:4s} | {row['Predicted_Target']:.1f}\n")
         
         # Save all predictions to a CSV file
-        predictions_file = f"logs/linear_regression/{timestamp}/predictions_{scoring_type}_{timestamp}.csv"
+        predictions_file = f"logs/mlp_regression/{timestamp}/predictions_{scoring_type}_{timestamp}.csv"
         df_next_season_predictions.to_csv(predictions_file, index=False)
         print(f"All predictions saved to {predictions_file}")
 
 # === SAVE BEST MODEL ===
-model_file = f"linear_regression/joblib_files/linear_pipeline_{scoring_type}_{timestamp}.pkl"
+model_file = f"mlp_regression/joblib_files/mlp_pipeline_{scoring_type}_{timestamp}.pkl"
 joblib.dump(best_model, model_file)
 
 print(f"\nResults saved to {results_file}")

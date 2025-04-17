@@ -11,7 +11,7 @@ from datetime import datetime
 import os
 
 # === CONFIGURATION ===
-input = input("Enter the scoring type (1 for PPR, 0 for Standard): ")
+input = "1"
 scoring_type = "PPR" if input == "1" else "Standard"
 input_file = "data/final_data/nfl_stats_long_format_with_context_filtered.csv"   
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -19,9 +19,9 @@ timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # Create directories if they don't exist
 os.makedirs("logs", exist_ok=True)
-os.makedirs("logs/mlp_regression", exist_ok=True)  
-os.makedirs(f"logs/mlp_regression/{timestamp}", exist_ok=True)  
-os.makedirs("mlp_regression/joblib_files", exist_ok=True)  
+os.makedirs("logs/deep_neural_network", exist_ok=True)  
+os.makedirs(f"logs/deep_neural_network/{timestamp}", exist_ok=True)  
+os.makedirs("deep_neural_network/joblib_files", exist_ok=True)  
 
 # === LOAD DATA ===
 df = pd.read_csv(input_file)
@@ -73,15 +73,18 @@ pipeline = Pipeline([
 
 # === PARAMETER GRID ===
 param_grid = {
-    'mlp__activation': ['tanh'],
-    'mlp__alpha': [0.125],
-    'mlp__batch_size': [32],
+    'mlp__hidden_layer_sizes': [
+        (300, 150, 75),         
+    ],
+    'mlp__activation': ['relu'],  
+    'mlp__alpha': [0.1],  
+    'mlp__batch_size': [32],     
+    'mlp__learning_rate': ['adaptive'],  
+    'mlp__learning_rate_init': [0.001],  
+    'mlp__max_iter': [2000],     
     'mlp__early_stopping': [True],
-    'mlp__hidden_layer_sizes': [(125,)],
-    'mlp__learning_rate_init': [0.001],
-    'mlp__max_iter': [1000],
-    'mlp__n_iter_no_change': [10],
-    'mlp__validation_fraction': [0.1]
+    'mlp__validation_fraction': [0.1],
+    'mlp__n_iter_no_change': [15]
 }
 
 # === GRID SEARCH ===
@@ -120,7 +123,7 @@ print("\nGenerating predictions for 2024 season...")
 df_next_season = df[df["Season"] == 2024].copy()
 
 # === SAVE RESULTS ===
-results_file = f"logs/mlp_regression/{timestamp}/mlp_results_{scoring_type}_{timestamp}.txt"
+results_file = f"logs/deep_neural_network/{timestamp}/dnn_results_{scoring_type}_{timestamp}.txt"
 
 with open(results_file, 'w') as f:
     f.write("Grid Search Results\n")
@@ -172,12 +175,12 @@ with open(results_file, 'w') as f:
             f.write(f"{i:4d} | {row['Player Name']:11s} | {row['Position']:8s} | {row['Team']:4s} | {row['Predicted_Target']:.1f}\n")
         
         # Save all predictions to a CSV file
-        predictions_file = f"logs/mlp_regression/{timestamp}/predictions_{scoring_type}_{timestamp}.csv"
+        predictions_file = f"logs/deep_neural_network/{timestamp}/predictions_{scoring_type}_{timestamp}.csv"
         df_next_season_predictions.to_csv(predictions_file, index=False)
         print(f"All predictions saved to {predictions_file}")
 
 # === SAVE BEST MODEL ===
-model_file = f"mlp_regression/joblib_files/mlp_pipeline_{scoring_type}_{timestamp}.pkl"
+model_file = f"deep_neural_network/joblib_files/dnn_pipeline_{scoring_type}_{timestamp}.pkl"
 joblib.dump(best_model, model_file)
 
 print(f"\nResults saved to {results_file}")

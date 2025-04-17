@@ -1,0 +1,67 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.574
+RMSE: 55.7
+
+MinMaxScaler:
+R^2: 0.574
+RMSE: 55.7
+
+RobustScaler:
+R^2: 0.574
+RMSE: 55.7
+
+Normalizer:
+R^2: 0.537
+RMSE: 58.1
+
+
+Best Scaler: StandardScaler
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 0.95
+xgb__gamma: 0.01
+xgb__learning_rate: 0.05
+xgb__max_depth: 4
+xgb__min_child_weight: 2
+xgb__n_estimators: 200
+xgb__reg_alpha: 0.05
+xgb__reg_lambda: 10
+xgb__subsample: 0.85
+
+Test Set Performance:
+R^2: 0.574
+RMSE: 55.7
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 313.3
+   2 | Josh Allen  | QB       | BUF  | 281.4
+   3 | Justin Jefferson | WR       | MIN  | 279.8
+   4 | CeeDee Lamb | WR       | DAL  | 274.9
+   5 | Jalen Hurts | QB       | PHI  | 274.8
+   6 | Ja'Marr Chase | WR       | CIN  | 262.4
+   7 | A.J. Brown  | WR       | PHI  | 256.4
+   8 | Amon-Ra St. Brown | WR       | DET  | 254.5
+   9 | Joe Burrow  | QB       | CIN  | 253.6
+  10 | Davante Adams | WR       | 2TM  | 250.3
+  11 | Brock Purdy | QB       | SFO  | 249.8
+  12 | Jared Goff  | QB       | DET  | 237.7
+  13 | Jahmyr Gibbs | RB       | DET  | 236.1
+  14 | Puka Nacua  | WR       | LAR  | 232.2
+  15 | Jaxon Smith-Njigba | WR       | SEA  | 230.2
+  16 | Patrick Mahomes | QB       | KAN  | 229.6
+  17 | Justin Herbert | QB       | LAC  | 228.0
+  18 | Drake London | WR       | ATL  | 227.2
+  19 | Tyreek Hill | WR       | MIA  | 226.8
+  20 | Mike Evans  | WR       | TAM  | 226.0

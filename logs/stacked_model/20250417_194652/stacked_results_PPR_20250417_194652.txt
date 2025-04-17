@@ -1,0 +1,34 @@
+
+Test Set Performance:
+R^2: 0.571
+RMSE: 56.0
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 289.5
+   2 | Josh Allen  | QB       | BUF  | 275.0
+   3 | Patrick Mahomes | QB       | KAN  | 261.8
+   4 | Jalen Hurts | QB       | PHI  | 256.0
+   5 | Joe Burrow  | QB       | CIN  | 255.6
+   6 | Ja'Marr Chase | WR       | CIN  | 255.4
+   7 | Bijan Robinson | RB       | ATL  | 255.2
+   8 | Tyreek Hill | WR       | MIA  | 252.5
+   9 | Amon-Ra St. Brown | WR       | DET  | 249.8
+  10 | Justin Herbert | QB       | LAC  | 246.2
+  11 | Jahmyr Gibbs | RB       | DET  | 243.2
+  12 | James Cook  | RB       | BUF  | 240.1
+  13 | CeeDee Lamb | WR       | DAL  | 237.3
+  14 | Brock Purdy | QB       | SFO  | 232.5
+  15 | A.J. Brown  | WR       | PHI  | 232.3
+  16 | Davante Adams | WR       | 2TM  | 230.1
+  17 | Derrick Henry | RB       | BAL  | 229.7
+  18 | Josh Jacobs | RB       | GNB  | 228.5
+  19 | Justin Jefferson | WR       | MIN  | 227.7
+  20 | De'Von Achane | RB       | MIA  | 226.8

@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: tanh
+mlp__alpha: 0.125
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (125,)
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 1000
+mlp__n_iter_no_change: 10
+mlp__validation_fraction: 0.1
+
+Test Set Performance:
+R^2: 0.547
+RMSE: 57.5
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 198.2
+   2 | Jared Goff  | QB       | DET  | 197.6
+   3 | Jalen Hurts | QB       | PHI  | 196.4
+   4 | Justin Herbert | QB       | LAC  | 196.4
+   5 | Patrick Mahomes | QB       | KAN  | 196.4
+   6 | Josh Allen  | QB       | BUF  | 195.9
+   7 | Ja'Marr Chase | WR       | CIN  | 195.2
+   8 | CeeDee Lamb | WR       | DAL  | 195.2
+   9 | Joe Burrow  | QB       | CIN  | 194.8
+  10 | Justin Jefferson | WR       | MIN  | 194.5
+  11 | Amon-Ra St. Brown | WR       | DET  | 193.8
+  12 | Jahmyr Gibbs | RB       | DET  | 191.7
+  13 | Brock Purdy | QB       | SFO  | 188.7
+  14 | Drake London | WR       | ATL  | 188.2
+  15 | Jordan Love | QB       | GNB  | 188.1
+  16 | De'Von Achane | RB       | MIA  | 187.9
+  17 | Kyler Murray | QB       | ARI  | 187.3
+  18 | Jordan Addison | WR       | MIN  | 187.2
+  19 | Garrett Wilson | WR       | NYJ  | 186.5
+  20 | Puka Nacua  | WR       | LAR  | 186.4

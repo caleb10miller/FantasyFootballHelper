@@ -1,0 +1,48 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: relu
+mlp__alpha: 0.1
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (300, 150, 75)
+mlp__learning_rate: adaptive
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 2000
+mlp__n_iter_no_change: 15
+mlp__validation_fraction: 0.1
+
+Test Set Performance:
+R^2: 0.568
+RMSE: 56.1
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Josh Allen  | QB       | BUF  | 358.8
+   2 | Jalen Hurts | QB       | PHI  | 352.2
+   3 | Lamar Jackson | QB       | BAL  | 333.7
+   4 | Ja'Marr Chase | WR       | CIN  | 304.5
+   5 | Amon-Ra St. Brown | WR       | DET  | 296.9
+   6 | Justin Jefferson | WR       | MIN  | 287.6
+   7 | CeeDee Lamb | WR       | DAL  | 284.4
+   8 | Joe Burrow  | QB       | CIN  | 277.9
+   9 | Jared Goff  | QB       | DET  | 267.4
+  10 | Jahmyr Gibbs | RB       | DET  | 265.5
+  11 | Justin Herbert | QB       | LAC  | 264.3
+  12 | Tyreek Hill | WR       | MIA  | 254.6
+  13 | Baker Mayfield | QB       | TAM  | 250.0
+  14 | Patrick Mahomes | QB       | KAN  | 244.9
+  15 | Josh Jacobs | RB       | GNB  | 237.6
+  16 | Derrick Henry | RB       | BAL  | 235.1
+  17 | Saquon Barkley | RB       | PHI  | 225.9
+  18 | De'Von Achane | RB       | MIA  | 225.8
+  19 | A.J. Brown  | WR       | PHI  | 223.6
+  20 | Geno Smith  | QB       | SEA  | 222.8
