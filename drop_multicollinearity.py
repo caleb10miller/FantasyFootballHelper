@@ -55,12 +55,10 @@ columns_to_keep = [
     "Total Touchdowns Allowed","Special Teams Impact","ST_Safeties",
     "ST_Special Teams Touchdowns","XP2","Average ADP","Positional ADP",
     "PPR Fantasy Points Scored","Standard Fantasy Points Scored",
-    # "Delta_PPR_Fantasy_Points","Delta_Standard_Fantasy_Points",
-    # "Delta_Passing_Yards","Delta_Rushing_Yards","Delta_Receiving_Yards",
-    # "Delta_Passing_Touchdowns","Delta_Rushing_Touchdowns",
-    # "Delta_Receiving_Touchdowns","Rolling_2_Year_PPR_Fantasy_Points",
-    # "Rolling_2_Year_Standard_Fantasy_Points","Rolling_3_Year_PPR_Fantasy_Points",
-    # "Rolling_3_Year_Standard_Fantasy_Points"
+    "Delta_Passing_Yards","Delta_Rushing_Yards","Delta_Receiving_Yards",
+    "Delta_Passing_Touchdowns","Delta_Rushing_Touchdowns","Delta_Receiving_Touchdowns",
+    "Rolling_3_Year_PPR_Fantasy_Points",
+    "Rolling_3_Year_Standard_Fantasy_Points"
 ]
 
 long_df = df[columns_to_keep].copy()
