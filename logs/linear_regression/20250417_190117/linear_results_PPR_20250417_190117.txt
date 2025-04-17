@@ -1,0 +1,40 @@
+Grid Search Results
+==================
+
+Best Parameters:
+linear__fit_intercept: False
+linear__positive: False
+
+Test Set Performance:
+R^2: 0.573
+RMSE: 55.8
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 335.8
+   2 | Josh Allen  | QB       | BUF  | 324.9
+   3 | Jalen Hurts | QB       | PHI  | 294.8
+   4 | Joe Burrow  | QB       | CIN  | 291.1
+   5 | Ja'Marr Chase | WR       | CIN  | 278.8
+   6 | Justin Jefferson | WR       | MIN  | 269.7
+   7 | Justin Herbert | QB       | LAC  | 267.5
+   8 | CeeDee Lamb | WR       | DAL  | 266.7
+   9 | Jahmyr Gibbs | RB       | DET  | 263.5
+  10 | Amon-Ra St. Brown | WR       | DET  | 248.9
+  11 | Bijan Robinson | RB       | ATL  | 248.3
+  12 | Patrick Mahomes | QB       | KAN  | 245.9
+  13 | Jared Goff  | QB       | DET  | 239.3
+  14 | Josh Jacobs | RB       | GNB  | 230.3
+  15 | Derrick Henry | RB       | BAL  | 227.3
+  16 | Tyreek Hill | WR       | MIA  | 227.0
+  17 | Saquon Barkley | RB       | PHI  | 223.0
+  18 | De'Von Achane | RB       | MIA  | 219.7
+  19 | Baker Mayfield | QB       | TAM  | 214.7
+  20 | Tua Tagovailoa | QB       | MIA  | 206.3
