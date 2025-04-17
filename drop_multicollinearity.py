@@ -58,6 +58,7 @@ columns_to_keep = [
     "Delta_Passing_Yards","Delta_Rushing_Yards","Delta_Receiving_Yards",
     "Delta_Passing_Touchdowns","Delta_Rushing_Touchdowns","Delta_Receiving_Touchdowns",
     "Delta_Interceptions_Thrown","Delta_Fumbles", "Delta_Field_Goals_Made", "Delta_Extra_Points_Made",
+    "Delta_Average_ADP",
     "Rolling_3_Year_PPR_Fantasy_Points",
     "Rolling_3_Year_Standard_Fantasy_Points"
 ]
