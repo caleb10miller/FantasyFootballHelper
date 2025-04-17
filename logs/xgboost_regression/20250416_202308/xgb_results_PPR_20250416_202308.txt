@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 0.9
+xgb__gamma: 0
+xgb__learning_rate: 0.05
+xgb__max_depth: 3
+xgb__min_child_weight: 1
+xgb__n_estimators: 200
+xgb__reg_alpha: 0.1
+xgb__reg_lambda: 10
+xgb__subsample: 0.9
+
+Test Set Performance:
+R^2: 0.570
+RMSE: 56.0
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 301.0
+   2 | Josh Allen  | QB       | BUF  | 282.3
+   3 | Justin Jefferson | WR       | MIN  | 279.9
+   4 | Jalen Hurts | QB       | PHI  | 279.7
+   5 | Joe Burrow  | QB       | CIN  | 272.2
+   6 | CeeDee Lamb | WR       | DAL  | 260.2
+   7 | Ja'Marr Chase | WR       | CIN  | 258.2
+   8 | Amon-Ra St. Brown | WR       | DET  | 249.3
+   9 | Brock Purdy | QB       | SFO  | 245.3
+  10 | A.J. Brown  | WR       | PHI  | 244.9
+  11 | Davante Adams | WR       | 2TM  | 243.0
+  12 | Jaxon Smith-Njigba | WR       | SEA  | 239.3
+  13 | Jahmyr Gibbs | RB       | DET  | 234.3
+  14 | Bijan Robinson | RB       | ATL  | 232.4
+  15 | Patrick Mahomes | QB       | KAN  | 229.5
+  16 | Puka Nacua  | WR       | LAR  | 228.7
+  17 | Garrett Wilson | WR       | NYJ  | 228.0
+  18 | Justin Herbert | QB       | LAC  | 227.3
+  19 | Tyreek Hill | WR       | MIA  | 226.2
+  20 | De'Von Achane | RB       | MIA  | 225.3

@@ -1,0 +1,67 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.580
+RMSE: 55.4
+
+MinMaxScaler:
+R^2: 0.580
+RMSE: 55.4
+
+RobustScaler:
+R^2: 0.580
+RMSE: 55.4
+
+Normalizer:
+R^2: 0.540
+RMSE: 57.9
+
+
+Best Scaler: StandardScaler
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 0.95
+xgb__gamma: 0.01
+xgb__learning_rate: 0.05
+xgb__max_depth: 3
+xgb__min_child_weight: 2
+xgb__n_estimators: 200
+xgb__reg_alpha: 0.2
+xgb__reg_lambda: 10
+xgb__subsample: 0.85
+
+Test Set Performance:
+R^2: 0.580
+RMSE: 55.4
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 305.7
+   2 | Josh Allen  | QB       | BUF  | 292.1
+   3 | Jalen Hurts | QB       | PHI  | 280.7
+   4 | Justin Jefferson | WR       | MIN  | 267.7
+   5 | Joe Burrow  | QB       | CIN  | 266.5
+   6 | CeeDee Lamb | WR       | DAL  | 264.6
+   7 | Ja'Marr Chase | WR       | CIN  | 262.1
+   8 | Amon-Ra St. Brown | WR       | DET  | 253.9
+   9 | Jahmyr Gibbs | RB       | DET  | 251.5
+  10 | Brock Purdy | QB       | SFO  | 250.6
+  11 | A.J. Brown  | WR       | PHI  | 245.5
+  12 | Jaxon Smith-Njigba | WR       | SEA  | 242.2
+  13 | Davante Adams | WR       | 2TM  | 240.6
+  14 | Puka Nacua  | WR       | LAR  | 238.0
+  15 | Patrick Mahomes | QB       | KAN  | 237.5
+  16 | Garrett Wilson | WR       | NYJ  | 237.1
+  17 | Justin Herbert | QB       | LAC  | 235.3
+  18 | Drake London | WR       | ATL  | 228.7
+  19 | De'Von Achane | RB       | MIA  | 226.9
+  20 | Jared Goff  | QB       | DET  | 224.8

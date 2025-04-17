@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: tanh
+mlp__alpha: 0.125
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (125,)
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 1000
+mlp__n_iter_no_change: 10
+mlp__validation_fraction: 0.1
+
+Test Set Performance:
+R^2: 0.550
+RMSE: 57.3
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 269.5
+   2 | Josh Allen  | QB       | BUF  | 265.4
+   3 | Justin Herbert | QB       | LAC  | 264.1
+   4 | Jalen Hurts | QB       | PHI  | 261.8
+   5 | Joe Burrow  | QB       | CIN  | 250.1
+   6 | Jared Goff  | QB       | DET  | 246.9
+   7 | Patrick Mahomes | QB       | KAN  | 244.7
+   8 | CeeDee Lamb | WR       | DAL  | 242.6
+   9 | Puka Nacua  | WR       | LAR  | 241.0
+  10 | Ja'Marr Chase | WR       | CIN  | 238.2
+  11 | Brock Purdy | QB       | SFO  | 235.3
+  12 | Jordan Addison | WR       | MIN  | 234.7
+  13 | Baker Mayfield | QB       | TAM  | 234.5
+  14 | Jayden Reed | WR       | GNB  | 230.3
+  15 | Amon-Ra St. Brown | WR       | DET  | 229.1
+  16 | A.J. Brown  | WR       | PHI  | 228.5
+  17 | Jahmyr Gibbs | RB       | DET  | 227.8
+  18 | Justin Jefferson | WR       | MIN  | 223.3
+  19 | Kyler Murray | QB       | ARI  | 222.0
+  20 | Zay Flowers | WR       | BAL  | 211.1

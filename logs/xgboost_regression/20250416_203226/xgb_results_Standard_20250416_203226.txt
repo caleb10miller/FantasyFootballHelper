@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 0.95
+xgb__gamma: 0.01
+xgb__learning_rate: 0.05
+xgb__max_depth: 3
+xgb__min_child_weight: 2
+xgb__n_estimators: 200
+xgb__reg_alpha: 0.2
+xgb__reg_lambda: 10
+xgb__subsample: 0.85
+
+Test Set Performance:
+R^2: 0.593
+RMSE: 46.6
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 295.9
+   2 | Josh Allen  | QB       | BUF  | 276.0
+   3 | Joe Burrow  | QB       | CIN  | 266.9
+   4 | Brock Purdy | QB       | SFO  | 253.0
+   5 | Jalen Hurts | QB       | PHI  | 251.0
+   6 | Justin Herbert | QB       | LAC  | 247.5
+   7 | Patrick Mahomes | QB       | KAN  | 222.7
+   8 | C.J. Stroud | QB       | HOU  | 219.7
+   9 | Jared Goff  | QB       | DET  | 216.5
+  10 | Jordan Love | QB       | GNB  | 214.1
+  11 | Baker Mayfield | QB       | TAM  | 208.8
+  12 | Dak Prescott | QB       | DAL  | 208.5
+  13 | Jahmyr Gibbs | RB       | DET  | 200.6
+  14 | Justin Jefferson | WR       | MIN  | 199.5
+  15 | Kyler Murray | QB       | ARI  | 196.0
+  16 | Geno Smith  | QB       | SEA  | 195.6
+  17 | Matthew Stafford | QB       | LAR  | 184.2
+  18 | De'Von Achane | RB       | MIA  | 178.6
+  19 | CeeDee Lamb | WR       | DAL  | 178.4
+  20 | Bijan Robinson | RB       | ATL  | 177.5

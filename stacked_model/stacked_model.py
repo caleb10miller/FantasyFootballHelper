@@ -3,7 +3,7 @@ from xgboost import XGBRegressor
 from sklearn.neural_network import MLPRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_squared_error, r2_score
 import pandas as pd
@@ -15,7 +15,7 @@ from datetime import datetime
 # === CONFIGURATION ===
 input = input("Enter the scoring type (1 for PPR, 0 for Standard): ")
 scoring_type = "PPR" if input == "1" else "Standard"
-input_file = "data/final_data/nfl_stats_long_format_filtered.csv"   
+input_file = "data/final_data/nfl_stats_long_format_with_context_filtered.csv"   
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # Create directories if they don't exist
@@ -36,7 +36,8 @@ df_test = df[df["Season"] == 2023].copy()
 df_test = df_test[df_test[target_col].notna()]
 
 # === DEFINE FEATURES ===
-exclude_cols = ["Player Name", "Season", "Target_PPR", "Target_Standard", "PPR Fantasy Points Scored", "Standard Fantasy Points Scored"]
+exclude_cols = ["Player Name", "Season", "Target_PPR", "Target_Standard", "PPR Fantasy Points Scored", "Standard Fantasy Points Scored",
+                "Delta_PPR_Fantasy_Points" if scoring_type == "Standard" else "Delta_Standard_Fantasy_Points"]
 feature_cols = [col for col in df.columns if col not in exclude_cols]
 
 X_train = df_train[feature_cols].copy()
@@ -60,7 +61,7 @@ for col in categorical_cols:
 # === PREPROCESSOR ===
 preprocessor = ColumnTransformer(
     transformers=[
-        ("num", StandardScaler(), numerical_cols),
+        ("num", MinMaxScaler(), numerical_cols),
         ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), categorical_cols)
     ]
 )
