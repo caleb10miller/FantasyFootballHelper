@@ -57,29 +57,29 @@ for col in categorical_cols:
     X_test[col] = X_test[col].astype(str)
 
 # === PARAMETER GRID ===
-param_grid = {
-    'xgb__n_estimators': [100, 200],  
-    'xgb__max_depth': [3, 4],  
-    'xgb__learning_rate': [0.05, 0.1],  
-    'xgb__subsample': [0.8, 0.9],  
-    'xgb__colsample_bytree': [0.9, 1.0],  
-    'xgb__min_child_weight': [1, 2],  
-    'xgb__gamma': [0, 0.05],  
-    'xgb__reg_alpha': [0.05, 0.1],  
-    'xgb__reg_lambda': [5, 10]  
-}
-
 # param_grid = {
-#     'xgb__n_estimators': [200, 300],  
+#     'xgb__n_estimators': [100, 200],  
 #     'xgb__max_depth': [3, 4],  
-#     'xgb__learning_rate': [0.03, 0.05], 
-#     'xgb__subsample': [0.5, 0.85],  
-#     'xgb__colsample_bytree': [0.95, 1.0],  
-#     'xgb__min_child_weight': [1,2],  
-#     'xgb__gamma': [0.01, 0.05],  
-#     'xgb__reg_alpha': [0.05, 0.2],  
-#     'xgb__reg_lambda': [10, 20]  
+#     'xgb__learning_rate': [0.05, 0.1],  
+#     'xgb__subsample': [0.8, 0.9],  
+#     'xgb__colsample_bytree': [0.9, 1.0],  
+#     'xgb__min_child_weight': [1, 2],  
+#     'xgb__gamma': [0, 0.05],  
+#     'xgb__reg_alpha': [0.05, 0.1],  
+#     'xgb__reg_lambda': [5, 10]  
 # }
+
+param_grid = {
+    'xgb__n_estimators': [200, 300],  
+    'xgb__max_depth': [3, 4],  
+    'xgb__learning_rate': [0.03, 0.05], 
+    'xgb__subsample': [0.5, 0.85],  
+    'xgb__colsample_bytree': [0.95, 1.0],  
+    'xgb__min_child_weight': [1,2],  
+    'xgb__gamma': [0.01, 0.05],  
+    'xgb__reg_alpha': [0.05, 0.2],  
+    'xgb__reg_lambda': [10, 20]  
+}
 
 
 # === TRY DIFFERENT SCALERS ===

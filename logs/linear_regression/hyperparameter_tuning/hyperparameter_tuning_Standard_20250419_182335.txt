@@ -1,0 +1,61 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.600
+RMSE: 46.2
+
+MinMaxScaler:
+R^2: 0.600
+RMSE: 46.2
+
+RobustScaler:
+R^2: 0.600
+RMSE: 46.2
+
+Normalizer:
+R^2: 0.462
+RMSE: 53.5
+
+
+Best Scaler: MinMaxScaler
+==================
+
+Best Parameters:
+linear__fit_intercept: False
+linear__n_jobs: -1
+linear__positive: False
+
+Test Set Performance:
+R^2: 0.600
+RMSE: 46.2
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 335.9
+   2 | Josh Allen  | QB       | BUF  | 318.8
+   3 | Jalen Hurts | QB       | PHI  | 291.5
+   4 | Joe Burrow  | QB       | CIN  | 288.5
+   5 | Justin Herbert | QB       | LAC  | 259.8
+   6 | Patrick Mahomes | QB       | KAN  | 241.9
+   7 | Jared Goff  | QB       | DET  | 239.2
+   8 | Baker Mayfield | QB       | TAM  | 221.2
+   9 | Jahmyr Gibbs | RB       | DET  | 212.1
+  10 | Derrick Henry | RB       | BAL  | 202.8
+  11 | Tua Tagovailoa | QB       | MIA  | 201.9
+  12 | Bijan Robinson | RB       | ATL  | 197.8
+  13 | Kyler Murray | QB       | ARI  | 197.5
+  14 | Josh Jacobs | RB       | GNB  | 196.0
+  15 | Brock Purdy | QB       | SFO  | 194.7
+  16 | Saquon Barkley | RB       | PHI  | 192.9
+  17 | C.J. Stroud | QB       | HOU  | 186.7
+  18 | Geno Smith  | QB       | SEA  | 185.9
+  19 | Sam Darnold | QB       | MIN  | 178.0
+  20 | CeeDee Lamb | WR       | DAL  | 177.5

@@ -1,0 +1,61 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.572
+RMSE: 55.9
+
+MinMaxScaler:
+R^2: 0.572
+RMSE: 55.9
+
+RobustScaler:
+R^2: 0.572
+RMSE: 55.9
+
+Normalizer:
+R^2: 0.440
+RMSE: 63.9
+
+
+Best Scaler: StandardScaler
+==================
+
+Best Parameters:
+linear__fit_intercept: True
+linear__n_jobs: -1
+linear__positive: False
+
+Test Set Performance:
+R^2: 0.572
+RMSE: 55.9
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 335.1
+   2 | Josh Allen  | QB       | BUF  | 322.4
+   3 | Joe Burrow  | QB       | CIN  | 291.4
+   4 | Jalen Hurts | QB       | PHI  | 290.8
+   5 | Ja'Marr Chase | WR       | CIN  | 277.7
+   6 | CeeDee Lamb | WR       | DAL  | 270.6
+   7 | Justin Jefferson | WR       | MIN  | 269.2
+   8 | Justin Herbert | QB       | LAC  | 267.1
+   9 | Jahmyr Gibbs | RB       | DET  | 261.1
+  10 | Amon-Ra St. Brown | WR       | DET  | 248.4
+  11 | Patrick Mahomes | QB       | KAN  | 248.3
+  12 | Bijan Robinson | RB       | ATL  | 246.2
+  13 | Jared Goff  | QB       | DET  | 240.1
+  14 | Josh Jacobs | RB       | GNB  | 227.9
+  15 | Tyreek Hill | WR       | MIA  | 227.2
+  16 | Derrick Henry | RB       | BAL  | 225.9
+  17 | Saquon Barkley | RB       | PHI  | 225.4
+  18 | De'Von Achane | RB       | MIA  | 219.2
+  19 | Baker Mayfield | QB       | TAM  | 215.2
+  20 | Jordan Addison | WR       | MIN  | 203.6

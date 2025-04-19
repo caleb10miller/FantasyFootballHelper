@@ -79,7 +79,7 @@ pipeline = Pipeline([
 
 # === PARAMETER GRID ===
 param_grid = {
-    'linear__fit_intercept': [True],
+    'linear__fit_intercept': [False],
     'linear__positive': [False]
 }
 
