@@ -4,6 +4,20 @@ import numpy as np
 # Load the data
 df = pd.read_csv("data/final_data/nfl_stats_long_format.csv")
 
+def add_rookie_status(df):
+    # Sort by Player Name and Season to find first appearance
+    df = df.sort_values(['Player Name', 'Season'])
+    
+    # Group by player and get their first season
+    first_seasons = df.groupby('Player Name')['Season'].first()
+    
+    # Create rookie flag
+    df['Is_Rookie'] = df.apply(lambda row: 1 if row['Season'] == first_seasons[row['Player Name']] else 0, axis=1)
+    
+    return df
+
+df = add_rookie_status(df)
+
 # Sort by player and season to ensure correct order for calculations
 df = df.sort_values(['Player Name', 'Season'])
 
