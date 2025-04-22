@@ -7,7 +7,7 @@ combined_df = []
 valid_positions = {"QB", "TE", "RB", "WR", "DEF", "K"}
 
 for year in years:
-    file_path = f"data/{year}/{year}_finalized_data.csv"
+    file_path = f"data/{year}/{year}_final_data_with_injuries.csv"
     
     if not os.path.exists(file_path):
         print(f"File not found: {file_path}")
@@ -21,4 +21,4 @@ for year in years:
 
 final_df = pd.concat(combined_df, ignore_index=True)
 
-final_df.to_csv("data/final_data/nfl_stats_long_format.csv", index=False)
+final_df.to_csv("data/final_data/nfl_stats_long_format_with_injuries.csv", index=False)
