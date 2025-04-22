@@ -61,13 +61,7 @@ columns_to_keep = [
     "Delta_Average_ADP",
     "Rolling_3_Year_PPR_Fantasy_Points",
     "Rolling_3_Year_Standard_Fantasy_Points",
-    "injury_abdomen", "injury_achilles", "injury_ankle", "injury_back", "injury_calf", "injury_chest", 
-    "injury_concussion", "injury_elbow", "injury_fibula", "injury_finger", "injury_foot", "injury_forearm", 
-    "injury_groin", "injury_hamstring", "injury_hand", "injury_heel", "injury_hip", "injury_illness", "injury_knee", 
-    "injury_left knee", "injury_left wrist", "injury_neck", "injury_not injury related", "injury_oblique", "injury_pectoral", 
-    "injury_quad", "injury_rib", "injury_ribs", "injury_right elbow", "injury_right groin", "injury_right hamstring", "injury_right hip", 
-    "injury_right shoulder", "injury_right thigh", "injury_shin", "injury_shoulder", "injury_sternoclavicular", "injury_teeth", 
-    "injury_thigh", "injury_thumb", "injury_tibia", "injury_toe", "injury_triceps", "injury_wrist"
+    "Total_Injuries"
 ]
 
 long_df = df[columns_to_keep].copy()

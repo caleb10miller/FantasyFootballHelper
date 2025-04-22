@@ -86,14 +86,21 @@ def process_year(year):
     injuries_data.rename(columns={'player_name': 'Player Name'}, inplace=True)
     injuries_data['Player Name'] = clean_names(injuries_data['Player Name'].tolist(), reference_names)
     
+    # Count total injuries per player
+    print("Counting total injuries per player...")
+    injury_columns = [col for col in injuries_data.columns if col.startswith('injury_')]
+    injuries_data['Total_Injuries'] = injuries_data[injury_columns].sum(axis=1)
+    
+    # Keep only Player Name and Total_Injuries columns
+    injuries_summary = injuries_data[['Player Name', 'Total_Injuries']].copy()
+    
     # Merge the datasets
     print("Merging datasets...")
-    merged_data = finalized_data.merge(injuries_data, on='Player Name', how='left')
+    merged_data = finalized_data.merge(injuries_summary, on='Player Name', how='left')
     
-    # Fill nulls with 0s for all injury-related columns
-    print("Filling null injury values with 0s...")
-    injury_columns = [col for col in merged_data.columns if col.startswith('injury_')]
-    merged_data[injury_columns] = merged_data[injury_columns].fillna(0)
+    # Fill null injury counts with 0
+    print("Filling null injury counts with 0s...")
+    merged_data['Total_Injuries'] = merged_data['Total_Injuries'].fillna(0)
     
     # Save the merged data
     print(f"Saving merged data to {output_path}")
@@ -102,11 +109,12 @@ def process_year(year):
     
     # Print some stats
     total_players = len(finalized_data)
-    matched_players = len(merged_data[merged_data['season'].notna()])
+    players_with_injuries = len(merged_data[merged_data['Total_Injuries'] > 0])
     print(f"\nStats for {year}:")
     print(f"Total players in finalized data: {total_players}")
-    print(f"Players with injury data: {matched_players}")
-    print(f"Match rate: {(matched_players/total_players)*100:.1f}%")
+    print(f"Players with injuries: {players_with_injuries}")
+    print(f"Injury rate: {(players_with_injuries/total_players)*100:.1f}%")
+    print(f"Average injuries per player: {merged_data['Total_Injuries'].mean():.2f}")
 
 def main():
     """Main function to process all years from 2018 to 2024."""
