@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # Load the data
-df = pd.read_csv("data/final_data/nfl_stats_long_format_with_injuries.csv")
+df = pd.read_csv("data/final_data/nfl_stats_with_severity_injuries.csv")
 
 def add_rookie_status(df):
     # Sort by Player Name and Season to find first appearance
@@ -78,9 +78,9 @@ for player in df['Player Name'].unique():
         df.loc[player_mask, 'Rolling_3_Year_Standard_Fantasy_Points'] = player_data['Standard Fantasy Points Scored'].rolling(window=3, min_periods=1).mean()
 
 # Save to new file
-df.to_csv("data/final_data/nfl_stats_long_format_with_context_with_injuries.csv", index=False)
+df.to_csv("data/final_data/nfl_stats_with_context_with_injuries.csv", index=False)
 
-print("Context variables have been added and saved to nfl_stats_long_format_with_context_with_injuries.csv")
+print("Context variables have been added and saved to nfl_stats_with_context_with_injuries.csv")
 print("\nNew columns added:")
 print("\nDelta columns:")
 for col in delta_columns:

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv("data/final_data/nfl_stats_long_format_with_context_with_injuries.csv") 
+df = pd.read_csv("data/final_data/nfl_stats_with_context_with_injuries.csv") 
 
 df['Yards per Completion'] = df['Passing Yards'] / df['Passing Completions']
 
@@ -61,8 +61,20 @@ columns_to_keep = [
     "Delta_Average_ADP",
     "Rolling_3_Year_PPR_Fantasy_Points",
     "Rolling_3_Year_Standard_Fantasy_Points",
-    "Total_Injuries"
-]
+    'injury_abdomen', 'injury_achilles', 'injury_ankle', 'injury_back', 'injury_calf', 'injury_chest', 'injury_concussion',
+    'injury_elbow', 'injury_fibula', 'injury_finger','injury_foot','injury_forearm','injury_groin','injury_hamstring','injury_hand',
+    'injury_heel','injury_hip','injury_illness','injury_knee','injury_left knee','injury_left wrist','injury_neck','injury_not injury related',
+    'injury_oblique','injury_pectoral','injury_quad','injury_rib','injury_ribs','injury_right elbow','injury_right groin','injury_right hamstring',
+    'injury_right hip','injury_right shoulder','injury_right thigh','injury_shin','injury_shoulder','injury_sternoclavicular','injury_teeth',
+    'injury_thigh','injury_thumb','injury_tibia','injury_toe','injury_triceps','injury_wrist','injury_severity_score','critical_injury_count',
+    'serious_injury_count','minor_injury_count','position_specific_injury_score','Total_Injuries','has_critical_injury','has_serious_injury',
+    'injury_severity_ratio','injury_ankles','injury_biceps','injury_collarbone','injury_core','injury_head','injury_jaw','injury_knees',
+    'injury_left shoulder','injury_right thumb','injury_tricep','injury_core muscle','injury_hamstrings','injury_left hip','injury_liver',
+    'injury_pelvis','injury_rest','injury_stinger','injury_throat','injury_tooth','injury_acl','injury_arm','injury_coaches decision',
+    'injury_covid protocol','injury_hands','injury_left hand','injury_load mgmt','injury_non injury related','injury_not-injury related',
+    'injury_other','injury_undisclosed','injury_abodmen','injury_achillies','injury_appendix','injury_eye','injury_glute','injury_griub',
+    'injury_hamsting','injury_hernia','injury_kidney','injury_left ankle','injury_necl','injury_pec','injury_right ankle','injury_right calf'
+    ]
 
 long_df = df[columns_to_keep].copy()
 
@@ -91,4 +103,4 @@ for name, group in long_df.groupby('Player Name'):
 # Combine back into single dataframe
 long_df = pd.concat(targets_df, axis=0).reset_index(drop=True)
 
-long_df.to_csv("data/final_data/nfl_stats_long_format_with_context_with_injuries_filtered.csv", index=False)
+long_df.to_csv("data/final_data/nfl_stats_with_context_with_injuries_filtered.csv", index=False)
