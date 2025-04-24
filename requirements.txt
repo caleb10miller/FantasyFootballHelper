@@ -8,3 +8,5 @@ scipy
 scikit-learn
 statsmodels
 regex
+dash
+dash-bootstrap-components
