@@ -436,7 +436,8 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
                 pipeline=pipeline,
                 scoring_type=scoring_type or "PPR",
                 roster_config=roster_config,
-                top_n=5
+                top_n=5,
+                num_rounds=draft_state['num_rounds']
             )
             
             table = dbc.Table.from_dataframe(

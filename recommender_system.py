@@ -30,9 +30,9 @@ def avoid_te_early(row, round_num):
     """Avoid TE before round 5 unless elite."""
     return row["Position"] != "TE" or round_num >= 6 or is_elite_te(row["Player Name"], round_num)
 
-def avoid_k_dst_early(row, round_num):
-    """Delay Kicker/Defense picks until Round 13+."""
-    return row["Position"] not in ["K", "DST"] or round_num >= 13
+def avoid_k_dst_early(row, round_num, num_rounds=15):
+    """Delay Kicker/Defense picks until the last 2 rounds."""
+    return row["Position"] not in ["K", "DST"] or round_num >= (num_rounds - 1)
 
 def respect_roster_limits(row, team_state, roster_config):
     """Avoid recommending players at positions already at or above max."""
@@ -47,10 +47,11 @@ def prioritize_needs(row, team_state, roster_config):
     return filled < max_allowed
 
 def apply_all_rules(row, round_num, team_state, roster_config):
+    num_rounds = max(roster_config.values()) + sum(roster_config.values()) - 1  # Estimate total rounds from roster config
     return (
         avoid_qb_early(row, round_num)
         and avoid_te_early(row, round_num)
-        and avoid_k_dst_early(row, round_num)
+        and avoid_k_dst_early(row, round_num, num_rounds)
         and respect_roster_limits(row, team_state, roster_config)
         and prioritize_needs(row, team_state, roster_config)
     )
@@ -66,13 +67,17 @@ def recommend_players(
     pipeline,
     scoring_type="PPR",
     roster_config=None,
-    top_n=5
+    top_n=5,
+    num_rounds=None  # Add num_rounds parameter
 ):
     """
     Generate fantasy player recommendations using rules + ML pipeline.
     """
     if roster_config is None:
         roster_config = {"QB": 1, "RB": 4, "WR": 5, "TE": 2, "K": 1, "DST": 1}
+    
+    if num_rounds is None:
+        num_rounds = max(roster_config.values()) + sum(roster_config.values()) - 1
 
     df_players = df_players[df_players["Season"] == 2024].copy()
 
