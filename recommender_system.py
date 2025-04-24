@@ -24,11 +24,11 @@ def is_elite_te(player_name, round_num):
 
 def avoid_qb_early(row, round_num):
     """Avoid QB before round 4 unless elite."""
-    return row["Position"] != "QB" or round_num >= 4 or is_elite_qb(row["Player Name"], round_num)
+    return row["Position"] != "QB" or round_num >= 5 or is_elite_qb(row["Player Name"], round_num)
 
 def avoid_te_early(row, round_num):
     """Avoid TE before round 5 unless elite."""
-    return row["Position"] != "TE" or round_num >= 5 or is_elite_te(row["Player Name"], round_num)
+    return row["Position"] != "TE" or round_num >= 6 or is_elite_te(row["Player Name"], round_num)
 
 def avoid_k_dst_early(row, round_num):
     """Delay Kicker/Defense picks until Round 13+."""
