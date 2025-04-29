@@ -13,8 +13,8 @@ def load_pipeline(pipeline_path):
 # Configurable Draft Rules
 # -----------------------------
 
-ELITE_QBS = {"Josh Allen", "Jalen Hurts", "Patrick Mahomes", "Lamar Jackson"}
-ELITE_TES = {"Travis Kelce", "Mark Andrews", "Sam LaPorta", "George Kittle"}
+ELITE_QBS = {"Josh Allen", "Jalen Hurts", "Patrick Mahomes", "Lamar Jackson"} #implement threshold
+ELITE_TES = {"Travis Kelce", "Mark Andrews", "Sam LaPorta", "George Kittle"} #implement threshold
 
 def is_elite_qb(player_name, round_num):
     return player_name in ELITE_QBS and round_num >= 3
@@ -45,6 +45,8 @@ def prioritize_needs(row, team_state, roster_config):
     filled = team_state["position_counts"].get(position, 0)
     max_allowed = roster_config.get(position, 99)
     return filled < max_allowed
+
+# add value over replacement type rule (look at average points per position and then compute standard deviations ?)
 
 def apply_all_rules(row, round_num, team_state, roster_config):
     num_rounds = max(roster_config.values()) + sum(roster_config.values()) - 1  # Estimate total rounds from roster config
