@@ -436,16 +436,30 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
                 pipeline=pipeline,
                 scoring_type=scoring_type or "PPR",
                 roster_config=roster_config,
-                top_n=5,
-                num_rounds=draft_state['num_rounds']
+                top_n=25,  # Increased to 25 recommendations
+                num_rounds=draft_state['num_rounds'],
+                league_size=draft_state['num_teams'],
+                vor_weight=0.7
             )
             
-            table = dbc.Table.from_dataframe(
-                recommendations[['Player Name', 'Position', 'Team', 'Predicted_Points']],
-                striped=True,
-                bordered=True,
-                hover=True
-            )
+            # Format the recommendations table with VOR and Overall Score
+            recommendations['Predicted_Points'] = recommendations['Predicted_Points'].round(1)
+            recommendations['VOR'] = recommendations['VOR'].round(1)
+            recommendations['Overall_Score'] = recommendations['Overall_Score'].round(3)
+            
+            table = html.Div([
+                dbc.Table.from_dataframe(
+                    recommendations[['Player Name', 'Position', 'Team', 'Predicted_Points', 'VOR', 'Overall_Score']],
+                    striped=True,
+                    bordered=True,
+                    hover=True
+                )
+            ], style={
+                'maxHeight': '300px',  # Set maximum height
+                'overflowY': 'auto',   # Enable vertical scrolling
+                'overflowX': 'hidden', # Hide horizontal scrollbar
+                'marginBottom': '20px'  # Add some space below the table
+            })
         except Exception as e:
             print(f"Error generating recommendations: {str(e)}")
             table = html.Div("Unable to generate recommendations at this time.")

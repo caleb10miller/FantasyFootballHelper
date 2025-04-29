@@ -13,26 +13,33 @@ def load_pipeline(pipeline_path):
 # Configurable Draft Rules
 # -----------------------------
 
-ELITE_QBS = {"Josh Allen", "Jalen Hurts", "Patrick Mahomes", "Lamar Jackson"} #implement threshold
-ELITE_TES = {"Travis Kelce", "Mark Andrews", "Sam LaPorta", "George Kittle"} #implement threshold
+def is_elite_qb(player_name, round_num, predicted_points):
+    """Determine if a QB is elite based on predicted points."""
+    QB_ELITE_THRESHOLD = 225  # QBs projected for 225+ points
+    return predicted_points >= QB_ELITE_THRESHOLD and round_num >= 3
 
-def is_elite_qb(player_name, round_num):
-    return player_name in ELITE_QBS and round_num >= 3
-
-def is_elite_te(player_name, round_num):
-    return player_name in ELITE_TES and round_num >= 3
+def is_elite_te(player_name, round_num, predicted_points):
+    """Determine if a TE is elite based on predicted points."""
+    TE_ELITE_THRESHOLD = 185  # TEs projected for 190+ points
+    return predicted_points >= TE_ELITE_THRESHOLD and round_num >= 3
 
 def avoid_qb_early(row, round_num):
     """Avoid QB before round 4 unless elite."""
-    return row["Position"] != "QB" or round_num >= 5 or is_elite_qb(row["Player Name"], round_num)
+    if row["Position"] != "QB":
+        return True
+    return round_num >= 5 or is_elite_qb(row["Player Name"], round_num, row["Predicted_Points"])
 
 def avoid_te_early(row, round_num):
     """Avoid TE before round 5 unless elite."""
-    return row["Position"] != "TE" or round_num >= 6 or is_elite_te(row["Player Name"], round_num)
+    if row["Position"] != "TE":
+        return True
+    return round_num >= 6 or is_elite_te(row["Player Name"], round_num, row["Predicted_Points"])
 
 def avoid_k_dst_early(row, round_num, num_rounds=15):
     """Delay Kicker/Defense picks until the last 2 rounds."""
-    return row["Position"] not in ["K", "DST"] or round_num >= (num_rounds - 1)
+    if row["Position"] in ["K", "DEF"]:
+        return round_num >= (num_rounds - 1)
+    return True
 
 def respect_roster_limits(row, team_state, roster_config):
     """Avoid recommending players at positions already at or above max."""
@@ -46,7 +53,69 @@ def prioritize_needs(row, team_state, roster_config):
     max_allowed = roster_config.get(position, 99)
     return filled < max_allowed
 
-# add value over replacement type rule (look at average points per position and then compute standard deviations ?)
+def get_replacement_levels(df_players, league_size=12):
+    """Calculate replacement level points for each position."""
+    replacement_ranks = {
+        'QB': league_size + 2,    # 14th best QB (backup level)
+        'RB': league_size * 2.5,  # 30th best RB (2.5 per team)
+        'WR': league_size * 2.5,  # 30th best WR (2.5 per team)
+        'TE': league_size + 2,    # 14th best TE (backup level)
+        'K': league_size,         # 12th best K
+        'DEF': league_size        # 12th best DEF
+    }
+    
+    replacement_levels = {}
+    
+    for position in replacement_ranks:
+        position_players = df_players[df_players['Position'] == position].copy()
+        if not position_players.empty:
+            # Sort by predicted points and get replacement level
+            position_players = position_players.sort_values('Predicted_Points', ascending=False)
+            rank = int(replacement_ranks[position])
+            if len(position_players) >= rank:
+                replacement_levels[position] = position_players.iloc[rank-1]['Predicted_Points']
+            else:
+                replacement_levels[position] = position_players['Predicted_Points'].min()
+                
+    return replacement_levels
+
+def calculate_vor_and_score(df_players, replacement_levels, vor_weight=0.7):
+    """Calculate Value Over Replacement and combined score for each player."""
+    df = df_players.copy()
+    
+    # Position value multipliers to account for positional importance
+    position_multipliers = {
+        'QB': 1.1,   # Premium for QBs due to high floor
+        'RB': 1.2,   # Premium on RBs due to scarcity
+        'WR': 1.1,   # Slight premium on WRs
+        'TE': 1.0,   # Full value for TEs
+        'K': 0.3,    # Significantly reduced as low-impact position
+        'DEF': 0.3   # Significantly reduced as low-impact position
+    }
+    
+    # Calculate VOR with position multipliers
+    df['VOR'] = df.apply(
+        lambda row: (row['Predicted_Points'] - replacement_levels.get(row['Position'], 0)) * 
+                   position_multipliers.get(row['Position'], 1.0),
+        axis=1
+    )
+    
+    # Add a bonus for elite QBs (over 225 points)
+    df['VOR'] = df.apply(
+        lambda row: row['VOR'] * 1.15 if row['Position'] == 'QB' and row['Predicted_Points'] > 225 else row['VOR'],
+        axis=1
+    )
+    
+    # Normalize VOR and Predicted Points to 0-1 scale to make them comparable
+    df['VOR_Normalized'] = (df['VOR'] - df['VOR'].min()) / (df['VOR'].max() - df['VOR'].min())
+    df['Points_Normalized'] = (df['Predicted_Points'] - df['Predicted_Points'].min()) / (
+        df['Predicted_Points'].max() - df['Predicted_Points'].min()
+    )
+    
+    # Calculate combined score
+    df['Overall_Score'] = vor_weight * df['VOR_Normalized'] + (1 - vor_weight) * df['Points_Normalized']
+    
+    return df
 
 def apply_all_rules(row, round_num, team_state, roster_config):
     num_rounds = max(roster_config.values()) + sum(roster_config.values()) - 1  # Estimate total rounds from roster config
@@ -70,13 +139,15 @@ def recommend_players(
     scoring_type="PPR",
     roster_config=None,
     top_n=5,
-    num_rounds=None  # Add num_rounds parameter
+    league_size=12,
+    vor_weight=0.7,
+    num_rounds=None
 ):
     """
     Generate fantasy player recommendations using rules + ML pipeline.
     """
     if roster_config is None:
-        roster_config = {"QB": 1, "RB": 4, "WR": 5, "TE": 2, "K": 1, "DST": 1}
+        roster_config = {"QB": 1, "RB": 4, "WR": 5, "TE": 2, "K": 1, "DEF": 1}
     
     if num_rounds is None:
         num_rounds = max(roster_config.values()) + sum(roster_config.values()) - 1
@@ -95,6 +166,10 @@ def recommend_players(
         X[col] = X[col].astype(str)
 
     df_players["Predicted_Points"] = pipeline.predict(X)
+    
+    # Calculate VOR and Overall Score
+    replacement_levels = get_replacement_levels(df_players, league_size)
+    df_players = calculate_vor_and_score(df_players, replacement_levels, vor_weight)
 
     eligible_players = df_players[
         df_players.apply(
@@ -103,7 +178,11 @@ def recommend_players(
         )
     ]
 
-    top_players = eligible_players.sort_values("Predicted_Points", ascending=False).head(top_n)
+    # Sort by Overall Score
+    top_players = eligible_players.sort_values("Overall_Score", ascending=False).head(top_n)
+
+    # Clean up the output by dropping normalized columns
+    top_players = top_players.drop(['VOR_Normalized', 'Points_Normalized'], axis=1)
 
     return top_players.reset_index(drop=True)
 
@@ -120,11 +199,11 @@ if __name__ == "__main__":
     team_state = {
         "filled_positions": ["QB"],
         "drafted_players": ["Amon-Ra St. Brown"],
-        "position_counts": {"QB": 1, "RB": 2, "WR": 1, "TE": 0, "K": 0, "DST": 0}
+        "position_counts": {"QB": 1, "RB": 2, "WR": 1, "TE": 0, "K": 0, "DEF": 0}
     }
 
     # User-defined roster limits
-    roster_config = {"QB": 1, "RB": 4, "WR": 5, "TE": 2, "K": 1, "DST": 1}
+    roster_config = {"QB": 1, "RB": 4, "WR": 5, "TE": 2, "K": 1, "DEF": 1}
 
     # === LOAD DATA & MODEL ===
     player_data_path = "data/final_data/nfl_stats_long_format_with_context_filtered.csv"
@@ -141,8 +220,9 @@ if __name__ == "__main__":
         pipeline=pipeline,
         scoring_type=scoring_type,
         roster_config=roster_config,
-        top_n=10
+        top_n=10,
+        vor_weight=0.7
     )
 
     print("\nTop Player Recommendations:")
-    print(recommendations[["Player Name", "Position", "Team", "Predicted_Points"]])
+    print(recommendations[["Player Name", "Position", "Team", "Predicted_Points", "VOR", "Overall_Score"]].round(2))
