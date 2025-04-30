@@ -4,8 +4,36 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from recommender_system import recommend_players, load_pipeline
 
-# Initialize the Dash app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+# Initialize the Dash app with dark theme
+app = dash.Dash(
+    __name__,
+    external_stylesheets=[dbc.themes.DARKLY],  # Using DARKLY theme for dark mode
+    meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}]
+)
+
+# Custom dark theme colors
+DARK_THEME = {
+    'background': '#222',
+    'text': '#fff',
+    'primary': '#375a7f',
+    'secondary': '#444',
+    'success': '#00bc8c',
+    'info': '#3498DB',
+    'warning': '#F39C12',
+    'danger': '#E74C3C'
+}
+
+# Custom styles for components
+table_style = {
+    'backgroundColor': DARK_THEME['background'],
+    'color': DARK_THEME['text']
+}
+
+card_style = {
+    'backgroundColor': DARK_THEME['background'],
+    'color': DARK_THEME['text'],
+    'borderColor': DARK_THEME['secondary']
+}
 
 def get_current_drafter(round_num, pick_num, num_teams):
     """
@@ -179,43 +207,52 @@ def create_draft_setup():
 
 def create_draft_board():
     return dbc.Card([
-        dbc.CardHeader("Draft Board"),
+        dbc.CardHeader("Draft Board", style={'backgroundColor': DARK_THEME['secondary']}),
         dbc.CardBody([
             dbc.Row([
                 dbc.Col([
-                    dbc.Label("Current Round"),
-                    html.Div(id="current-round", className="h4")
+                    dbc.Label("Current Round", className="text-light"),
+                    html.Div(id="current-round", className="h4 text-info")
                 ], width=3),
                 dbc.Col([
-                    dbc.Label("Current Pick"),
-                    html.Div(id="current-pick", className="h4")
+                    dbc.Label("Current Pick", className="text-light"),
+                    html.Div(id="current-pick", className="h4 text-info")
                 ], width=3),
                 dbc.Col([
-                    dbc.Label("Current Drafter"),
-                    html.Div(id="current-drafter", className="h4 text-primary")
+                    dbc.Label("Current Drafter", className="text-light"),
+                    html.Div(id="current-drafter", className="h4 text-info")
                 ], width=3),
                 dbc.Col([
-                    dbc.Label("Picks Until Your Turn"),
-                    html.Div(id="picks-until-turn", className="h4")
+                    dbc.Label("Picks Until Your Turn", className="text-light"),
+                    html.Div(id="picks-until-turn", className="h4 text-warning")
                 ], width=3),
             ]),
             dbc.Row([
                 dbc.Col([
-                    dbc.Label("Select Player"),
-                    dcc.Dropdown(id="player-dropdown", multi=False),
+                    dbc.Label("Select Player", className="text-light"),
+                    dcc.Dropdown(
+                        id="player-dropdown",
+                        multi=False,
+                        style={
+                            'backgroundColor': DARK_THEME['background'],
+                            'color': 'white',
+                        },
+                        className="player-dropdown",
+                        optionHeight=35,
+                    ),
                     dbc.Button("Submit Pick", id="submit-pick", color="primary", className="mt-2"),
                     html.Div(id="pick-error-message", className="text-danger mt-2")
                 ], width=12)
             ]),
-            html.Hr(),
+            html.Hr(style={'borderColor': DARK_THEME['secondary']}),
             # Recommendations section
             dbc.Row([
                 dbc.Col([
-                    html.H5("Recommendations", className="mb-3"),
+                    html.H5("Recommendations", className="mb-3 text-light"),
                     html.Div(id="recommendations-table")
                 ], width=12)
             ]),
-            html.Hr(),
+            html.Hr(style={'borderColor': DARK_THEME['secondary']}),
             # Add New Player section with collapse
             dbc.Row([
                 dbc.Col([
@@ -228,34 +265,57 @@ def create_draft_board():
                     dbc.Collapse(
                         dbc.Card([
                             dbc.CardBody([
-                                html.H5("Add New Player"),
+                                html.H5("Add New Player", className="text-light"),
                                 dbc.Row([
                                     dbc.Col([
-                                        dbc.Label("Player Name"),
-                                        dbc.Input(id="new-player-name", type="text", placeholder="Enter player name")
-                                    ], width=4),
-                                    dbc.Col([
-                                        dbc.Label("Position"),
-                                        dcc.Dropdown(
-                                            id="new-player-position",
-                                            options=[{"label": pos, "value": pos} for pos in ["QB", "RB", "WR", "TE", "K", "DST"]],
-                                            placeholder="Select position"
+                                        dbc.Label("Player Name", className="text-light"),
+                                        dbc.Input(
+                                            id="new-player-name",
+                                            type="text",
+                                            placeholder="Enter player name",
+                                            style={
+                                                'backgroundColor': DARK_THEME['background'],
+                                                'color': DARK_THEME['text'],
+                                                'borderColor': 'white'
+                                            }
                                         )
                                     ], width=4),
                                     dbc.Col([
-                                        dbc.Label("Team"),
-                                        dbc.Input(id="new-player-team", type="text", placeholder="Enter team (e.g., SF)")
+                                        dbc.Label("Position", className="text-light"),
+                                        dcc.Dropdown(
+                                            id="new-player-position",
+                                            options=[{"label": pos, "value": pos} for pos in ["QB", "RB", "WR", "TE", "K", "DST"]],
+                                            placeholder="Select position",
+                                            style={
+                                                'backgroundColor': DARK_THEME['background'],
+                                                'color': 'white',
+                                            },
+                                            className="dash-dropdown"
+                                        )
+                                    ], width=4),
+                                    dbc.Col([
+                                        dbc.Label("Team", className="text-light"),
+                                        dbc.Input(
+                                            id="new-player-team",
+                                            type="text",
+                                            placeholder="Enter team (e.g., SF)",
+                                            style={
+                                                'backgroundColor': DARK_THEME['background'],
+                                                'color': DARK_THEME['text'],
+                                                'borderColor': 'white'
+                                            }
+                                        )
                                     ], width=4)
                                 ]),
                                 dbc.Button("Add Player", id="add-player-button", color="secondary", className="mt-2")
                             ])
-                        ]),
+                        ], style=card_style),
                         id="add-player-collapse",
                         is_open=False
                     )
                 ], width=12)
             ]),
-            html.Hr(),
+            html.Hr(style={'borderColor': DARK_THEME['secondary']}),
             # Draft History section with collapse
             dbc.Row([
                 dbc.Col([
@@ -268,17 +328,17 @@ def create_draft_board():
                     dbc.Collapse(
                         dbc.Card([
                             dbc.CardBody([
-                                html.H5("Draft History"),
+                                html.H5("Draft History", className="text-light"),
                                 html.Div(id="draft-history-table")
                             ])
-                        ]),
+                        ], style=card_style),
                         id="draft-history-collapse",
                         is_open=False
                     )
                 ], width=12)
             ])
-        ])
-    ])
+        ], style={'backgroundColor': DARK_THEME['background']})
+    ], style=card_style)
 
 def create_recommendations():
     return dbc.Card([
@@ -412,18 +472,42 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
         picks_until_turn = 0
         
         if current_drafter != user_position:  # Only calculate if it's not user's turn
-            if draft_state['round'] % 2 == 1:  # Odd rounds
-                if current_drafter < user_position:
-                    picks_until_turn = user_position - current_drafter
+            current_round = draft_state['round']
+            current_pick = draft_state['pick']
+            num_teams = draft_state['num_teams']
+            
+            # For even rounds (2, 4, 6...), we need to reverse the positions
+            if current_round % 2 == 0:
+                # Convert positions to reversed order
+                current_pos = num_teams - current_drafter + 1
+                user_pos = num_teams - user_position + 1
+            else:
+                current_pos = current_drafter
+                user_pos = user_position
+            
+            # If we're at the end of a round
+            if current_pick == num_teams:
+                # If current round is odd and next round is even
+                if current_round % 2 == 1:
+                    # Calculate distance from last pick to user's reversed position
+                    picks_until_turn = num_teams - user_position + 1
+                # If current round is even and next round is odd
                 else:
-                    picks_until_turn = (draft_state['num_teams'] - current_drafter) + user_position
-            else:  # Even rounds
-                reversed_current = draft_state['num_teams'] - current_drafter + 1
-                reversed_user = draft_state['num_teams'] - user_position + 1
-                if reversed_current < reversed_user:
-                    picks_until_turn = reversed_user - reversed_current
+                    # Calculate distance from last pick to user's normal position
+                    picks_until_turn = user_position
+            else:
+                # Within the same round
+                if current_pos < user_pos:
+                    picks_until_turn = user_pos - current_pos
                 else:
-                    picks_until_turn = (draft_state['num_teams'] - reversed_current) + reversed_user
+                    # Need to go to next round
+                    remaining_in_round = num_teams - current_pick
+                    if current_round % 2 == 1:
+                        # Going from odd to even round
+                        picks_until_turn = remaining_in_round + (num_teams - user_position + 1)
+                    else:
+                        # Going from even to odd round
+                        picks_until_turn = remaining_in_round + user_position
         
         # Get recommendations from available players
         available_players = df_players[df_players['Player Name'].isin(draft_state.get('available_players', AVAILABLE_PLAYERS))]
@@ -436,7 +520,7 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
                 pipeline=pipeline,
                 scoring_type=scoring_type or "PPR",
                 roster_config=roster_config,
-                top_n=25,  # Increased to 25 recommendations
+                top_n=50,  # Increased to 25 recommendations
                 num_rounds=draft_state['num_rounds'],
                 league_size=draft_state['num_teams'],
                 vor_weight=0.7
@@ -497,7 +581,7 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
             f"Round {draft_state['round']}",
             f"Pick {draft_state['pick']}",
             f"Team {current_drafter}'s turn to draft",
-            f"{picks_until_turn} picks until your turn",
+            f"{picks_until_turn} picks until your turn" if picks_until_turn > 0 else "Your turn to draft",
             history_table,
             is_draft_complete,  # Disable submit button if draft is complete
             error_message
@@ -692,6 +776,45 @@ def update_roster_limits(num_rounds):
     
     limits = calculate_roster_limits(num_rounds)
     return [limits[pos] for pos in ["QB", "RB", "WR", "TE", "K", "DST"]]
+
+# Add this at the top of the file with the other style definitions
+app.index_string = '''
+<!DOCTYPE html>
+<html>
+    <head>
+        {%metas%}
+        <title>{%title%}</title>
+        {%favicon%}
+        {%css%}
+        <style>
+            .dash-dropdown .Select-menu-outer {
+                background-color: #222 !important;
+            }
+            .dash-dropdown .Select-option {
+                color: white !important;
+                background-color: #222 !important;
+            }
+            .dash-dropdown .Select-value-label {
+                color: white !important;
+            }
+            .dash-dropdown .Select-option:hover {
+                background-color: #375a7f !important;
+            }
+            .dash-dropdown .Select-option.is-selected {
+                background-color: #375a7f !important;
+            }
+        </style>
+    </head>
+    <body>
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>
+'''
 
 if __name__ == '__main__':
     app.run(debug=True) 

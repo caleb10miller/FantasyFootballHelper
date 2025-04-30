@@ -15,12 +15,12 @@ def load_pipeline(pipeline_path):
 
 def is_elite_qb(player_name, round_num, predicted_points):
     """Determine if a QB is elite based on predicted points."""
-    QB_ELITE_THRESHOLD = 225  # QBs projected for 225+ points
+    QB_ELITE_THRESHOLD = 200  # QBs projected for 200+ points
     return predicted_points >= QB_ELITE_THRESHOLD and round_num >= 3
 
 def is_elite_te(player_name, round_num, predicted_points):
     """Determine if a TE is elite based on predicted points."""
-    TE_ELITE_THRESHOLD = 185  # TEs projected for 190+ points
+    TE_ELITE_THRESHOLD = 170  # TEs projected for 170+ points
     return predicted_points >= TE_ELITE_THRESHOLD and round_num >= 3
 
 def avoid_qb_early(row, round_num):
@@ -56,10 +56,10 @@ def prioritize_needs(row, team_state, roster_config):
 def get_replacement_levels(df_players, league_size=12):
     """Calculate replacement level points for each position."""
     replacement_ranks = {
-        'QB': league_size + 2,    # 14th best QB (backup level)
-        'RB': league_size * 2.5,  # 30th best RB (2.5 per team)
-        'WR': league_size * 2.5,  # 30th best WR (2.5 per team)
-        'TE': league_size + 2,    # 14th best TE (backup level)
+        'QB': league_size + 4,    # 16th best QB (deeper backup level)
+        'RB': league_size * 2,    # 24th best RB (2 per team)
+        'WR': league_size * 2,    # 24th best WR (2 per team)
+        'TE': league_size + 4,    # 16th best TE (backup level)
         'K': league_size,         # 12th best K
         'DEF': league_size        # 12th best DEF
     }
@@ -85,12 +85,12 @@ def calculate_vor_and_score(df_players, replacement_levels, vor_weight=0.7):
     
     # Position value multipliers to account for positional importance
     position_multipliers = {
-        'QB': 1.1,   # Premium for QBs due to high floor
-        'RB': 1.2,   # Premium on RBs due to scarcity
-        'WR': 1.1,   # Slight premium on WRs
-        'TE': 1.0,   # Full value for TEs
-        'K': 0.3,    # Significantly reduced as low-impact position
-        'DEF': 0.3   # Significantly reduced as low-impact position
+        'QB': 1.2,   # Higher premium for QBs
+        'RB': 1.15,  # Slightly reduced RB premium
+        'WR': 1.15,   # Baseline value
+        'TE': 1.0,   # Slightly reduced
+        'K': 0.3,    # Significantly reduced
+        'DEF': 0.3   # Significantly reduced
     }
     
     # Calculate VOR with position multipliers
@@ -102,7 +102,7 @@ def calculate_vor_and_score(df_players, replacement_levels, vor_weight=0.7):
     
     # Add a bonus for elite QBs (over 225 points)
     df['VOR'] = df.apply(
-        lambda row: row['VOR'] * 1.15 if row['Position'] == 'QB' and row['Predicted_Points'] > 225 else row['VOR'],
+        lambda row: row['VOR'] * 1.1 if row['Position'] == 'QB' and row['Predicted_Points'] > 225 else row['VOR'],
         axis=1
     )
     
