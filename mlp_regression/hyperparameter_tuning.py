@@ -58,15 +58,16 @@ for col in categorical_cols:
 
 # === PARAMETER GRID ===
 param_grid = {
-    'mlp__hidden_layer_sizes': [(125,), (150,), (175,)], 
-    'mlp__alpha': [0.075, 0.1, 0.125], 
-    'mlp__learning_rate_init': [0.001],
-    'mlp__batch_size': [32],
+    'mlp__hidden_layer_sizes': [(150,)],  # Original best performing single layer
+    'mlp__activation': ['relu'],  # Original best performing activation
+    'mlp__alpha': [0.009, 0.01, 0.011],  # Very small variations around original best alpha
+    'mlp__learning_rate_init': [0.001],  # Original best learning rate
+    'mlp__batch_size': [32],  # Original best batch size
     'mlp__max_iter': [1000],
     'mlp__early_stopping': [True],
     'mlp__validation_fraction': [0.1],
     'mlp__n_iter_no_change': [10],
-    'mlp__activation': ['tanh']
+    'mlp__solver': ['adam']
 }
 
 # === TRY DIFFERENT SCALERS ===

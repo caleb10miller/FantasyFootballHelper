@@ -1,0 +1,23 @@
+Position-Specific Model Results
+=============================
+
+QB Model:
+R²: 0.000
+RMSE: inf
+Number of test samples: 0
+
+RB Model:
+R²: 0.000
+RMSE: inf
+Number of test samples: 0
+
+WR Model:
+R²: 0.000
+RMSE: inf
+Number of test samples: 0
+
+TE Model:
+R²: 0.000
+RMSE: inf
+Number of test samples: 0
+

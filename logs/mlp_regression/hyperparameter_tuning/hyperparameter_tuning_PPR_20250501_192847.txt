@@ -1,0 +1,68 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.551
+RMSE: 57.3
+
+MinMaxScaler:
+R^2: 0.553
+RMSE: 57.1
+
+RobustScaler:
+R^2: 0.508
+RMSE: 59.9
+
+Normalizer:
+R^2: 0.486
+RMSE: 61.2
+
+
+Best Scaler: MinMaxScaler
+==================
+
+Best Parameters:
+mlp__activation: relu
+mlp__alpha: 0.004
+mlp__batch_size: 20
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (175,)
+mlp__learning_rate_init: 0.0015
+mlp__max_iter: 1000
+mlp__n_iter_no_change: 10
+mlp__solver: adam
+mlp__validation_fraction: 0.1
+
+Test Set Performance:
+R^2: 0.553
+RMSE: 57.1
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 293.4
+   2 | Josh Allen  | QB       | BUF  | 292.2
+   3 | Jalen Hurts | QB       | PHI  | 274.9
+   4 | Joe Burrow  | QB       | CIN  | 266.0
+   5 | Ja'Marr Chase | WR       | CIN  | 264.6
+   6 | Justin Jefferson | WR       | MIN  | 253.6
+   7 | Amon-Ra St. Brown | WR       | DET  | 252.0
+   8 | Jared Goff  | QB       | DET  | 248.5
+   9 | Patrick Mahomes | QB       | KAN  | 248.0
+  10 | Baker Mayfield | QB       | TAM  | 246.6
+  11 | CeeDee Lamb | WR       | DAL  | 245.9
+  12 | Jahmyr Gibbs | RB       | DET  | 235.8
+  13 | Josh Jacobs | RB       | GNB  | 234.2
+  14 | Derrick Henry | RB       | BAL  | 231.4
+  15 | Tyreek Hill | WR       | MIA  | 228.2
+  16 | Bijan Robinson | RB       | ATL  | 227.7
+  17 | Justin Herbert | QB       | LAC  | 225.4
+  18 | Geno Smith  | QB       | SEA  | 223.4
+  19 | Saquon Barkley | RB       | PHI  | 223.3
+  20 | De'Von Achane | RB       | MIA  | 221.7

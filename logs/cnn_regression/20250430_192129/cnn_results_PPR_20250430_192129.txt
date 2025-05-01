@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+cnn__batch_size: 32
+cnn__conv_filters: 64
+cnn__dense_units: 256
+cnn__dropout_rate: 0.3
+cnn__epochs: 100
+cnn__kernel_size: 3
+cnn__l1_reg: 0.01
+cnn__l2_reg: 0.01
+cnn__learning_rate: 0.001
+
+Test Set Performance:
+R^2: 0.523
+RMSE: 59.0
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Josh Allen  | QB       | BUF  | 384.3
+   2 | Jalen Hurts | QB       | PHI  | 368.4
+   3 | Lamar Jackson | QB       | BAL  | 335.3
+   4 | Joe Burrow  | QB       | CIN  | 283.8
+   5 | Jahmyr Gibbs | RB       | DET  | 258.6
+   6 | Ja'Marr Chase | WR       | CIN  | 256.9
+   7 | Justin Herbert | QB       | LAC  | 244.9
+   8 | Jared Goff  | QB       | DET  | 240.4
+   9 | CeeDee Lamb | WR       | DAL  | 240.1
+  10 | Amon-Ra St. Brown | WR       | DET  | 238.9
+  11 | Brock Purdy | QB       | SFO  | 228.2
+  12 | Derrick Henry | RB       | BAL  | 226.5
+  13 | Justin Jefferson | WR       | MIN  | 226.0
+  14 | Patrick Mahomes | QB       | KAN  | 219.7
+  15 | Tyreek Hill | WR       | MIA  | 217.7
+  16 | Josh Jacobs | RB       | GNB  | 217.0
+  17 | Saquon Barkley | RB       | PHI  | 211.4
+  18 | David Montgomery | RB       | DET  | 209.2
+  19 | Jayden Reed | WR       | GNB  | 206.6
+  20 | Dak Prescott | QB       | DAL  | 204.1

@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+cnn__batch_size: 32
+cnn__conv_filters: 32
+cnn__dense_units: 128
+cnn__dropout_rate: 0.2
+cnn__epochs: 100
+cnn__kernel_size: 3
+cnn__l1_reg: 0.001
+cnn__l2_reg: 0.0001
+cnn__learning_rate: 0.001
+
+Test Set Performance:
+R^2: 0.547
+RMSE: 57.5
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Josh Allen  | QB       | BUF  | 351.7
+   2 | Jalen Hurts | QB       | PHI  | 337.2
+   3 | Lamar Jackson | QB       | BAL  | 306.1
+   4 | Ja'Marr Chase | WR       | CIN  | 264.3
+   5 | Derrick Henry | RB       | BAL  | 255.7
+   6 | Joe Burrow  | QB       | CIN  | 254.2
+   7 | Justin Jefferson | WR       | MIN  | 253.1
+   8 | Jahmyr Gibbs | RB       | DET  | 252.9
+   9 | Amon-Ra St. Brown | WR       | DET  | 249.1
+  10 | James Cook  | RB       | BUF  | 248.5
+  11 | Jared Goff  | QB       | DET  | 248.3
+  12 | CeeDee Lamb | WR       | DAL  | 246.4
+  13 | Tyreek Hill | WR       | MIA  | 243.5
+  14 | Saquon Barkley | RB       | PHI  | 236.9
+  15 | Josh Jacobs | RB       | GNB  | 232.1
+  16 | Patrick Mahomes | QB       | KAN  | 225.6
+  17 | Justin Herbert | QB       | LAC  | 222.2
+  18 | De'Von Achane | RB       | MIA  | 218.6
+  19 | Baker Mayfield | QB       | TAM  | 213.7
+  20 | Brock Purdy | QB       | SFO  | 213.5

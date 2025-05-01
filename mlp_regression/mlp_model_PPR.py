@@ -73,15 +73,16 @@ pipeline = Pipeline([
 
 # === PARAMETER GRID ===
 param_grid = {
-    'mlp__activation': ['tanh'],
-    'mlp__alpha': [0.075],
+    'mlp__activation': ['relu'],
+    'mlp__alpha': [0.01],
     'mlp__batch_size': [32],
     'mlp__early_stopping': [True],
-    'mlp__hidden_layer_sizes': [(175,)],
+    'mlp__hidden_layer_sizes': [(150,)],
     'mlp__learning_rate_init': [0.001],
     'mlp__max_iter': [1000],
     'mlp__n_iter_no_change': [10],
-    'mlp__validation_fraction': [0.1]
+    'mlp__validation_fraction': [0.1],
+    'mlp__solver': ['adam']
 }
 
 # === GRID SEARCH ===
