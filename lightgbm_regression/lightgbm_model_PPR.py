@@ -10,10 +10,20 @@ import lightgbm as lgb
 import joblib
 import os
 import logging
+from datetime import datetime
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# === CONFIGURATION ===
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+# Create directories if they don't exist
+os.makedirs("logs", exist_ok=True)
+os.makedirs("logs/lightgbm_regression", exist_ok=True)  
+os.makedirs(f"logs/lightgbm_regression/{timestamp}", exist_ok=True)  
+os.makedirs("lightgbm_regression/joblib_files", exist_ok=True)  
 
 class LightGBMRegressor(BaseEstimator, RegressorMixin):
     def __init__(self, n_estimators=100, learning_rate=0.1, max_depth=6, 
@@ -144,16 +154,20 @@ def load_data():
     X = df[feature_columns]
     y = df['Target_PPR']
     
-    return X, y
+    return X, y, df
 
 def main():
     # Load data
-    X, y = load_data()
+    X, y, df = load_data()
     
     # Split data
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
     )
+    
+    # Get corresponding player names for test set
+    test_indices = X_test.index
+    test_player_names = df.loc[test_indices, 'Player Name']
     
     # Define parameter grid for grid search
     param_grid = {
@@ -193,15 +207,54 @@ def main():
     r2 = r2_score(y_test, y_pred)
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
     
-    # Log results
-    logger.info(f"Best parameters: {best_params}")
-    logger.info(f"R² score: {r2:.3f}")
-    logger.info(f"RMSE: {rmse:.2f}")
+    # === SAVE RESULTS ===
+    results_file = f"logs/lightgbm_regression/{timestamp}/lightgbm_results_{timestamp}.txt"
+    
+    with open(results_file, 'w') as f:
+        f.write("Grid Search Results\n")
+        f.write("==================\n\n")
+        f.write("Best Parameters:\n")
+        for param, value in best_params.items():
+            f.write(f"{param}: {value}\n")
+        
+        f.write("\nTest Set Performance:\n")
+        f.write(f"R^2: {r2:.3f}\n")
+        f.write(f"RMSE: {rmse:.1f}\n")
+        
+        # Add predictions to the log file
+        f.write("\n\nTest Set Predictions\n")
+        f.write("===================\n\n")
+        
+        # Create a DataFrame with predictions
+        df_predictions = pd.DataFrame({
+            'Player Name': test_player_names,
+            'Actual': y_test,
+            'Predicted': y_pred
+        })
+        
+        # Sort by predicted value in descending order
+        df_predictions = df_predictions.sort_values('Predicted', ascending=False)
+        
+        # Write top 20 predictions to log file
+        f.write("Top 20 Predictions:\n")
+        f.write("------------------\n\n")
+        f.write("Rank | Player Name | Actual | Predicted\n")
+        f.write("-----|-------------|--------|----------\n")
+        
+        for i, (_, row) in enumerate(df_predictions.head(20).iterrows(), 1):
+            f.write(f"{i:4d} | {row['Player Name']:11s} | {row['Actual']:6.1f} | {row['Predicted']:8.1f}\n")
+        
+        # Save all predictions to a CSV file
+        predictions_file = f"logs/lightgbm_regression/{timestamp}/predictions_{timestamp}.csv"
+        df_predictions.to_csv(predictions_file, index=False)
+        logger.info(f"All predictions saved to {predictions_file}")
     
     # Save the model
-    model_path = os.path.join('lightgbm_regression', 'lightgbm_model.joblib')
-    joblib.dump(best_model, model_path)
-    logger.info(f"Model saved to {model_path}")
+    model_file = f"lightgbm_regression/joblib_files/lightgbm_model_{timestamp}.pkl"
+    joblib.dump(best_model, model_file)
+    
+    logger.info(f"Results saved to {results_file}")
+    logger.info(f"Best model saved to {model_file}")
 
 if __name__ == "__main__":
     main() 

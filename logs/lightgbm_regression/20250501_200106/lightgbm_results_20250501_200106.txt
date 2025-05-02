@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+colsample_bytree: 0.8
+learning_rate: 0.05
+max_depth: 6
+min_child_samples: 10
+n_estimators: 100
+num_leaves: 35
+reg_alpha: 0.1
+reg_lambda: 0.1
+subsample: 0.8
+
+Test Set Performance:
+R^2: 0.618
+RMSE: 51.0
+
+
+Test Set Predictions
+===================
+
+Top 20 Predictions:
+------------------
+
+Rank | Player Name | Actual | Predicted
+-----|-------------|--------|----------
+   1 | Wil Lutz    |  380.6 |    341.3
+   2 | Justin Jefferson |  262.8 |    286.8
+   3 | Mitch Wishnowsky |  185.8 |    280.8
+   4 | Ricky Seals-Jones |  260.7 |    277.1
+   5 | Jared Goff  |  467.2 |    273.8
+   6 | Gus Edwards |  216.4 |    271.0
+   7 | Drake London |  362.4 |    268.2
+   8 | Adam Thielen |  218.2 |    257.4
+   9 | Breshad Perriman |  274.5 |    256.8
+  10 | Larry Fitzgerald |  339.2 |    256.4
+  11 | Damiere Byrd |  262.5 |    249.9
+  12 | Adam Trautman |  368.8 |    239.6
+  13 | Skyy Moore  |   86.6 |    236.2
+  14 | Tyler Ervin |  146.4 |    235.8
+  15 | T.J. Hockenson |  232.0 |    234.4
+  16 | Jacksonville Jaguars DST |  314.6 |    234.2
+  17 | Dalton Schultz |  372.6 |    232.1
+  18 | Jaxon Smith-Njigba |  328.6 |    231.4
+  19 | Josh Reynolds |  202.3 |    231.1
+  20 | D'Ernest Johnson |  178.8 |    228.4

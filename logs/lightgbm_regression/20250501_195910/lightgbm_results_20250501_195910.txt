@@ -1,0 +1,27 @@
+Grid Search Results
+==================
+
+Best Parameters:
+colsample_bytree: 0.8
+learning_rate: 0.05
+max_depth: 6
+min_child_samples: 10
+n_estimators: 100
+num_leaves: 35
+reg_alpha: 0.1
+reg_lambda: 0.1
+subsample: 0.8
+
+Test Set Performance:
+R^2: 0.618
+RMSE: 51.0
+
+
+Test Set Predictions
+===================
+
+Top 20 Predictions:
+------------------
+
+Rank | Player Name | Position | Team | Actual | Predicted
+-----|-------------|----------|------|--------|----------
