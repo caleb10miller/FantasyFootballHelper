@@ -1,0 +1,47 @@
+Grid Search Results
+==================
+
+Best Parameters:
+colsample_bytree: 0.8
+learning_rate: 0.05
+max_depth: 6
+min_child_samples: 10
+n_estimators: 100
+num_leaves: 35
+reg_alpha: 0.1
+reg_lambda: 0.1
+subsample: 0.8
+
+Test Set Performance:
+R^2: 0.618
+RMSE: 51.0
+
+
+Test Set Predictions
+===================
+
+Top 20 Predictions:
+------------------
+
+Rank | Player Name | Actual | Predicted
+-----|-------------|--------|----------
+   1 | Josh Allen  |  380.6 |    341.3
+   2 | Travis Kelce |  262.8 |    286.8
+   3 | Ezekiel Elliott |  185.8 |    280.8
+   4 | Ja'Marr Chase |  260.7 |    277.1
+   5 | Christian McCaffrey |  467.2 |    273.8
+   6 | C.J. Stroud |  216.4 |    271.0
+   7 | Patrick Mahomes |  362.4 |    268.2
+   8 | Justin Fields |  218.2 |    257.4
+   9 | Kyler Murray |  274.5 |    256.8
+  10 | Tyreek Hill |  339.2 |    256.4
+  11 | Mike Evans  |  262.5 |    249.9
+  12 | Justin Herbert |  368.8 |    239.6
+  13 | James Robinson |   86.6 |    236.2
+  14 | Jonathan Taylor |  146.4 |    235.8
+  15 | Jared Goff  |  232.0 |    234.4
+  16 | Russell Wilson |  314.6 |    234.2
+  17 | Michael Thomas |  372.6 |    232.1
+  18 | Stefon Diggs |  328.6 |    231.4
+  19 | Dalvin Cook |  202.3 |    231.1
+  20 | Melvin Gordon |  178.8 |    228.4

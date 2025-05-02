@@ -208,7 +208,7 @@ def main():
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
     
     # === SAVE RESULTS ===
-    results_file = f"logs/lightgbm_regression/{timestamp}/lightgbm_results_{timestamp}.txt"
+    results_file = f"logs/lightgbm_regression/{timestamp}/lightgbm_results_ppr_{timestamp}.txt"
     
     with open(results_file, 'w') as f:
         f.write("Grid Search Results\n")
