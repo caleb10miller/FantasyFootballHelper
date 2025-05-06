@@ -1,0 +1,53 @@
+Grid Search Results
+==================
+
+Best Parameters:
+colsample_bytree: 0.8
+learning_rate: 0.05
+max_depth: 6
+min_child_samples: 10
+n_estimators: 100
+num_leaves: 35
+reg_alpha: 0.1
+reg_lambda: 0.1
+subsample: 0.8
+
+Test Set Performance:
+R^2: 0.551
+RMSE: 57.2
+
+
+Test Set Predictions
+===================
+
+Top 20 Predictions:
+------------------
+
+Rank | Player Name | Actual | Predicted
+-----|-------------|--------|----------
+   1 | C.J. Stroud |  216.4 |    289.9
+   2 | Jalen Hurts |  307.1 |    287.2
+   3 | Lamar Jackson |  420.4 |    278.3
+   4 | Amon-Ra St. Brown |  316.2 |    274.4
+   5 | CeeDee Lamb |  263.4 |    269.3
+   6 | Dak Prescott |  110.5 |    268.4
+   7 | Davante Adams |  241.3 |    259.6
+   8 | Stefon Diggs |  121.9 |    256.7
+   9 | Patrick Mahomes |  279.0 |    250.5
+  10 | Tyreek Hill |  218.2 |    249.8
+  11 | Trevor Lawrence |  135.2 |    249.7
+  12 | Deebo Samuel |  151.6 |    246.3
+  13 | Ja'Marr Chase |  403.0 |    238.3
+  14 | Travis Kelce |  193.4 |    235.3
+  15 | Mike Evans  |  240.4 |    234.2
+  16 | Jakobi Meyers |  218.0 |    231.3
+  17 | Cooper Kupp |  173.0 |    230.3
+  18 | A.J. Brown  |  216.9 |    230.1
+  19 | Bijan Robinson |  337.7 |    229.5
+  20 | Josh Allen  |  371.0 |    228.7
+
+
+2025 Season Predictions
+=======================
+
+No data found for 2024 season. Please check your data.

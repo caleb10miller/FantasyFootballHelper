@@ -1,0 +1,77 @@
+Grid Search Results
+==================
+
+Best Parameters:
+colsample_bytree: 0.8
+learning_rate: 0.05
+max_depth: 6
+min_child_samples: 10
+n_estimators: 100
+num_leaves: 35
+reg_alpha: 0.1
+reg_lambda: 0.1
+subsample: 0.8
+
+Test Set Performance:
+R^2: 0.626
+RMSE: 42.2
+
+
+Test Set Predictions
+===================
+
+Top 20 Predictions:
+------------------
+
+Rank | Player Name | Actual | Predicted
+-----|-------------|--------|----------
+   1 | Josh Allen  |  380.6 |    331.7
+   2 | Patrick Mahomes |  362.4 |    276.9
+   3 | Justin Fields |  218.2 |    271.4
+   4 | Russell Wilson |  314.6 |    247.2
+   5 | Jared Goff  |  232.0 |    246.4
+   6 | Kyler Murray |  274.5 |    237.3
+   7 | C.J. Stroud |  216.4 |    236.6
+   8 | Tua Tagovailoa |  254.4 |    232.4
+   9 | Travis Kelce |  170.8 |    230.6
+  10 | Ezekiel Elliott |  168.8 |    230.2
+  11 | Christian McCaffrey |  351.2 |    229.1
+  12 | Carson Wentz |  176.4 |    224.0
+  13 | Justin Herbert |  368.8 |    210.7
+  14 | Jonathan Taylor |  118.4 |    208.2
+  15 | Matt Ryan   |  274.4 |    207.8
+  16 | Dalvin Cook |  168.3 |    194.1
+  17 | Melvin Gordon |  136.8 |    193.4
+  18 | Joe Burrow  |  338.7 |    190.8
+  19 | Aaron Rodgers |    0.0 |    188.3
+  20 | Josh Jacobs |  198.3 |    186.4
+
+
+2025 Season Predictions
+=======================
+
+Top 20 Players for 2025 Season:
+==============================
+
+Rank | Player Name | Predicted Target
+-----|-------------|-----------------
+   1 | Lamar Jackson | 321.2
+   2 | Josh Allen  | 297.6
+   3 | Jalen Hurts | 297.1
+   4 | Brock Purdy | 256.9
+   5 | Jared Goff  | 253.1
+   6 | Patrick Mahomes | 251.1
+   7 | Jahmyr Gibbs | 250.6
+   8 | Josh Jacobs | 250.6
+   9 | Justin Herbert | 245.6
+  10 | Bijan Robinson | 233.5
+  11 | Joe Burrow  | 232.9
+  12 | CeeDee Lamb | 230.3
+  13 | Jordan Love | 229.6
+  14 | Joe Mixon   | 226.4
+  15 | Ja'Marr Chase | 223.6
+  16 | Christian McCaffrey | 221.3
+  17 | Tua Tagovailoa | 220.3
+  18 | Davante Adams | 220.1
+  19 | A.J. Brown  | 216.8
+  20 | C.J. Stroud | 214.4

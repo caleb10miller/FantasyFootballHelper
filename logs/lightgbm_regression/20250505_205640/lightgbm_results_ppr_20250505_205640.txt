@@ -1,0 +1,77 @@
+Grid Search Results
+==================
+
+Best Parameters:
+colsample_bytree: 0.8
+learning_rate: 0.05
+max_depth: 6
+min_child_samples: 10
+n_estimators: 100
+num_leaves: 35
+reg_alpha: 0.1
+reg_lambda: 0.1
+subsample: 0.8
+
+Test Set Performance:
+R^2: 0.608
+RMSE: 49.6
+
+
+Test Set Predictions
+===================
+
+Top 20 Predictions:
+------------------
+
+Rank | Player Name | Actual | Predicted
+-----|-------------|--------|----------
+   1 | Josh Allen  |  380.6 |    322.9
+   2 | Travis Kelce |  262.8 |    283.8
+   3 | Patrick Mahomes |  362.4 |    279.1
+   4 | C.J. Stroud |  216.4 |    277.0
+   5 | Tyreek Hill |  339.2 |    270.8
+   6 | Cooper Kupp |  199.4 |    256.0
+   7 | Russell Wilson |  314.6 |    250.7
+   8 | Justin Fields |  218.2 |    249.5
+   9 | Alvin Kamara |  234.7 |    247.4
+  10 | Jonathan Taylor |  146.4 |    235.5
+  11 | Kyler Murray |  274.5 |    233.0
+  12 | Aaron Rodgers |    0.0 |    231.7
+  13 | Travis Kelce |  193.4 |    230.0
+  14 | Lamar Jackson |  319.2 |    226.3
+  15 | Michael Thomas |  372.6 |    225.7
+  16 | Chris Godwin |  189.0 |    225.4
+  17 | Justin Herbert |  368.8 |    224.6
+  18 | Stefon Diggs |  210.1 |    221.2
+  19 | James Robinson |   86.6 |    218.0
+  20 | Aaron Jones |  227.0 |    212.6
+
+
+2025 Season Predictions
+=======================
+
+Top 20 Players for 2025 Season:
+==============================
+
+Rank | Player Name | Predicted Target
+-----|-------------|-----------------
+   1 | A.J. Brown  | 310.7
+   2 | Ja'Marr Chase | 308.5
+   3 | De'Von Achane | 308.4
+   4 | Jahmyr Gibbs | 306.6
+   5 | Justin Jefferson | 301.5
+   6 | CeeDee Lamb | 296.2
+   7 | Josh Allen  | 288.4
+   8 | Josh Jacobs | 287.7
+   9 | Lamar Jackson | 283.6
+  10 | Davante Adams | 275.8
+  11 | Jalen Hurts | 269.5
+  12 | Tyreek Hill | 266.6
+  13 | Bijan Robinson | 266.2
+  14 | Puka Nacua  | 261.9
+  15 | Mike Evans  | 260.1
+  16 | Amon-Ra St. Brown | 259.6
+  17 | Patrick Mahomes | 258.5
+  18 | Christian McCaffrey | 256.3
+  19 | Jared Goff  | 253.6
+  20 | Joe Mixon   | 247.1

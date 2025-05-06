@@ -108,9 +108,6 @@ def load_data():
     data_path = os.path.join('data', 'final_data', 'nfl_stats_long_format_with_context_filtered.csv')
     df = pd.read_csv(data_path)
     
-    # Drop rows with missing target values
-    df = df.dropna(subset=['Target_PPR'])
-    
     # Create position-specific features
     df['QB_Features'] = df['Position'].apply(lambda x: 1 if x == 'QB' else 0)
     df['RB_Features'] = df['Position'].apply(lambda x: 1 if x == 'RB' else 0)
@@ -151,23 +148,28 @@ def load_data():
     # Convert categorical variables
     df['Position'] = pd.Categorical(df['Position']).codes
     
-    X = df[feature_columns]
-    y = df['Target_PPR']
+    # Use 2018-2023 for train/test, 2024 for next season prediction
+    df_model = df[df["Season"].between(2018, 2023)].copy()
+    df_model = df_model[df_model['Target_PPR'].notna()]
+    df_next_season = df[df["Season"] == 2024].copy()  # Use 2024 stats to predict 2025
     
-    return X, y, df
+    X = df_model[feature_columns]
+    y = df_model['Target_PPR']
+    
+    return X, y, df_model, df_next_season, feature_columns
 
 def main():
     # Load data
-    X, y, df = load_data()
+    X, y, df_model, df_next_season, feature_columns = load_data()
     
-    # Split data
+    # Split train/test (70/30)
+    from sklearn.model_selection import train_test_split
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
     )
-    
-    # Get corresponding player names for test set
-    test_indices = X_test.index
-    test_player_names = df.loc[test_indices, 'Player Name']
+    df_train = df_model.loc[X_train.index]
+    df_train = df_model.loc[X_train.index]
+    df_test = df_model.loc[X_test.index]
     
     # Define parameter grid for grid search
     param_grid = {
@@ -190,7 +192,7 @@ def main():
     grid_search = GridSearchCV(
         estimator=base_model,
         param_grid=param_grid,
-        cv=3,  # Reduced from 5 to 3 folds
+        cv=3,
         scoring='r2',
         n_jobs=-1,
         verbose=2
@@ -209,50 +211,58 @@ def main():
     
     # === SAVE RESULTS ===
     results_file = f"logs/lightgbm_regression/{timestamp}/lightgbm_results_ppr_{timestamp}.txt"
-    
     with open(results_file, 'w') as f:
         f.write("Grid Search Results\n")
         f.write("==================\n\n")
         f.write("Best Parameters:\n")
         for param, value in best_params.items():
             f.write(f"{param}: {value}\n")
-        
         f.write("\nTest Set Performance:\n")
         f.write(f"R^2: {r2:.3f}\n")
         f.write(f"RMSE: {rmse:.1f}\n")
-        
-        # Add predictions to the log file
         f.write("\n\nTest Set Predictions\n")
         f.write("===================\n\n")
-        
-        # Create a DataFrame with predictions
         df_predictions = pd.DataFrame({
-            'Player Name': test_player_names,
+            'Player Name': df_test['Player Name'],
             'Actual': y_test,
             'Predicted': y_pred
         })
-        
-        # Sort by predicted value in descending order
         df_predictions = df_predictions.sort_values('Predicted', ascending=False)
-        
-        # Write top 20 predictions to log file
         f.write("Top 20 Predictions:\n")
         f.write("------------------\n\n")
         f.write("Rank | Player Name | Actual | Predicted\n")
         f.write("-----|-------------|--------|----------\n")
-        
         for i, (_, row) in enumerate(df_predictions.head(20).iterrows(), 1):
             f.write(f"{i:4d} | {row['Player Name']:11s} | {row['Actual']:6.1f} | {row['Predicted']:8.1f}\n")
-        
-        # Save all predictions to a CSV file
-        predictions_file = f"logs/lightgbm_regression/{timestamp}/predictions_{timestamp}.csv"
+        predictions_file = f"logs/lightgbm_regression/{timestamp}/test_predictions_{timestamp}.csv"
         df_predictions.to_csv(predictions_file, index=False)
-        logger.info(f"All predictions saved to {predictions_file}")
+        logger.info(f"Test set predictions saved to {predictions_file}")
+
+        # === GENERATE PREDICTIONS FOR 2025 SEASON AND WRITE TO TXT ===
+        f.write("\n\n2025 Season Predictions\n")
+        f.write("=======================\n\n")
+        if len(df_next_season) == 0:
+            f.write("No data found for 2024 season. Please check your data.\n")
+            logger.info("No data found for 2024 season. Please check your data.")
+        else:
+            X_2024 = df_next_season[feature_columns].copy().fillna(0)
+            next_season_predictions = best_model.predict(X_2024)
+            df_2025_pred = df_next_season[["Player Name"]].copy()
+            df_2025_pred["Predicted_Target"] = next_season_predictions
+            df_2025_pred = df_2025_pred.sort_values("Predicted_Target", ascending=False)
+            f.write("Top 20 Players for 2025 Season:\n")
+            f.write("==============================\n\n")
+            f.write("Rank | Player Name | Predicted Target\n")
+            f.write("-----|-------------|-----------------\n")
+            for i, (_, row) in enumerate(df_2025_pred.head(20).iterrows(), 1):
+                f.write(f"{i:4d} | {row['Player Name']:11s} | {row['Predicted_Target']:.1f}\n")
+            predictions_file_2025 = f"logs/lightgbm_regression/{timestamp}/predictions_2025.csv"
+            df_2025_pred.to_csv(predictions_file_2025, index=False)
+            logger.info(f"2025 season predictions saved to {predictions_file_2025}")
     
     # Save the model
     model_file = f"lightgbm_regression/joblib_files/lightgbm_model_{timestamp}.pkl"
     joblib.dump(best_model, model_file)
-    
     logger.info(f"Results saved to {results_file}")
     logger.info(f"Best model saved to {model_file}")
 

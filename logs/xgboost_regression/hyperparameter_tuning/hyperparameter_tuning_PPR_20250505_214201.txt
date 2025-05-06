@@ -1,0 +1,77 @@
+Grid Search Results
+==================
+
+Best Parameters:
+xgb__colsample_bytree: 0.9
+xgb__gamma: 0
+xgb__learning_rate: 0.05
+xgb__max_depth: 3
+xgb__min_child_weight: 1
+xgb__n_estimators: 200
+xgb__reg_alpha: 0.1
+xgb__reg_lambda: 5
+xgb__subsample: 0.8
+
+Test Set Performance:
+R^2: 0.610
+RMSE: 51.5
+
+
+Test Set Predictions
+===================
+
+Top 20 Test Set Predictions:
+---------------------------
+
+Rank | Player Name | Position | Team | Actual | Predicted
+-----|-------------|----------|------|---------|----------
+   1 | Kyler Murray | QB       | ARI  |  274.5 |    318.8
+   2 | Justin Fields | QB       | CHI  |  218.2 |    295.8
+   3 | Josh Allen  | QB       | BUF  |  380.6 |    286.0
+   4 | Russell Wilson | QB       | SEA  |  314.6 |    274.6
+   5 | C.J. Stroud | QB       | HOU  |  216.4 |    267.4
+   6 | Cooper Kupp | WR       | LAR  |  199.4 |    261.9
+   7 | Tyreek Hill | WR       | KAN  |  339.2 |    257.3
+   8 | Patrick Mahomes | QB       | KAN  |  362.4 |    255.8
+   9 | Alvin Kamara | RB       | NOR  |  234.7 |    254.3
+  10 | Ja'Marr Chase | WR       | CIN  |  260.7 |    253.0
+  11 | Jonathan Taylor | RB       | IND  |  146.4 |    250.6
+  12 | Justin Herbert | QB       | LAC  |  368.8 |    246.8
+  13 | Travis Kelce | TE       | KAN  |  262.8 |    245.4
+  14 | Melvin Gordon | RB       | LAC  |  178.8 |    241.0
+  15 | Ezekiel Elliott | RB       | DAL  |  185.8 |    240.5
+  16 | Christian McCaffrey | RB       | CAR  |  467.2 |    239.1
+  17 | Todd Gurley | RB       | LAR  |  215.4 |    238.6
+  18 | Mike Evans  | WR       | TAM  |  262.5 |    238.4
+  19 | Aaron Jones | RB       | GNB  |  227.0 |    237.5
+  20 | Aaron Rodgers | QB       | GNB  |    0.0 |    235.7
+
+
+2025 Season Predictions
+=======================
+
+Top 20 Players for 2025 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 290.5
+   2 | Jalen Hurts | QB       | PHI  | 284.0
+   3 | Justin Jefferson | WR       | MIN  | 275.9
+   4 | Ja'Marr Chase | WR       | CIN  | 269.0
+   5 | Joe Burrow  | QB       | CIN  | 268.0
+   6 | Jahmyr Gibbs | RB       | DET  | 266.5
+   7 | CeeDee Lamb | WR       | DAL  | 266.2
+   8 | Josh Allen  | QB       | BUF  | 260.1
+   9 | Patrick Mahomes | QB       | KAN  | 250.8
+  10 | Puka Nacua  | WR       | LAR  | 242.0
+  11 | Amon-Ra St. Brown | WR       | DET  | 239.4
+  12 | Justin Herbert | QB       | LAC  | 238.1
+  13 | Jared Goff  | QB       | DET  | 237.4
+  14 | Jaxon Smith-Njigba | WR       | SEA  | 234.7
+  15 | Tyreek Hill | WR       | MIA  | 233.4
+  16 | A.J. Brown  | WR       | PHI  | 229.6
+  17 | Davante Adams | WR       | 2TM  | 224.6
+  18 | Josh Jacobs | RB       | GNB  | 223.5
+  19 | Bijan Robinson | RB       | ATL  | 223.3
+  20 | Brock Purdy | QB       | SFO  | 223.3

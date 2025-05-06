@@ -1,0 +1,48 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: relu
+mlp__alpha: 0.01
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (150,)
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 1000
+mlp__n_iter_no_change: 10
+mlp__solver: adam
+mlp__validation_fraction: 0.1
+
+Test Set Performance:
+R^2: 0.577
+RMSE: 55.6
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Predicted Target
+-----|-------------|----------|-----------------
+   1 | Lamar Jackson | QB       | 366.9
+   2 | Jalen Hurts | QB       | 321.1
+   3 | Josh Allen  | QB       | 317.3
+   4 | Ja'Marr Chase | WR       | 304.2
+   5 | CeeDee Lamb | WR       | 290.9
+   6 | Joe Burrow  | QB       | 277.7
+   7 | Amon-Ra St. Brown | WR       | 273.7
+   8 | Justin Jefferson | WR       | 267.3
+   9 | Justin Herbert | QB       | 261.8
+  10 | Tyreek Hill | WR       | 255.6
+  11 | Jared Goff  | QB       | 251.8
+  12 | Patrick Mahomes | QB       | 248.8
+  13 | Jahmyr Gibbs | RB       | 242.4
+  14 | Saquon Barkley | RB       | 235.6
+  15 | Derrick Henry | RB       | 227.5
+  16 | Bijan Robinson | RB       | 224.5
+  17 | Kyler Murray | QB       | 223.3
+  18 | Baker Mayfield | QB       | 222.2
+  19 | D.J. Moore  | WR       | 221.1
+  20 | Brock Purdy | QB       | 216.9

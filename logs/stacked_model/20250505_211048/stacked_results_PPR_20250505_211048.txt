@@ -1,0 +1,64 @@
+
+Test Set Performance:
+R^2: 0.599
+RMSE: 52.2
+
+
+Test Set Predictions
+===================
+
+Top 20 Test Set Predictions:
+---------------------------
+
+Rank | Player Name | Position | Team | Actual | Predicted
+-----|-------------|----------|------|---------|----------
+   1 | Patrick Mahomes | QB       | KAN  |  362.4 |    304.3
+   2 | Josh Allen  | QB       | BUF  |  380.6 |    277.8
+   3 | Kyler Murray | QB       | ARI  |  274.5 |    266.5
+   4 | C.J. Stroud | QB       | HOU  |  216.4 |    253.5
+   5 | Russell Wilson | QB       | SEA  |  314.6 |    251.6
+   6 | Justin Fields | QB       | CHI  |  218.2 |    249.4
+   7 | Alvin Kamara | RB       | NOR  |  234.7 |    249.4
+   8 | Justin Herbert | QB       | LAC  |  368.8 |    244.6
+   9 | Mike Evans  | WR       | TAM  |  225.4 |    244.1
+  10 | Tyreek Hill | WR       | KAN  |  339.2 |    244.1
+  11 | Michael Thomas | WR       | NOR  |  372.6 |    242.5
+  12 | Melvin Gordon | RB       | LAC  |  178.8 |    240.9
+  13 | Aaron Rodgers | QB       | GNB  |    0.0 |    239.0
+  14 | Travis Kelce | TE       | KAN  |  262.8 |    237.5
+  15 | Joe Mixon   | RB       | CIN  |  225.4 |    236.6
+  16 | Mike Evans  | WR       | TAM  |  262.5 |    236.1
+  17 | Ja'Marr Chase | WR       | CIN  |  260.7 |    236.0
+  18 | Ezekiel Elliott | RB       | DAL  |  185.8 |    235.4
+  19 | Breece Hall | RB       | NYJ  |  232.9 |    235.0
+  20 | Joe Burrow  | QB       | CIN  |  338.7 |    234.7
+
+
+2025 Season Predictions
+=======================
+
+Top 20 Players for 2025 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 314.0
+   2 | Patrick Mahomes | QB       | KAN  | 287.6
+   3 | Jalen Hurts | QB       | PHI  | 274.5
+   4 | Justin Jefferson | WR       | MIN  | 270.5
+   5 | Josh Allen  | QB       | BUF  | 255.5
+   6 | CeeDee Lamb | WR       | DAL  | 244.0
+   7 | Ja'Marr Chase | WR       | CIN  | 243.6
+   8 | Joe Burrow  | QB       | CIN  | 242.1
+   9 | De'Von Achane | RB       | MIA  | 239.1
+  10 | Amon-Ra St. Brown | WR       | DET  | 237.1
+  11 | Puka Nacua  | WR       | LAR  | 234.2
+  12 | Jared Goff  | QB       | DET  | 233.0
+  13 | Jahmyr Gibbs | RB       | DET  | 232.7
+  14 | Josh Jacobs | RB       | GNB  | 232.1
+  15 | James Cook  | RB       | BUF  | 229.4
+  16 | Dak Prescott | QB       | DAL  | 229.2
+  17 | Jaxon Smith-Njigba | WR       | SEA  | 226.8
+  18 | Justin Herbert | QB       | LAC  | 225.6
+  19 | A.J. Brown  | WR       | PHI  | 223.7
+  20 | Tyreek Hill | WR       | MIA  | 222.1

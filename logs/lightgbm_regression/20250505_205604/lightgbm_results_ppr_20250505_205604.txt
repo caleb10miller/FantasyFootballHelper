@@ -1,0 +1,77 @@
+Grid Search Results
+==================
+
+Best Parameters:
+colsample_bytree: 0.8
+learning_rate: 0.05
+max_depth: 6
+min_child_samples: 10
+n_estimators: 100
+num_leaves: 35
+reg_alpha: 0.1
+reg_lambda: 0.1
+subsample: 0.8
+
+Test Set Performance:
+R^2: 0.631
+RMSE: 50.6
+
+
+Test Set Predictions
+===================
+
+Top 20 Predictions:
+------------------
+
+Rank | Player Name | Actual | Predicted
+-----|-------------|--------|----------
+   1 | Josh Allen  |  380.6 |    336.5
+   2 | Travis Kelce |  262.8 |    287.9
+   3 | Patrick Mahomes |  362.4 |    277.7
+   4 | Russell Wilson |  314.6 |    273.3
+   5 | Lamar Jackson |  319.2 |    259.6
+   6 | Cooper Kupp |  199.4 |    253.8
+   7 | Tyreek Hill |  339.2 |    249.4
+   8 | C.J. Stroud |  216.4 |    246.3
+   9 | Alvin Kamara |  234.7 |    239.9
+  10 | Jonathan Taylor |  146.4 |    238.7
+  11 | Chris Godwin |  189.0 |    231.0
+  12 | Stefon Diggs |  210.1 |    229.8
+  13 | Calvin Ridley |   71.1 |    226.6
+  14 | James Robinson |   86.6 |    226.4
+  15 | Dalvin Cook |  202.3 |    226.3
+  16 | Kyler Murray |  274.5 |    225.5
+  17 | Travis Kelce |  193.4 |    224.7
+  18 | Breece Hall |  232.9 |    224.4
+  19 | Justin Fields |  218.2 |    221.8
+  20 | Justin Herbert |  368.8 |    220.4
+
+
+2025 Season Predictions
+=======================
+
+Top 20 Players for 2025 Season:
+==============================
+
+Rank | Player Name | Predicted Target
+-----|-------------|-----------------
+   1 | Ja'Marr Chase | 322.9
+   2 | Josh Jacobs | 321.4
+   3 | De'Von Achane | 317.6
+   4 | Justin Jefferson | 314.5
+   5 | Lamar Jackson | 312.5
+   6 | A.J. Brown  | 312.3
+   7 | Bijan Robinson | 293.7
+   8 | Jalen Hurts | 291.5
+   9 | Tyreek Hill | 288.4
+  10 | Davante Adams | 283.8
+  11 | Jahmyr Gibbs | 281.8
+  12 | Mike Evans  | 281.3
+  13 | CeeDee Lamb | 281.1
+  14 | Amon-Ra St. Brown | 273.2
+  15 | Saquon Barkley | 272.6
+  16 | Josh Allen  | 267.9
+  17 | Joe Mixon   | 264.7
+  18 | Christian McCaffrey | 262.3
+  19 | Derrick Henry | 259.2
+  20 | Patrick Mahomes | 257.5

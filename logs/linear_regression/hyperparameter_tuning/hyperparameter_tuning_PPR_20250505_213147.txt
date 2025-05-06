@@ -1,0 +1,91 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.583
+RMSE: 53.3
+
+MinMaxScaler:
+R^2: 0.562
+RMSE: 54.6
+
+RobustScaler:
+R^2: 0.583
+RMSE: 53.3
+
+Normalizer:
+R^2: 0.419
+RMSE: 62.9
+
+
+Best Scaler: RobustScaler
+==================
+
+Best Parameters:
+linear__fit_intercept: False
+linear__n_jobs: -1
+linear__positive: False
+
+Test Set Performance:
+R^2: 0.583
+RMSE: 53.3
+
+
+Test Set Predictions
+===================
+
+Top 20 Test Set Predictions:
+---------------------------
+
+Rank | Player Name | Position | Team | Actual | Predicted
+-----|-------------|----------|------|---------|----------
+   1 | Josh Allen  | QB       | BUF  |  380.6 |    330.1
+   2 | Patrick Mahomes | QB       | KAN  |  362.4 |    329.8
+   3 | Justin Herbert | QB       | LAC  |  368.8 |    301.7
+   4 | Todd Gurley | RB       | LAR  |  215.4 |    299.7
+   5 | Christian McCaffrey | RB       | CAR  |  467.2 |    298.8
+   6 | Kyler Murray | QB       | ARI  |  274.5 |    281.6
+   7 | Jonathan Taylor | RB       | IND  |  146.4 |    281.1
+   8 | Russell Wilson | QB       | SEA  |  314.6 |    280.7
+   9 | Alvin Kamara | RB       | NOR  |  234.7 |    276.8
+  10 | Cooper Kupp | WR       | LAR  |  199.4 |    267.0
+  11 | C.J. Stroud | QB       | HOU  |  216.4 |    261.4
+  12 | Aaron Rodgers | QB       | GNB  |    0.0 |    253.3
+  13 | Ja'Marr Chase | WR       | CIN  |  260.7 |    243.7
+  14 | Carson Wentz | QB       | PHI  |  176.4 |    240.9
+  15 | Ezekiel Elliott | RB       | DAL  |  185.8 |    239.1
+  16 | Michael Thomas | WR       | NOR  |  372.6 |    234.9
+  17 | Matt Ryan   | QB       | ATL  |  274.4 |    234.7
+  18 | Tyreek Hill | WR       | KAN  |  339.2 |    231.7
+  19 | Dalvin Cook | RB       | MIN  |  202.3 |    227.8
+  20 | Jared Goff  | QB       | LAR  |  232.0 |    227.4
+
+
+2025 Season Predictions
+=======================
+
+Top 20 Players for 2025 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 333.2
+   2 | Josh Allen  | QB       | BUF  | 310.5
+   3 | Joe Burrow  | QB       | CIN  | 292.2
+   4 | Jalen Hurts | QB       | PHI  | 286.6
+   5 | Jahmyr Gibbs | RB       | DET  | 273.0
+   6 | Ja'Marr Chase | WR       | CIN  | 271.7
+   7 | CeeDee Lamb | WR       | DAL  | 264.8
+   8 | Justin Jefferson | WR       | MIN  | 263.0
+   9 | Justin Herbert | QB       | LAC  | 260.2
+  10 | Bijan Robinson | RB       | ATL  | 258.3
+  11 | Amon-Ra St. Brown | WR       | DET  | 253.5
+  12 | Josh Jacobs | RB       | GNB  | 248.7
+  13 | Jared Goff  | QB       | DET  | 246.6
+  14 | Saquon Barkley | RB       | PHI  | 236.8
+  15 | Derrick Henry | RB       | BAL  | 234.9
+  16 | Patrick Mahomes | QB       | KAN  | 234.9
+  17 | Baker Mayfield | QB       | TAM  | 225.6
+  18 | Tyreek Hill | WR       | MIA  | 219.5
+  19 | De'Von Achane | RB       | MIA  | 217.7
+  20 | Puka Nacua  | WR       | LAR  | 206.0

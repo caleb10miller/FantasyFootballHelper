@@ -1,0 +1,53 @@
+Grid Search Results
+==================
+
+Best Parameters:
+colsample_bytree: 0.8
+learning_rate: 0.05
+max_depth: 6
+min_child_samples: 10
+n_estimators: 100
+num_leaves: 35
+reg_alpha: 0.1
+reg_lambda: 0.1
+subsample: 0.8
+
+Test Set Performance:
+R^2: 0.577
+RMSE: 55.9
+
+
+Test Set Predictions
+===================
+
+Top 20 Predictions:
+------------------
+
+Rank | Player Name | Actual | Predicted
+-----|-------------|--------|----------
+   1 | Josh Allen  |  380.6 |    321.0
+   2 | Travis Kelce |  262.8 |    311.7
+   3 | CeeDee Lamb |  263.4 |    297.3
+   4 | Ja'Marr Chase |  260.7 |    295.0
+   5 | Deshaun Watson |  305.0 |    285.0
+   6 | Justin Fields |  218.2 |    282.6
+   7 | Kyler Murray |  274.5 |    276.5
+   8 | Patrick Mahomes |  347.7 |    275.1
+   9 | Kyler Murray |  180.5 |    270.4
+  10 | Cooper Kupp |  199.4 |    268.7
+  11 | Ezekiel Elliott |  185.8 |    267.1
+  12 | Lamar Jackson |  319.2 |    263.3
+  13 | Patrick Mahomes |  362.4 |    262.8
+  14 | Derrick Henry |  296.8 |    261.5
+  15 | Christian McCaffrey |  467.2 |    254.5
+  16 | Antonio Brown |   16.1 |    254.4
+  17 | Tyreek Hill |  339.2 |    254.3
+  18 | Jonathan Taylor |  146.4 |    252.1
+  19 | JuJu Smith-Schuster |  113.2 |    252.0
+  20 | Russell Wilson |  314.6 |    247.4
+
+
+2025 Season Predictions
+=======================
+
+No data found for 2024 season. Please check your data.

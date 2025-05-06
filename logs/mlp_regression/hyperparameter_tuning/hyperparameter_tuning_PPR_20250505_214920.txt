@@ -1,0 +1,98 @@
+Scaler Comparison Results
+=======================
+
+StandardScaler:
+R^2: 0.580
+RMSE: 53.5
+
+MinMaxScaler:
+R^2: 0.576
+RMSE: 53.7
+
+RobustScaler:
+R^2: 0.549
+RMSE: 55.4
+
+Normalizer:
+R^2: 0.526
+RMSE: 56.8
+
+
+Best Scaler: StandardScaler
+==================
+
+Best Parameters:
+mlp__activation: relu
+mlp__alpha: 0.1
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (100,)
+mlp__learning_rate_init: 0.01
+mlp__max_iter: 1000
+mlp__n_iter_no_change: 10
+mlp__solver: adam
+mlp__validation_fraction: 0.1
+
+Test Set Performance:
+R^2: 0.580
+RMSE: 53.5
+
+
+Test Set Predictions
+===================
+
+Top 20 Test Set Predictions:
+---------------------------
+
+Rank | Player Name | Position | Team | Actual | Predicted
+-----|-------------|----------|------|---------|----------
+   1 | Josh Allen  | QB       | BUF  |  380.6 |    350.7
+   2 | Christian McCaffrey | RB       | CAR  |  467.2 |    310.5
+   3 | Kyler Murray | QB       | ARI  |  274.5 |    307.7
+   4 | Todd Gurley | RB       | LAR  |  215.4 |    304.0
+   5 | Jonathan Taylor | RB       | IND  |  146.4 |    287.1
+   6 | Patrick Mahomes | QB       | KAN  |  362.4 |    284.7
+   7 | Justin Herbert | QB       | LAC  |  368.8 |    282.1
+   8 | Cooper Kupp | WR       | LAR  |  199.4 |    276.8
+   9 | Russell Wilson | QB       | SEA  |  314.6 |    269.1
+  10 | Ja'Marr Chase | WR       | CIN  |  260.7 |    269.0
+  11 | Tyreek Hill | WR       | KAN  |  339.2 |    268.5
+  12 | Joe Burrow  | QB       | CIN  |  338.7 |    261.6
+  13 | Ezekiel Elliott | RB       | DAL  |  185.8 |    257.1
+  14 | Michael Thomas | WR       | NOR  |  372.6 |    248.8
+  15 | Alvin Kamara | RB       | NOR  |  234.7 |    247.6
+  16 | Justin Fields | QB       | CHI  |  218.2 |    246.7
+  17 | Dalvin Cook | RB       | MIN  |  202.3 |    245.6
+  18 | Stefon Diggs | WR       | MIN  |  210.1 |    239.7
+  19 | Aaron Rodgers | QB       | GNB  |    0.0 |    238.0
+  20 | Carson Wentz | QB       | PHI  |  176.4 |    237.4
+
+
+2025 Season Predictions
+=======================
+
+Top 20 Players for 2025 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 333.6
+   2 | Joe Burrow  | QB       | CIN  | 319.9
+   3 | Josh Allen  | QB       | BUF  | 319.8
+   4 | Jalen Hurts | QB       | PHI  | 304.8
+   5 | Ja'Marr Chase | WR       | CIN  | 300.6
+   6 | CeeDee Lamb | WR       | DAL  | 298.8
+   7 | Amon-Ra St. Brown | WR       | DET  | 291.8
+   8 | Jahmyr Gibbs | RB       | DET  | 272.5
+   9 | Justin Jefferson | WR       | MIN  | 271.5
+  10 | Baker Mayfield | QB       | TAM  | 265.3
+  11 | Tyreek Hill | WR       | MIA  | 258.5
+  12 | Jared Goff  | QB       | DET  | 254.9
+  13 | Josh Jacobs | RB       | GNB  | 252.2
+  14 | Saquon Barkley | RB       | PHI  | 246.6
+  15 | Bijan Robinson | RB       | ATL  | 244.0
+  16 | Derrick Henry | RB       | BAL  | 237.3
+  17 | Justin Herbert | QB       | LAC  | 233.6
+  18 | Patrick Mahomes | QB       | KAN  | 229.1
+  19 | Sam Darnold | QB       | MIN  | 225.6
+  20 | David Montgomery | RB       | DET  | 218.0

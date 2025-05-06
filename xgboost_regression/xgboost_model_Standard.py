@@ -29,20 +29,24 @@ df = pd.read_csv(input_file)
 target_col = "Target_PPR" if scoring_type == "PPR" else "Target_Standard"
 
 # === FILTER TRAIN AND TEST ===
-df_train = df[df["Season"].between(2018, 2022)].copy()
-df_train = df_train[df_train[target_col].notna()]
-df_test = df[df["Season"] == 2023].copy()
-df_test = df_test[df_test[target_col].notna()]
+df_model = df[df["Season"].between(2018, 2023)].copy()
+df_model = df_model[df_model[target_col].notna()]
+df_next_season = df[df["Season"] == 2024].copy()  # Use 2024 stats to predict 2025
 
 # === DEFINE FEATURES ===
 exclude_cols = ["Player Name", "Season", "Target_PPR", "Target_Standard", "PPR Fantasy Points Scored", "Standard Fantasy Points Scored",
                 "Delta_PPR_Fantasy_Points" if scoring_type == "Standard" else "Delta_Standard_Fantasy_Points"]
 feature_cols = [col for col in df.columns if col not in exclude_cols]
 
-X_train = df_train[feature_cols].copy()
-X_test = df_test[feature_cols].copy()
-y_train = df_train[target_col]
-y_test = df_test[target_col]
+X = df_model[feature_cols].copy()
+y = df_model[target_col]
+
+# Split train/test (80/20)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+df_train = df_model.loc[X_train.index]
+df_test = df_model.loc[X_test.index]
 
 # === FILL NA ===
 X_train = X_train.fillna(0)
@@ -112,12 +116,6 @@ print("\nBest Model Performance:")
 print(f"R^2: {r2:.3f}")
 print(f"RMSE: {rmse:.1f}")
 
-# === GENERATE PREDICTIONS FOR 2024 SEASON ===
-print("\nGenerating predictions for 2024 season...")
-
-# Filter data for 2024 season
-df_next_season = df[df["Season"] == 2024].copy()
-
 # === SAVE RESULTS ===
 results_file = f"logs/xgboost_regression/{timestamp}/xgb_results_{scoring_type}_{timestamp}.txt"
 
@@ -132,9 +130,34 @@ with open(results_file, 'w') as f:
     f.write(f"R^2: {r2:.3f}\n")
     f.write(f"RMSE: {rmse:.1f}\n")
     
-    # Add 2024 season predictions to the log file
-    f.write("\n\n2024 Season Predictions\n")
-    f.write("=====================\n\n")
+    # Add test set predictions to the log file
+    f.write("\n\nTest Set Predictions\n")
+    f.write("===================\n\n")
+    
+    df_predictions = pd.DataFrame({
+        'Player Name': df_test['Player Name'],
+        'Position': df_test['Position'],
+        'Team': df_test['Team'],
+        'Actual': y_test,
+        'Predicted': y_pred
+    })
+    df_predictions = df_predictions.sort_values('Predicted', ascending=False)
+    
+    f.write("Top 20 Test Set Predictions:\n")
+    f.write("---------------------------\n\n")
+    f.write("Rank | Player Name | Position | Team | Actual | Predicted\n")
+    f.write("-----|-------------|----------|------|---------|----------\n")
+    
+    for i, (_, row) in enumerate(df_predictions.head(20).iterrows(), 1):
+        f.write(f"{i:4d} | {row['Player Name']:11s} | {row['Position']:8s} | {row['Team']:4s} | {row['Actual']:6.1f} | {row['Predicted']:8.1f}\n")
+    
+    predictions_file = f"logs/xgboost_regression/{timestamp}/test_predictions_{timestamp}.csv"
+    df_predictions.to_csv(predictions_file, index=False)
+    print(f"Test set predictions saved to {predictions_file}")
+    
+    # === GENERATE PREDICTIONS FOR 2025 SEASON ===
+    f.write("\n\n2025 Season Predictions\n")
+    f.write("=======================\n\n")
     
     if len(df_next_season) == 0:
         f.write("No data found for 2024 season. Please check your data.\n")
@@ -152,28 +175,25 @@ with open(results_file, 'w') as f:
         next_season_predictions = best_model.predict(X_next_season)
         
         # Create a DataFrame with predictions
-        df_next_season_predictions = df_next_season[["Player Name", "Position", "Team", target_col]].copy()
-        df_next_season_predictions["Predicted_Target"] = next_season_predictions
+        df_2025_pred = df_next_season[["Player Name", "Position", "Team"]].copy()
+        df_2025_pred["Predicted_Target"] = next_season_predictions
         
         # Sort by predicted target in descending order
-        df_next_season_predictions = df_next_season_predictions.sort_values("Predicted_Target", ascending=False)
-        
-        # Get top 20 players
-        top_20_players = df_next_season_predictions.head(20)
+        df_2025_pred = df_2025_pred.sort_values("Predicted_Target", ascending=False)
         
         # Write top 20 players to log file
-        f.write("Top 20 Players for 2024 Season:\n")
+        f.write("Top 20 Players for 2025 Season:\n")
         f.write("==============================\n\n")
         f.write("Rank | Player Name | Position | Team | Predicted Target\n")
         f.write("-----|-------------|----------|------|-----------------\n")
         
-        for i, (_, row) in enumerate(top_20_players.iterrows(), 1):
+        for i, (_, row) in enumerate(df_2025_pred.head(20).iterrows(), 1):
             f.write(f"{i:4d} | {row['Player Name']:11s} | {row['Position']:8s} | {row['Team']:4s} | {row['Predicted_Target']:.1f}\n")
         
         # Save all predictions to a CSV file
-        predictions_file = f"logs/xgboost_regression/{timestamp}/predictions_{scoring_type}_{timestamp}.csv"
-        df_next_season_predictions.to_csv(predictions_file, index=False)
-        print(f"All predictions saved to {predictions_file}")
+        predictions_file_2025 = f"logs/xgboost_regression/{timestamp}/predictions_2025.csv"
+        df_2025_pred.to_csv(predictions_file_2025, index=False)
+        print(f"2025 season predictions saved to {predictions_file_2025}")
 
 # === SAVE BEST MODEL ===
 model_file = f"xgboost_regression/joblib_files/xgb_pipeline_{scoring_type}_{timestamp}.pkl"
