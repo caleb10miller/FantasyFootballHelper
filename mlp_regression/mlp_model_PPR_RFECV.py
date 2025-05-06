@@ -33,20 +33,24 @@ df = pd.read_csv(input_file)
 target_col = "Target_PPR" if scoring_type == "PPR" else "Target_Standard"
 
 # === FILTER TRAIN AND TEST ===
-df_train = df[df["Season"].between(2018, 2022)].copy()
-df_train = df_train[df_train[target_col].notna()]
-df_test = df[df["Season"] == 2023].copy()
-df_test = df_test[df_test[target_col].notna()]
+df_model = df[df["Season"].between(2018, 2023)].copy()
+df_model = df_model[df_model[target_col].notna()]
+df_next_season = df[df["Season"] == 2024].copy()  # Use 2024 stats to predict 2025
 
 # === DEFINE FEATURES ===
 exclude_cols = ["Player Name", "Season", "Target_PPR", "Target_Standard", "PPR Fantasy Points Scored", "Standard Fantasy Points Scored", "Team",
                 "Delta_PPR_Fantasy_Points" if scoring_type == "Standard" else "Delta_Standard_Fantasy_Points"]
 feature_cols = [col for col in df.columns if col not in exclude_cols]
 
-X_train = df_train[feature_cols].copy()
-X_test = df_test[feature_cols].copy()
-y_train = df_train[target_col]
-y_test = df_test[target_col]
+# Split train/test (80/20)
+X = df_model[feature_cols].copy()
+y = df_model[target_col]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+df_train = df_model.loc[X_train.index]
+df_test = df_model.loc[X_test.index]
 
 # === FILL NA ===
 X_train = X_train.fillna(0)
@@ -161,9 +165,6 @@ selected_features = [name for name, selected in
 
 # === GENERATE PREDICTIONS FOR 2024 SEASON ===
 print("\nGenerating predictions for 2024 season...")
-
-# Filter data for 2024 season
-df_next_season = df[df["Season"] == 2024].copy()
 
 # === SAVE RESULTS ===
 results_file = f"logs/mlp_regression/{timestamp}/mlp_results_{scoring_type}_{timestamp}.txt"

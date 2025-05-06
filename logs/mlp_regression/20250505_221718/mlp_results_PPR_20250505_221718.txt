@@ -1,0 +1,94 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: relu
+mlp__alpha: 0.01
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (150,)
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 1000
+mlp__n_iter_no_change: 10
+mlp__solver: adam
+mlp__validation_fraction: 0.1
+
+Feature Selection Results:
+Optimal number of features: 41
+
+Selected Features:
+- Age
+- Games Played
+- Games Started
+- Yards per Completion
+- Yards per Passing Touchdown
+- Attempts per Completion
+- Passing Touchdowns
+- Interceptions Thrown
+- Rushing Attempts
+- Yards per Rushing Touchdown
+- Yards per Carry
+- Rushing Touchdowns
+- Targets
+- Yards per Reception
+- Yards per Receiving Touchdown
+- Catch Percentage
+- Receiving Touchdowns
+- Fumbles
+- Field Goals Made
+- Field Goal Percentage
+- Total Touchdowns Allowed
+- Special Teams Impact
+- XP2
+- Average ADP
+- Positional ADP
+- Delta_Passing_Yards
+- Delta_Rushing_Yards
+- Delta_Receiving_Yards
+- Delta_Passing_Touchdowns
+- Delta_Rushing_Touchdowns
+- Delta_Receiving_Touchdowns
+- Delta_Interceptions_Thrown
+- Delta_Fumbles
+- Delta_Field_Goals_Made
+- Delta_Extra_Points_Made
+- Delta_Average_ADP
+- Rolling_3_Year_PPR_Fantasy_Points
+- Rolling_3_Year_Standard_Fantasy_Points
+- Position_K
+- Position_TE
+- Position_WR
+
+Test Set Performance:
+R^2: 0.599
+RMSE: 52.3
+
+
+2024 Season Predictions
+=====================
+
+Top 20 Players for 2024 Season:
+==============================
+
+Rank | Player Name | Position | Predicted Target
+-----|-------------|----------|-----------------
+   1 | Lamar Jackson | QB       | 326.1
+   2 | Joe Burrow  | QB       | 309.0
+   3 | Ja'Marr Chase | WR       | 278.0
+   4 | Amon-Ra St. Brown | WR       | 271.1
+   5 | Jalen Hurts | QB       | 270.9
+   6 | CeeDee Lamb | WR       | 267.3
+   7 | Justin Jefferson | WR       | 263.3
+   8 | Baker Mayfield | QB       | 251.4
+   9 | Jahmyr Gibbs | RB       | 248.2
+  10 | Kyler Murray | QB       | 246.3
+  11 | Saquon Barkley | RB       | 242.8
+  12 | Sam Darnold | QB       | 242.7
+  13 | Derrick Henry | RB       | 239.0
+  14 | Tyreek Hill | WR       | 232.2
+  15 | Christian McCaffrey | RB       | 227.7
+  16 | Josh Allen  | QB       | 227.1
+  17 | Bijan Robinson | RB       | 223.9
+  18 | Jared Goff  | QB       | 218.3
+  19 | David Montgomery | RB       | 216.6
+  20 | C.J. Stroud | QB       | 215.2
