@@ -235,4 +235,4 @@ joblib.dump(best_model, model_file)
 
 print(f"\nResults saved to {results_file}")
 print(f"Best model saved to {model_file}")
-print(f"Feature selection plot saved to graphs/rfecv_feature_selection_{scoring_type}_{timestamp}.png")
+print(f"Feature selection plot saved to graphs/mlp_regression/rfecv_feature_selection_{scoring_type}_{timestamp}.png")
