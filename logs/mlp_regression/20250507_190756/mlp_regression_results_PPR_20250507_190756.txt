@@ -1,0 +1,98 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: relu
+mlp__alpha: 0.01
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (150,)
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 1000
+mlp__n_iter_no_change: 10
+mlp__solver: adam
+mlp__validation_fraction: 0.1
+
+
+Test Set Predictions
+===================
+
+Top 20 Test Set Predictions:
+---------------------------
+
+Rank | Player Name | Position | Team | Actual | Predicted
+-----|-------------|----------|------|---------|----------
+   1 | Josh Allen  | QB       | BUF  |  380.6 |    344.6
+   2 | Christian McCaffrey | RB       | CAR  |  467.2 |    308.4
+   3 | Todd Gurley | RB       | LAR  |  215.4 |    291.6
+   4 | Kyler Murray | QB       | ARI  |  274.5 |    286.8
+   5 | Russell Wilson | QB       | SEA  |  314.6 |    281.4
+   6 | Justin Herbert | QB       | LAC  |  368.8 |    280.6
+   7 | Jonathan Taylor | RB       | IND  |  146.4 |    278.7
+   8 | Carson Wentz | QB       | PHI  |  176.4 |    270.3
+   9 | Patrick Mahomes | QB       | KAN  |  362.4 |    267.1
+  10 | Alvin Kamara | RB       | NOR  |  234.7 |    260.2
+  11 | Cooper Kupp | WR       | LAR  |  199.4 |    254.2
+  12 | C.J. Stroud | QB       | HOU  |  216.4 |    253.7
+  13 | Michael Thomas | WR       | NOR  |  372.6 |    252.8
+  14 | Justin Fields | QB       | CHI  |  218.2 |    249.0
+  15 | Ja'Marr Chase | WR       | CIN  |  260.7 |    243.8
+  16 | Tyreek Hill | WR       | KAN  |  339.2 |    236.0
+  17 | Matt Ryan   | QB       | ATL  |  274.4 |    232.9
+  18 | Aaron Rodgers | QB       | GNB  |    0.0 |    229.1
+  19 | Dalvin Cook | RB       | MIN  |  202.3 |    226.4
+  20 | Zach Ertz   | TE       | PHI  |  215.6 |    225.4
+
+
+2025 Season Predictions
+=======================
+
+Top 20 Players for 2025 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 330.3
+   2 | Joe Burrow  | QB       | CIN  | 309.4
+   3 | Josh Allen  | QB       | BUF  | 287.6
+   4 | Jalen Hurts | QB       | PHI  | 277.4
+   5 | Ja'Marr Chase | WR       | CIN  | 264.9
+   6 | CeeDee Lamb | WR       | DAL  | 260.8
+   7 | Jahmyr Gibbs | RB       | DET  | 259.1
+   8 | Baker Mayfield | QB       | TAM  | 258.3
+   9 | Saquon Barkley | RB       | PHI  | 258.2
+  10 | Bijan Robinson | RB       | ATL  | 254.7
+  11 | Jared Goff  | QB       | DET  | 253.4
+  12 | Justin Jefferson | WR       | MIN  | 250.1
+  13 | Amon-Ra St. Brown | WR       | DET  | 246.0
+  14 | Derrick Henry | RB       | BAL  | 236.2
+  15 | Justin Herbert | QB       | LAC  | 232.1
+  16 | Tyreek Hill | WR       | MIA  | 227.3
+  17 | Patrick Mahomes | QB       | KAN  | 226.6
+  18 | Josh Jacobs | RB       | GNB  | 224.5
+  19 | De'Von Achane | RB       | MIA  | 214.7
+  20 | Garrett Wilson | WR       | NYJ  | 211.1
+
+Feature Selection Results:
+========================
+
+Optimal number of features: 17
+
+Selected Features:
+- Age
+- Passing Touchdowns
+- Interceptions Thrown
+- Targets
+- Fumbles
+- Field Goal Percentage
+- Positional ADP
+- Delta_Rushing_Yards
+- Delta_Interceptions_Thrown
+- Rolling_3_Year_PPR_Fantasy_Points
+- Rolling_3_Year_Standard_Fantasy_Points
+- Position_DEF
+- Position_K
+- Position_QB
+- Position_RB
+- Position_TE
+- Position_WR

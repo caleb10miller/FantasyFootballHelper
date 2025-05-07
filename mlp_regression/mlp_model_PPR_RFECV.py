@@ -1,17 +1,18 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
 from sklearn.neural_network import MLPRegressor
-from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.feature_selection import RFECV
-from sklearn.ensemble import RandomForestRegressor
-import joblib
-from datetime import datetime
+from sklearn.linear_model import LinearRegression
+import sys
 import os
+from datetime import datetime
 import matplotlib.pyplot as plt
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.plotting import plot_actual_vs_predicted
+from utils.data_processing import prepare_data, prepare_next_season_data
+from utils.model_evaluation import evaluate_model, save_results, save_model
 
 # === CONFIGURATION ===
 input = "1"
@@ -25,6 +26,7 @@ os.makedirs("logs/mlp_regression", exist_ok=True)
 os.makedirs(f"logs/mlp_regression/{timestamp}", exist_ok=True)  
 os.makedirs("mlp_regression/joblib_files", exist_ok=True)  
 os.makedirs("graphs", exist_ok=True)
+os.makedirs("graphs/mlp_regression", exist_ok=True)
 
 # === LOAD DATA ===
 df = pd.read_csv(input_file)
@@ -41,53 +43,25 @@ df_next_season = df[df["Season"] == 2024].copy()  # Use 2024 stats to predict 20
 exclude_cols = ["Player Name", "Season", "Target_PPR", "Target_Standard", "PPR Fantasy Points Scored", "Standard Fantasy Points Scored", "Team",
                 "Delta_PPR_Fantasy_Points" if scoring_type == "Standard" else "Delta_Standard_Fantasy_Points"]
 feature_cols = [col for col in df.columns if col not in exclude_cols]
+categorical_cols = ["Position"]
 
-# Split train/test (80/20)
-X = df_model[feature_cols].copy()
-y = df_model[target_col]
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
-df_train = df_model.loc[X_train.index]
-df_test = df_model.loc[X_test.index]
-
-# === FILL NA ===
-X_train = X_train.fillna(0)
-X_test = X_test.fillna(0)
-
-# === ONE-HOT ENCODING for categorical columns ===
-categorical_cols = ["Position"] #["Team", "Position"]
-numerical_cols = [col for col in feature_cols if col not in categorical_cols]
-
-# Convert categorical columns to string type to ensure consistent data types
-for col in categorical_cols:
-    X_train[col] = X_train[col].astype(str)
-    X_test[col] = X_test[col].astype(str)
-
-# === CREATE PREPROCESSING PIPELINE ===
-preprocessor = ColumnTransformer(
-    transformers=[
-        ("num", StandardScaler(), numerical_cols),
-        ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), categorical_cols)
-    ]
-)
-
-# === FEATURE SELECTION WITH RFECV ===
-# We'll use RandomForest as the estimator for RFECV since it's more stable than MLP
-rfecv = RFECV(
-    estimator=RandomForestRegressor(n_estimators=100, random_state=42),
-    step=1,
-    cv=5,
-    scoring='r2',
-    n_jobs=-1,
-    verbose=2
+# === PREPARE DATA ===
+X_train, X_test, y_train, y_test, preprocessor = prepare_data(
+    df_model, target_col, feature_cols, categorical_cols
 )
 
 # === CREATE PIPELINE ===
 pipeline = Pipeline([
     ("preprocessor", preprocessor),
-    ("feature_selector", rfecv),
+    ("feature_selector", RFECV(
+        estimator=LinearRegression(), 
+        step=1, 
+        cv=3,    
+        scoring='r2',
+        n_jobs=-1,
+        verbose=2,
+        min_features_to_select=10 
+    )),
     ("mlp", MLPRegressor(random_state=42))
 ])
 
@@ -127,20 +101,21 @@ for param, value in grid_search.best_params_.items():
 best_model = grid_search.best_estimator_
 y_pred = best_model.predict(X_test)
 
-mse = mean_squared_error(y_test, y_pred)
-rmse = np.sqrt(mse)
-r2 = r2_score(y_test, y_pred)
+# Evaluate model
+mse, rmse, r2 = evaluate_model(y_test, y_pred, scoring_type)
 
-print("\nBest Model Performance:")
-print(f"R^2: {r2:.3f}")
-print(f"RMSE: {rmse:.1f}")
+# Plot actual vs predicted values
+plot_actual_vs_predicted(
+    y_test, 
+    y_pred,
+    title=f"MLP Model with RFECV - {scoring_type} Scoring",
+    xlabel=f"Actual {scoring_type} Targets",
+    ylabel=f"Predicted {scoring_type} Targets",
+    save_path=f"graphs/mlp_regression/actual_vs_predicted_rfecv_{scoring_type}_{timestamp}.png"
+)
 
-# === PLOT RFECV RESULTS ===
+# Plot RFECV results
 feature_selector = best_model.named_steps['feature_selector']
-n_features_selected = feature_selector.n_features_
-print(f"\nOptimal number of features selected: {n_features_selected}")
-
-# Plot number of features vs. cross-validated R-squared
 plt.figure(figsize=(10, 6))
 plt.plot(range(1, len(feature_selector.cv_results_['mean_test_score']) + 1),
          feature_selector.cv_results_['mean_test_score'], 'b-', label='CV Score')
@@ -150,88 +125,43 @@ plt.title('Feature Selection (RFECV)\nNumber of Features vs. Performance')
 plt.grid(True)
 plt.legend(loc='best')
 plt.tight_layout()
-plt.savefig(f'graphs/rfecv_feature_selection_{scoring_type}_{timestamp}.png')
+plt.savefig(f'graphs/mlp_regression/rfecv_feature_selection_{scoring_type}_{timestamp}.png')
 plt.close()
 
 # Get selected feature names
 cat_cols = categorical_cols
 cat_categories = best_model.named_steps['preprocessor'].named_transformers_['cat'].categories_
 all_feature_names = (
-    numerical_cols +
+    [col for col in feature_cols if col not in categorical_cols] +
     [f"{col}_{val}" for col, cats in zip(cat_cols, cat_categories) for val in cats]
 )
 selected_features = [name for name, selected in 
                     zip(all_feature_names, feature_selector.support_) if selected]
 
-# === GENERATE PREDICTIONS FOR 2024 SEASON ===
-print("\nGenerating predictions for 2024 season...")
+# === GENERATE PREDICTIONS FOR 2025 SEASON ===
+if len(df_next_season) > 0:
+    X_next_season = prepare_next_season_data(df_next_season, feature_cols, categorical_cols)
+    next_season_predictions = best_model.predict(X_next_season)
+else:
+    next_season_predictions = None
 
 # === SAVE RESULTS ===
-results_file = f"logs/mlp_regression/{timestamp}/mlp_results_{scoring_type}_{timestamp}.txt"
+results_file = save_results(
+    grid_search, y_test, y_pred, df.loc[X_test.index], 
+    df_next_season, next_season_predictions, scoring_type, timestamp
+)
 
-with open(results_file, 'w') as f:
-    f.write("Grid Search Results\n")
-    f.write("==================\n\n")
-    f.write("Best Parameters:\n")
-    for param, value in grid_search.best_params_.items():
-        f.write(f"{param}: {value}\n")
-    
+# Add selected features to results file
+with open(results_file, 'a') as f:
     f.write("\nFeature Selection Results:\n")
-    f.write(f"Optimal number of features: {n_features_selected}\n\n")
+    f.write("========================\n\n")
+    f.write(f"Optimal number of features: {feature_selector.n_features_}\n\n")
     f.write("Selected Features:\n")
     for feature in selected_features:
         f.write(f"- {feature}\n")
-    
-    f.write("\nTest Set Performance:\n")
-    f.write(f"R^2: {r2:.3f}\n")
-    f.write(f"RMSE: {rmse:.1f}\n")
-    
-    # Add 2024 season predictions to the log file
-    f.write("\n\n2024 Season Predictions\n")
-    f.write("=====================\n\n")
-    
-    if len(df_next_season) == 0:
-        f.write("No data found for 2024 season. Please check your data.\n")
-        print("No data found for 2024 season. Please check your data.")
-    else:
-        # Prepare features for prediction
-        X_next_season = df_next_season[feature_cols].copy()
-        X_next_season = X_next_season.fillna(0)
-        
-        # Convert categorical columns to string type
-        for col in categorical_cols:
-            X_next_season[col] = X_next_season[col].astype(str)
-        
-        # Generate predictions
-        next_season_predictions = best_model.predict(X_next_season)
-        
-        # Create a DataFrame with predictions
-        df_next_season_predictions = df_next_season[["Player Name", "Position", target_col]].copy()
-        df_next_season_predictions["Predicted_Target"] = next_season_predictions
-        
-        # Sort by predicted target in descending order
-        df_next_season_predictions = df_next_season_predictions.sort_values("Predicted_Target", ascending=False)
-        
-        # Get top 20 players
-        top_20_players = df_next_season_predictions.head(20)
-        
-        # Write top 20 players to log file
-        f.write("Top 20 Players for 2024 Season:\n")
-        f.write("==============================\n\n")
-        f.write("Rank | Player Name | Position | Predicted Target\n")
-        f.write("-----|-------------|----------|-----------------\n")
-        
-        for i, (_, row) in enumerate(top_20_players.iterrows(), 1):
-            f.write(f"{i:4d} | {row['Player Name']:11s} | {row['Position']:8s} | {row['Predicted_Target']:.1f}\n")
-        
-        # Save all predictions to a CSV file
-        predictions_file = f"logs/mlp_regression/{timestamp}/predictions_{scoring_type}_{timestamp}.csv"
-        df_next_season_predictions.to_csv(predictions_file, index=False)
-        print(f"All predictions saved to {predictions_file}")
 
 # === SAVE BEST MODEL ===
-model_file = f"mlp_regression/joblib_files/mlp_pipeline_{scoring_type}_{timestamp}.pkl"
-joblib.dump(best_model, model_file)
+model_file = save_model(best_model, scoring_type, timestamp)
 
 print(f"\nResults saved to {results_file}")
 print(f"Best model saved to {model_file}")
