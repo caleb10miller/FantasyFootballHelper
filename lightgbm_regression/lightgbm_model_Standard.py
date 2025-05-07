@@ -1,16 +1,24 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, RegressorMixin
-from sklearn.metrics import r2_score, mean_squared_error
 import lightgbm as lgb
 import joblib
 import os
 import logging
 from datetime import datetime
+import sys
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
+
+# Add the project root directory to the Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from utils.model_evaluation import evaluate_model, save_results, save_model
+from utils.data_processing import prepare_data, prepare_next_season_data
+from utils.plotting import plot_actual_vs_predicted
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -18,12 +26,13 @@ logger = logging.getLogger(__name__)
 
 # === CONFIGURATION ===
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+scoring_type = "Standard"
 
 # Create directories if they don't exist
-os.makedirs("logs", exist_ok=True)
-os.makedirs("logs/lightgbm_regression", exist_ok=True)  
-os.makedirs(f"logs/lightgbm_regression/{timestamp}", exist_ok=True)  
-os.makedirs("lightgbm_regression/joblib_files", exist_ok=True)  
+os.makedirs("logs/lightgbm_regression", exist_ok=True)
+os.makedirs(f"logs/lightgbm_regression/{timestamp}", exist_ok=True)
+os.makedirs("lightgbm_regression/joblib_files", exist_ok=True)
+os.makedirs("graphs/lightgbm_regression", exist_ok=True)
 
 class LightGBMRegressor(BaseEstimator, RegressorMixin):
     def __init__(self, n_estimators=100, learning_rate=0.1, max_depth=6, 
@@ -43,6 +52,7 @@ class LightGBMRegressor(BaseEstimator, RegressorMixin):
         self.min_split_gain = min_split_gain
         self.model = None
         self.scaler = StandardScaler()
+        self.preprocessor = None
         
     def get_params(self, deep=True):
         return {
@@ -65,11 +75,23 @@ class LightGBMRegressor(BaseEstimator, RegressorMixin):
         return self
         
     def fit(self, X, y):
-        # Scale numerical features
-        X_scaled = self.scaler.fit_transform(X)
+        # Get numerical and categorical columns
+        numerical_cols = [col for col in X.columns if col != 'Position']
+        categorical_cols = ['Position']
+        
+        # Create preprocessor
+        self.preprocessor = ColumnTransformer(
+            transformers=[
+                ("num", self.scaler, numerical_cols),
+                ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), categorical_cols)
+            ]
+        )
+        
+        # Transform features
+        X_processed = self.preprocessor.fit_transform(X)
         
         # Create LightGBM dataset
-        train_data = lgb.Dataset(X_scaled, label=y)
+        train_data = lgb.Dataset(X_processed, label=y)
         
         # Set up parameters
         params = {
@@ -95,18 +117,19 @@ class LightGBMRegressor(BaseEstimator, RegressorMixin):
         return self
     
     def predict(self, X):
-        X_scaled = self.scaler.transform(X)
-        return self.model.predict(X_scaled)
+        X_processed = self.preprocessor.transform(X)
+        return self.model.predict(X_processed)
     
     def score(self, X, y):
         y_pred = self.predict(X)
         return r2_score(y, y_pred)
 
-def load_data():
-    """Load and preprocess the data"""
-    logger.info("Loading data...")
-    data_path = os.path.join('data', 'final_data', 'nfl_stats_long_format_with_context_filtered.csv')
-    df = pd.read_csv(data_path)
+def main():
+    # Load and prepare data
+    df = pd.read_csv('data/final_data/nfl_stats_long_format_with_context_filtered.csv')
+    
+    # Remove rows with NaN in target variable
+    df = df.dropna(subset=['Target_Standard'])
     
     # Create position-specific features
     df['QB_Features'] = df['Position'].apply(lambda x: 1 if x == 'QB' else 0)
@@ -120,8 +143,8 @@ def load_data():
     df['WR_Receiving_Yards'] = df['WR_Features'] * df['Yards per Reception']
     df['TE_Receiving_Yards'] = df['TE_Features'] * df['Yards per Reception']
     
-    # Select features and target
-    feature_columns = [
+    # Define feature columns
+    feature_cols = [
         'Age', 'Games Played', 'Games Started',
         'Yards per Completion', 'Yards per Passing Touchdown',
         'Attempts per Completion', 'Passing Touchdowns',
@@ -141,34 +164,22 @@ def load_data():
         'Delta_Field_Goals_Made', 'Delta_Extra_Points_Made',
         'Delta_Average_ADP', 'Rolling_3_Year_PPR_Fantasy_Points',
         'Rolling_3_Year_Standard_Fantasy_Points',
+        'Position',  # Add Position back to features
         'QB_Features', 'RB_Features', 'WR_Features', 'TE_Features',
         'QB_Passing_Yards', 'RB_Rushing_Yards', 'WR_Receiving_Yards', 'TE_Receiving_Yards'
     ]
     
-    # Convert categorical variables
-    df['Position'] = pd.Categorical(df['Position']).codes
-    
-    # Use 2018-2023 for train/test, 2024 for next season prediction
-    df_model = df[df["Season"].between(2018, 2023)].copy()
-    df_model = df_model[df_model['Target_Standard'].notna()]
-    df_next_season = df[df["Season"] == 2024].copy()  # Use 2024 stats to predict 2025
-    
-    X = df_model[feature_columns]
-    y = df_model['Target_Standard']
-    
-    return X, y, df_model, df_next_season, feature_columns
-
-def main():
-    # Load data
-    X, y, df_model, df_next_season, feature_columns = load_data()
-    
-    # Split train/test (70/30)
-    from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
+    # Prepare data using utility function
+    X_train, X_test, y_train, y_test, preprocessor = prepare_data(
+        df=df,
+        target_col='Target_Standard',
+        feature_cols=feature_cols,
+        categorical_cols=['Position'],
+        scaler=StandardScaler()
     )
-    df_train = df_model.loc[X_train.index]
-    df_test = df_model.loc[X_test.index]
+    
+    # Create df_test from X_test
+    df_test = df.loc[X_test.index]
     
     # Define parameter grid for grid search
     param_grid = {
@@ -199,69 +210,54 @@ def main():
     
     grid_search.fit(X_train, y_train)
     
-    # Get best parameters and model
-    best_params = grid_search.best_params_
+    # Get best model
     best_model = grid_search.best_estimator_
     
     # Evaluate on test set
     y_pred = best_model.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
     
-    # === SAVE RESULTS ===
-    results_file = f"logs/lightgbm_regression/{timestamp}/lightgbm_results_standard_{timestamp}.txt"
-    with open(results_file, 'w') as f:
-        f.write("Grid Search Results\n")
-        f.write("==================\n\n")
-        f.write("Best Parameters:\n")
-        for param, value in best_params.items():
-            f.write(f"{param}: {value}\n")
-        f.write("\nTest Set Performance:\n")
-        f.write(f"R^2: {r2:.3f}\n")
-        f.write(f"RMSE: {rmse:.1f}\n")
-        f.write("\n\nTest Set Predictions\n")
-        f.write("===================\n\n")
-        df_predictions = pd.DataFrame({
-            'Player Name': df_test['Player Name'],
-            'Actual': y_test,
-            'Predicted': y_pred
-        })
-        df_predictions = df_predictions.sort_values('Predicted', ascending=False)
-        f.write("Top 20 Predictions:\n")
-        f.write("------------------\n\n")
-        f.write("Rank | Player Name | Actual | Predicted\n")
-        f.write("-----|-------------|--------|----------\n")
-        for i, (_, row) in enumerate(df_predictions.head(20).iterrows(), 1):
-            f.write(f"{i:4d} | {row['Player Name']:11s} | {row['Actual']:6.1f} | {row['Predicted']:8.1f}\n")
-        predictions_file = f"logs/lightgbm_regression/{timestamp}/test_predictions_{timestamp}.csv"
-        df_predictions.to_csv(predictions_file, index=False)
-        logger.info(f"Test set predictions saved to {predictions_file}")
-
-        # === GENERATE PREDICTIONS FOR 2025 SEASON AND WRITE TO TXT ===
-        f.write("\n\n2025 Season Predictions\n")
-        f.write("=======================\n\n")
-        if len(df_next_season) == 0:
-            f.write("No data found for 2024 season. Please check your data.\n")
-            logger.info("No data found for 2024 season. Please check your data.")
-        else:
-            X_2024 = df_next_season[feature_columns].copy().fillna(0)
-            next_season_predictions = best_model.predict(X_2024)
-            df_2025_pred = df_next_season[["Player Name"]].copy()
-            df_2025_pred["Predicted_Target"] = next_season_predictions
-            df_2025_pred = df_2025_pred.sort_values("Predicted_Target", ascending=False)
-            f.write("Top 20 Players for 2025 Season:\n")
-            f.write("==============================\n\n")
-            f.write("Rank | Player Name | Predicted Target\n")
-            f.write("-----|-------------|-----------------\n")
-            for i, (_, row) in enumerate(df_2025_pred.head(20).iterrows(), 1):
-                f.write(f"{i:4d} | {row['Player Name']:11s} | {row['Predicted_Target']:.1f}\n")
-            predictions_file_2025 = f"logs/lightgbm_regression/{timestamp}/predictions_2025.csv"
-            df_2025_pred.to_csv(predictions_file_2025, index=False)
-            logger.info(f"2025 season predictions saved to {predictions_file_2025}")
+    # Evaluate model performance
+    evaluate_model(y_test, y_pred, scoring_type)
     
-    # Save the model
-    model_file = f"lightgbm_regression/joblib_files/lightgbm_model_{timestamp}.pkl"
-    joblib.dump(best_model, model_file)
+    # Plot actual vs predicted values
+    plot_actual_vs_predicted(
+        y_test, 
+        y_pred,
+        title=f"LightGBM Model - {scoring_type} Scoring",
+        xlabel=f"Actual {scoring_type} Targets",
+        ylabel=f"Predicted {scoring_type} Targets",
+        save_path=f"graphs/lightgbm_regression/actual_vs_predicted_{scoring_type}_{timestamp}.png"
+    )
+    
+    # Prepare next season data
+    df_next_season = df[df['Season'] == df['Season'].max()].copy()
+    X_next_season = prepare_next_season_data(
+        df_next_season=df_next_season,
+        feature_cols=feature_cols,
+        categorical_cols=['Position']
+    )
+    
+    # Generate predictions for next season
+    next_season_predictions = best_model.predict(X_next_season)
+    
+    # Save results and model
+    results_file = save_results(
+        model=grid_search,
+        y_test=y_test,
+        y_pred=y_pred,
+        df_test=df_test,
+        df_next_season=df_next_season,
+        next_season_predictions=next_season_predictions,
+        scoring_type=scoring_type,
+        timestamp=timestamp
+    )
+    
+    model_file = save_model(
+        model=grid_search,
+        scoring_type=scoring_type,
+        timestamp=timestamp
+    )
+    
     logger.info(f"Results saved to {results_file}")
     logger.info(f"Best model saved to {model_file}")
 

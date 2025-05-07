@@ -1,0 +1,73 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: tanh
+mlp__alpha: 0.1
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (175,)
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 1000
+mlp__n_iter_no_change: 10
+mlp__validation_fraction: 0.1
+
+
+Test Set Predictions
+===================
+
+Top 20 Test Set Predictions:
+---------------------------
+
+Rank | Player Name | Position | Actual | Predicted
+-----|-------------|----------|---------|----------
+   1 | Josh Allen  | QB       |  380.6 |    221.2
+   2 | Kyler Murray | QB       |  274.5 |    218.9
+   3 | Justin Herbert | QB       |  368.8 |    217.9
+   4 | Aaron Rodgers | QB       |    0.0 |    216.1
+   5 | Patrick Mahomes | QB       |  362.4 |    215.7
+   6 | Russell Wilson | QB       |  314.6 |    215.4
+   7 | Carson Wentz | QB       |  176.4 |    211.5
+   8 | Jared Goff  | QB       |  232.0 |    210.3
+   9 | Christian McCaffrey | RB       |  351.2 |    209.5
+  10 | Joe Burrow  | QB       |  338.7 |    208.9
+  11 | Kyler Murray | QB       |  368.7 |    208.7
+  12 | Todd Gurley | RB       |  184.4 |    208.1
+  13 | Matt Ryan   | QB       |  274.4 |    208.0
+  14 | Lamar Jackson | QB       |  319.2 |    205.2
+  15 | Jonathan Taylor | RB       |  118.4 |    203.8
+  16 | C.J. Stroud | QB       |  216.4 |    199.7
+  17 | Derek Carr  | QB       |  236.4 |    197.8
+  18 | Justin Fields | QB       |  218.2 |    195.2
+  19 | Alvin Kamara | RB       |  187.7 |    195.1
+  20 | Aaron Jones | RB       |  175.0 |    191.2
+
+
+2025 Season Predictions
+=======================
+
+Top 20 Players for 2025 Season:
+==============================
+
+Rank | Player Name | Position | Predicted Target
+-----|-------------|----------|-----------------
+   1 | Josh Allen  | QB       | 220.4
+   2 | Jalen Hurts | QB       | 219.9
+   3 | Lamar Jackson | QB       | 219.6
+   4 | Joe Burrow  | QB       | 217.3
+   5 | Baker Mayfield | QB       | 216.8
+   6 | Jared Goff  | QB       | 215.3
+   7 | Patrick Mahomes | QB       | 209.6
+   8 | Justin Herbert | QB       | 208.2
+   9 | Geno Smith  | QB       | 206.6
+  10 | Jordan Love | QB       | 201.9
+  11 | Josh Jacobs | RB       | 201.6
+  12 | Jahmyr Gibbs | RB       | 201.4
+  13 | Brock Purdy | QB       | 198.5
+  14 | C.J. Stroud | QB       | 193.9
+  15 | Tua Tagovailoa | QB       | 193.9
+  16 | Kyler Murray | QB       | 191.4
+  17 | Amon-Ra St. Brown | WR       | 191.0
+  18 | Derrick Henry | RB       | 190.3
+  19 | Dak Prescott | QB       | 189.0
+  20 | CeeDee Lamb | WR       | 186.9

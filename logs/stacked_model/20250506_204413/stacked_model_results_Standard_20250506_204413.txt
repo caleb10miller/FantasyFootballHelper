@@ -1,0 +1,329 @@
+Model Parameters
+===============
+
+memory: None
+steps: [('preprocessor', ColumnTransformer(transformers=[('num', MinMaxScaler(),
+                                 ['Age', 'Games Played', 'Games Started',
+                                  'Yards per Completion',
+                                  'Yards per Passing Touchdown',
+                                  'Attempts per Completion',
+                                  'Passing Touchdowns', 'Interceptions Thrown',
+                                  'Rushing Attempts',
+                                  'Yards per Rushing Touchdown',
+                                  'Yards per Carry', 'Rushing Touchdowns',
+                                  'Targets', 'Yards per Reception',
+                                  'Yards per Receiving Touchdown',
+                                  'Catch...ving Touchdowns',
+                                  'Fumbles', 'Field Goals Made',
+                                  'Field Goal Percentage',
+                                  'Total Touchdowns Allowed',
+                                  'Special Teams Impact', 'ST_Safeties',
+                                  'ST_Special Teams Touchdowns', 'XP2',
+                                  'Average ADP', 'Positional ADP',
+                                  'Delta_Passing_Yards', 'Delta_Rushing_Yards',
+                                  'Delta_Receiving_Yards', ...]),
+                                ('cat',
+                                 OneHotEncoder(handle_unknown='ignore',
+                                               sparse_output=False),
+                                 ['Team', 'Position'])])), ('stack', StackingRegressor(estimators=[('mlp',
+                               MLPRegressor(activation='tanh', alpha=0.125,
+                                            batch_size=32, early_stopping=True,
+                                            hidden_layer_sizes=(125,),
+                                            max_iter=1000, random_state=42)),
+                              ('xgb',
+                               XGBRegressor(base_score=None, booster=None,
+                                            callbacks=None,
+                                            colsample_bylevel=None,
+                                            colsample_bynode=None,
+                                            colsample_bytree=0.9, device=None,
+                                            early_stopping_rounds=None,
+                                            enable_ca...
+                                               importance_type=None,
+                                               interaction_constraints=None,
+                                               learning_rate=0.05, max_bin=None,
+                                               max_cat_threshold=None,
+                                               max_cat_to_onehot=None,
+                                               max_delta_step=None, max_depth=3,
+                                               max_leaves=None,
+                                               min_child_weight=None,
+                                               missing=nan,
+                                               monotone_constraints=None,
+                                               multi_strategy=None,
+                                               n_estimators=100, n_jobs=None,
+                                               num_parallel_tree=None,
+                                               random_state=42, ...),
+                  n_jobs=-1, passthrough=True))]
+verbose: False
+preprocessor: ColumnTransformer(transformers=[('num', MinMaxScaler(),
+                                 ['Age', 'Games Played', 'Games Started',
+                                  'Yards per Completion',
+                                  'Yards per Passing Touchdown',
+                                  'Attempts per Completion',
+                                  'Passing Touchdowns', 'Interceptions Thrown',
+                                  'Rushing Attempts',
+                                  'Yards per Rushing Touchdown',
+                                  'Yards per Carry', 'Rushing Touchdowns',
+                                  'Targets', 'Yards per Reception',
+                                  'Yards per Receiving Touchdown',
+                                  'Catch...ving Touchdowns',
+                                  'Fumbles', 'Field Goals Made',
+                                  'Field Goal Percentage',
+                                  'Total Touchdowns Allowed',
+                                  'Special Teams Impact', 'ST_Safeties',
+                                  'ST_Special Teams Touchdowns', 'XP2',
+                                  'Average ADP', 'Positional ADP',
+                                  'Delta_Passing_Yards', 'Delta_Rushing_Yards',
+                                  'Delta_Receiving_Yards', ...]),
+                                ('cat',
+                                 OneHotEncoder(handle_unknown='ignore',
+                                               sparse_output=False),
+                                 ['Team', 'Position'])])
+stack: StackingRegressor(estimators=[('mlp',
+                               MLPRegressor(activation='tanh', alpha=0.125,
+                                            batch_size=32, early_stopping=True,
+                                            hidden_layer_sizes=(125,),
+                                            max_iter=1000, random_state=42)),
+                              ('xgb',
+                               XGBRegressor(base_score=None, booster=None,
+                                            callbacks=None,
+                                            colsample_bylevel=None,
+                                            colsample_bynode=None,
+                                            colsample_bytree=0.9, device=None,
+                                            early_stopping_rounds=None,
+                                            enable_ca...
+                                               importance_type=None,
+                                               interaction_constraints=None,
+                                               learning_rate=0.05, max_bin=None,
+                                               max_cat_threshold=None,
+                                               max_cat_to_onehot=None,
+                                               max_delta_step=None, max_depth=3,
+                                               max_leaves=None,
+                                               min_child_weight=None,
+                                               missing=nan,
+                                               monotone_constraints=None,
+                                               multi_strategy=None,
+                                               n_estimators=100, n_jobs=None,
+                                               num_parallel_tree=None,
+                                               random_state=42, ...),
+                  n_jobs=-1, passthrough=True)
+preprocessor__n_jobs: None
+preprocessor__remainder: drop
+preprocessor__sparse_threshold: 0.3
+preprocessor__transformer_weights: None
+preprocessor__transformers: [('num', MinMaxScaler(), ['Age', 'Games Played', 'Games Started', 'Yards per Completion', 'Yards per Passing Touchdown', 'Attempts per Completion', 'Passing Touchdowns', 'Interceptions Thrown', 'Rushing Attempts', 'Yards per Rushing Touchdown', 'Yards per Carry', 'Rushing Touchdowns', 'Targets', 'Yards per Reception', 'Yards per Receiving Touchdown', 'Catch Percentage', 'Receiving Touchdowns', 'Fumbles', 'Field Goals Made', 'Field Goal Percentage', 'Total Touchdowns Allowed', 'Special Teams Impact', 'ST_Safeties', 'ST_Special Teams Touchdowns', 'XP2', 'Average ADP', 'Positional ADP', 'Delta_Passing_Yards', 'Delta_Rushing_Yards', 'Delta_Receiving_Yards', 'Delta_Passing_Touchdowns', 'Delta_Rushing_Touchdowns', 'Delta_Receiving_Touchdowns', 'Delta_Interceptions_Thrown', 'Delta_Fumbles', 'Delta_Field_Goals_Made', 'Delta_Extra_Points_Made', 'Delta_Average_ADP', 'Rolling_3_Year_PPR_Fantasy_Points', 'Rolling_3_Year_Standard_Fantasy_Points']), ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), ['Team', 'Position'])]
+preprocessor__verbose: False
+preprocessor__verbose_feature_names_out: True
+preprocessor__num: MinMaxScaler()
+preprocessor__cat: OneHotEncoder(handle_unknown='ignore', sparse_output=False)
+preprocessor__num__clip: False
+preprocessor__num__copy: True
+preprocessor__num__feature_range: (0, 1)
+preprocessor__cat__categories: auto
+preprocessor__cat__drop: None
+preprocessor__cat__dtype: <class 'numpy.float64'>
+preprocessor__cat__feature_name_combiner: concat
+preprocessor__cat__handle_unknown: ignore
+preprocessor__cat__max_categories: None
+preprocessor__cat__min_frequency: None
+preprocessor__cat__sparse_output: False
+stack__cv: None
+stack__estimators: [('mlp', MLPRegressor(activation='tanh', alpha=0.125, batch_size=32, early_stopping=True,
+             hidden_layer_sizes=(125,), max_iter=1000, random_state=42)), ('xgb', XGBRegressor(base_score=None, booster=None, callbacks=None,
+             colsample_bylevel=None, colsample_bynode=None,
+             colsample_bytree=0.9, device=None, early_stopping_rounds=None,
+             enable_categorical=False, eval_metric=None, feature_types=None,
+             gamma=0, grow_policy=None, importance_type=None,
+             interaction_constraints=None, learning_rate=0.05, max_bin=None,
+             max_cat_threshold=None, max_cat_to_onehot=None,
+             max_delta_step=None, max_depth=3, max_leaves=None,
+             min_child_weight=1, missing=nan, monotone_constraints=None,
+             multi_strategy=None, n_estimators=200, n_jobs=None,
+             num_parallel_tree=None, random_state=42, ...))]
+stack__final_estimator__objective: reg:squarederror
+stack__final_estimator__base_score: None
+stack__final_estimator__booster: None
+stack__final_estimator__callbacks: None
+stack__final_estimator__colsample_bylevel: None
+stack__final_estimator__colsample_bynode: None
+stack__final_estimator__colsample_bytree: None
+stack__final_estimator__device: None
+stack__final_estimator__early_stopping_rounds: None
+stack__final_estimator__enable_categorical: False
+stack__final_estimator__eval_metric: None
+stack__final_estimator__feature_types: None
+stack__final_estimator__gamma: None
+stack__final_estimator__grow_policy: None
+stack__final_estimator__importance_type: None
+stack__final_estimator__interaction_constraints: None
+stack__final_estimator__learning_rate: 0.05
+stack__final_estimator__max_bin: None
+stack__final_estimator__max_cat_threshold: None
+stack__final_estimator__max_cat_to_onehot: None
+stack__final_estimator__max_delta_step: None
+stack__final_estimator__max_depth: 3
+stack__final_estimator__max_leaves: None
+stack__final_estimator__min_child_weight: None
+stack__final_estimator__missing: nan
+stack__final_estimator__monotone_constraints: None
+stack__final_estimator__multi_strategy: None
+stack__final_estimator__n_estimators: 100
+stack__final_estimator__n_jobs: None
+stack__final_estimator__num_parallel_tree: None
+stack__final_estimator__random_state: 42
+stack__final_estimator__reg_alpha: None
+stack__final_estimator__reg_lambda: None
+stack__final_estimator__sampling_method: None
+stack__final_estimator__scale_pos_weight: None
+stack__final_estimator__subsample: None
+stack__final_estimator__tree_method: None
+stack__final_estimator__validate_parameters: None
+stack__final_estimator__verbosity: None
+stack__final_estimator: XGBRegressor(base_score=None, booster=None, callbacks=None,
+             colsample_bylevel=None, colsample_bynode=None,
+             colsample_bytree=None, device=None, early_stopping_rounds=None,
+             enable_categorical=False, eval_metric=None, feature_types=None,
+             gamma=None, grow_policy=None, importance_type=None,
+             interaction_constraints=None, learning_rate=0.05, max_bin=None,
+             max_cat_threshold=None, max_cat_to_onehot=None,
+             max_delta_step=None, max_depth=3, max_leaves=None,
+             min_child_weight=None, missing=nan, monotone_constraints=None,
+             multi_strategy=None, n_estimators=100, n_jobs=None,
+             num_parallel_tree=None, random_state=42, ...)
+stack__n_jobs: -1
+stack__passthrough: True
+stack__verbose: 0
+stack__mlp: MLPRegressor(activation='tanh', alpha=0.125, batch_size=32, early_stopping=True,
+             hidden_layer_sizes=(125,), max_iter=1000, random_state=42)
+stack__xgb: XGBRegressor(base_score=None, booster=None, callbacks=None,
+             colsample_bylevel=None, colsample_bynode=None,
+             colsample_bytree=0.9, device=None, early_stopping_rounds=None,
+             enable_categorical=False, eval_metric=None, feature_types=None,
+             gamma=0, grow_policy=None, importance_type=None,
+             interaction_constraints=None, learning_rate=0.05, max_bin=None,
+             max_cat_threshold=None, max_cat_to_onehot=None,
+             max_delta_step=None, max_depth=3, max_leaves=None,
+             min_child_weight=1, missing=nan, monotone_constraints=None,
+             multi_strategy=None, n_estimators=200, n_jobs=None,
+             num_parallel_tree=None, random_state=42, ...)
+stack__mlp__activation: tanh
+stack__mlp__alpha: 0.125
+stack__mlp__batch_size: 32
+stack__mlp__beta_1: 0.9
+stack__mlp__beta_2: 0.999
+stack__mlp__early_stopping: True
+stack__mlp__epsilon: 1e-08
+stack__mlp__hidden_layer_sizes: (125,)
+stack__mlp__learning_rate: constant
+stack__mlp__learning_rate_init: 0.001
+stack__mlp__max_fun: 15000
+stack__mlp__max_iter: 1000
+stack__mlp__momentum: 0.9
+stack__mlp__n_iter_no_change: 10
+stack__mlp__nesterovs_momentum: True
+stack__mlp__power_t: 0.5
+stack__mlp__random_state: 42
+stack__mlp__shuffle: True
+stack__mlp__solver: adam
+stack__mlp__tol: 0.0001
+stack__mlp__validation_fraction: 0.1
+stack__mlp__verbose: False
+stack__mlp__warm_start: False
+stack__xgb__objective: reg:squarederror
+stack__xgb__base_score: None
+stack__xgb__booster: None
+stack__xgb__callbacks: None
+stack__xgb__colsample_bylevel: None
+stack__xgb__colsample_bynode: None
+stack__xgb__colsample_bytree: 0.9
+stack__xgb__device: None
+stack__xgb__early_stopping_rounds: None
+stack__xgb__enable_categorical: False
+stack__xgb__eval_metric: None
+stack__xgb__feature_types: None
+stack__xgb__gamma: 0
+stack__xgb__grow_policy: None
+stack__xgb__importance_type: None
+stack__xgb__interaction_constraints: None
+stack__xgb__learning_rate: 0.05
+stack__xgb__max_bin: None
+stack__xgb__max_cat_threshold: None
+stack__xgb__max_cat_to_onehot: None
+stack__xgb__max_delta_step: None
+stack__xgb__max_depth: 3
+stack__xgb__max_leaves: None
+stack__xgb__min_child_weight: 1
+stack__xgb__missing: nan
+stack__xgb__monotone_constraints: None
+stack__xgb__multi_strategy: None
+stack__xgb__n_estimators: 200
+stack__xgb__n_jobs: None
+stack__xgb__num_parallel_tree: None
+stack__xgb__random_state: 42
+stack__xgb__reg_alpha: 0.1
+stack__xgb__reg_lambda: 10
+stack__xgb__sampling_method: None
+stack__xgb__scale_pos_weight: None
+stack__xgb__subsample: 0.9
+stack__xgb__tree_method: None
+stack__xgb__validate_parameters: None
+stack__xgb__verbosity: 0
+
+
+Test Set Predictions
+===================
+
+Top 20 Test Set Predictions:
+---------------------------
+
+Rank | Player Name | Position | Team | Actual | Predicted
+-----|-------------|----------|------|---------|----------
+   1 | Josh Allen  | QB       | BUF  |  380.6 |    300.6
+   2 | Kyler Murray | QB       | ARI  |  274.5 |    277.0
+   3 | Patrick Mahomes | QB       | KAN  |  362.4 |    275.0
+   4 | Russell Wilson | QB       | SEA  |  314.6 |    251.4
+   5 | C.J. Stroud | QB       | HOU  |  216.4 |    243.7
+   6 | Matt Ryan   | QB       | ATL  |  274.4 |    236.5
+   7 | Justin Fields | QB       | CHI  |  218.2 |    234.8
+   8 | Joe Burrow  | QB       | CIN  |  338.7 |    229.8
+   9 | Justin Herbert | QB       | LAC  |  368.8 |    227.3
+  10 | Aaron Rodgers | QB       | NYJ  |  246.6 |    222.5
+  11 | Aaron Rodgers | QB       | GNB  |    0.0 |    215.8
+  12 | Carson Wentz | QB       | PHI  |  176.4 |    212.3
+  13 | Jared Goff  | QB       | LAR  |  232.0 |    211.5
+  14 | Jonathan Taylor | RB       | IND  |  118.4 |    208.8
+  15 | Lamar Jackson | QB       | BAL  |  319.2 |    198.8
+  16 | Christian McCaffrey | RB       | CAR  |  351.2 |    198.2
+  17 | Kyler Murray | QB       | ARI  |  368.7 |    198.0
+  18 | Tua Tagovailoa | QB       | MIA  |  254.4 |    194.2
+  19 | Carson Wentz | QB       | PHI  |  253.9 |    191.9
+  20 | Todd Gurley | RB       | LAR  |  184.4 |    186.7
+
+
+2025 Season Predictions
+=======================
+
+Top 20 Players for 2025 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Lamar Jackson | QB       | BAL  | 323.4
+   2 | Jalen Hurts | QB       | PHI  | 273.3
+   3 | Josh Allen  | QB       | BUF  | 262.5
+   4 | Patrick Mahomes | QB       | KAN  | 254.7
+   5 | Joe Burrow  | QB       | CIN  | 232.1
+   6 | Justin Herbert | QB       | LAC  | 223.6
+   7 | Jared Goff  | QB       | DET  | 222.6
+   8 | Jordan Love | QB       | GNB  | 211.4
+   9 | Dak Prescott | QB       | DAL  | 210.6
+  10 | Brock Purdy | QB       | SFO  | 210.5
+  11 | Baker Mayfield | QB       | TAM  | 208.8
+  12 | Jahmyr Gibbs | RB       | DET  | 204.1
+  13 | Geno Smith  | QB       | SEA  | 202.2
+  14 | C.J. Stroud | QB       | HOU  | 196.7
+  15 | Sam Darnold | QB       | MIN  | 188.7
+  16 | Kyler Murray | QB       | ARI  | 182.0
+  17 | Derrick Henry | RB       | BAL  | 181.0
+  18 | Matthew Stafford | QB       | LAR  | 175.4
+  19 | James Cook  | RB       | BUF  | 173.1
+  20 | Bijan Robinson | RB       | ATL  | 170.1
