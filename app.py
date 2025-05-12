@@ -7,8 +7,9 @@ from recommender_system import recommend_players, load_pipeline
 # Initialize the Dash app with dark theme
 app = dash.Dash(
     __name__,
-    external_stylesheets=[dbc.themes.DARKLY],  # Using DARKLY theme for dark mode
-    meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}]
+    external_stylesheets=[dbc.themes.DARKLY],
+    meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
+    suppress_callback_exceptions=True
 )
 
 # Custom dark theme colors
@@ -137,7 +138,7 @@ def create_roster_config_inputs():
     ])
 
 def create_draft_setup():
-    return dbc.Collapse(
+    return html.Div(
         dbc.Card([
             dbc.CardHeader("Draft Setup"),
             dbc.CardBody([
@@ -201,8 +202,7 @@ def create_draft_setup():
                 html.Div(id="setup-error", className="text-danger mt-2")
             ])
         ]),
-        id="draft-setup-collapse",
-        is_open=True
+        id="draft-setup-container"
     )
 
 def create_draft_board():
@@ -351,10 +351,16 @@ def create_recommendations():
 # App layout
 app.layout = dbc.Container([
     html.H1("Fantasy Football Draft Assistant", className="text-center my-4"),
-    dbc.Row([
-        dbc.Col(create_draft_setup(), width=12, className="mb-4"),
-        dbc.Col(create_draft_board(), width=12, className="mb-4")
-    ]),
+    
+    # Tabs for navigation
+    dcc.Tabs(id="main-tabs", value="draft", children=[
+        dcc.Tab(label="Draft Board", value="draft", style={'color': 'black'}, selected_style={'color': 'black'}),
+        dcc.Tab(label="Team Overview", value="teams", style={'color': 'black'}, selected_style={'color': 'black'}),
+    ], style={'color': 'black'}),    
+    # Tab content will be injected here
+    html.Div(id="tab-content"),
+
+    # Store for draft state
     dcc.Store(id='draft-state', data={
         'round': 1,
         'pick': 1,
@@ -369,14 +375,14 @@ app.layout = dbc.Container([
         'other_teams_picks': {},
         'pick_history': [],
         'available_players': list(AVAILABLE_PLAYERS),
-        'error_message': None
+        'error_message': None,
+        'setup_collapsed': False  # Add this to track setup collapse state
     })
 ], fluid=True)
-
 # Callbacks
 @app.callback(
     [Output('draft-state', 'data'),
-     Output('draft-setup-collapse', 'is_open'),
+     Output('draft-setup-container', 'style'),
      Output('setup-error', 'children')],
     Input('start-draft', 'n_clicks'),
     [State('num-teams', 'value'),
@@ -387,14 +393,14 @@ app.layout = dbc.Container([
 )
 def start_draft(n_clicks, num_teams, num_rounds, draft_position, draft_state):
     if not n_clicks:
-        return draft_state, True, ""
+        return draft_state, {"display": "block" if not draft_state.get('setup_collapsed', False) else "none"}, ""
     
     # Validate inputs
     if not all([num_teams, num_rounds, draft_position]):
-        return draft_state, True, "Please fill in all required fields"
+        return draft_state, {"display": "block"}, "Please fill in all required fields"
     
     if draft_position > num_teams:
-        return draft_state, True, f"Draft position cannot be greater than number of teams ({num_teams})"
+        return draft_state, {"display": "block"}, f"Draft position cannot be greater than number of teams ({num_teams})"
     
     # Initialize other_teams_picks with empty lists for all teams
     other_teams_picks = {i: [] for i in range(1, num_teams + 1) if i != draft_position}
@@ -413,11 +419,12 @@ def start_draft(n_clicks, num_teams, num_rounds, draft_position, draft_state):
         'other_teams_picks': other_teams_picks,
         'pick_history': [],
         'available_players': list(AVAILABLE_PLAYERS),
-        'error_message': None
+        'error_message': None,
+        'setup_collapsed': True
     }
     
-    # Return new state and collapse the setup section
-    return new_draft_state, False, ""
+    # Return new state and hide the setup section
+    return new_draft_state, {"display": "none"}, ""
 
 @app.callback(
     Output('player-dropdown', 'options', allow_duplicate=True),
@@ -527,13 +534,20 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
             )
             
             # Format the recommendations table with VOR and Overall Score
-            recommendations['Predicted_Points'] = recommendations['Predicted_Points'].round(1)
-            recommendations['VOR'] = recommendations['VOR'].round(1)
-            recommendations['Overall_Score'] = recommendations['Overall_Score'].round(3)
+
+            ### RENAMED RECOMMENDATIONS HERE TO DISPLAY THEM WITHOUT __  IN THE DASHBOARD ###
+
+            recommendations['Predicted Points'] = recommendations['Predicted_Points'].round(1)
+            recommendations['Value Over Replacement'] = recommendations['VOR'].round(1)
+            recommendations['Overall Score'] = recommendations['Overall_Score'].round(3)
             
+            
+
+            ### CHANGED BELOW AS WELL 
+
             table = html.Div([
                 dbc.Table.from_dataframe(
-                    recommendations[['Player Name', 'Position', 'Team', 'Predicted_Points', 'VOR', 'Overall_Score']],
+                    recommendations[['Player Name', 'Position', 'Team', 'Predicted Points', 'Value Over Replacement', 'Overall Score']],
                     striped=True,
                     bordered=True,
                     hover=True
@@ -637,7 +651,8 @@ def submit_pick(n_clicks, selected_player, draft_state):
             'other_teams_picks': {k: v.copy() for k, v in draft_state['other_teams_picks'].items()},
             'pick_history': draft_state.get('pick_history', []).copy(),
             'available_players': list(available_players - {selected_player}),  # Remove drafted player
-            'error_message': None  # Clear error message on successful pick
+            'error_message': None,  # Clear error message on successful pick
+            'setup_collapsed': True  # Ensure setup stays collapsed after pick
         }
         
         # Add the pick to history first
@@ -743,7 +758,120 @@ def add_new_player(n_clicks, player_name, position, team, draft_state):
     
     return new_state, f"Added {player_name} ({position}-{team}) to available players"
 
-# Add new callbacks for toggling sections
+### CREATES NEW CREATE TEAM OVERVIEW FUNCTION
+### Generate team roster tables for all teams based on draft pick history
+    
+
+
+def create_team_overview(draft_state):
+    num_teams = draft_state.get("num_teams", 12)
+    num_rounds = draft_state.get("num_rounds", 15)
+    pick_history = draft_state.get("pick_history", [])
+
+    # Roster template
+    starting_slots = ["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "DEF", "K"]
+    bench_count = num_rounds - len(starting_slots)
+    full_roster = starting_slots + ["BENCH"] * bench_count
+
+    # Build per-team draft records
+    team_rosters = {i: [] for i in range(1, num_teams + 1)}
+    for pick in pick_history:
+        team = pick["team"]
+        team_rosters[team].append({
+            "name": pick["player"],
+            "position": pick["position"]
+        })
+
+    team_cards = []
+
+    for team_num in range(1, num_teams + 1):
+        players = team_rosters.get(team_num, [])
+
+        slot_limits = {
+            "QB": 1,
+            "RB": 2,
+            "WR": 2,
+            "TE": 1,
+            "K": 1,
+            "DEF": 1,
+            "FLEX": 1  # Only for RB/WR/TE
+        }
+
+        assigned = []
+        bench = []
+
+        for p in players:
+            pos = p["position"]
+            name = p["name"]
+
+            # Try primary slot
+            if slot_limits.get(pos, 0) > 0:
+                assigned.append({"slot": pos, "name": name})
+                slot_limits[pos] -= 1
+            # Try FLEX if eligible
+            elif pos in ["RB", "WR", "TE"] and slot_limits["FLEX"] > 0:
+                assigned.append({"slot": "FLEX", "name": name})
+                slot_limits["FLEX"] -= 1
+            else:
+                bench.append({"slot": "BENCH", "name": name})
+
+        # Fill BENCH
+        assigned += bench[:bench_count]
+
+        # Fill remaining with placeholders
+        while len(assigned) < num_rounds:
+            assigned.append({"slot": "BENCH", "name": "---"})
+
+        # Render rows in correct order
+        rows = []
+        for slot in full_roster:
+            match = next((a for a in assigned if a["slot"] == slot), None)
+            if match:
+                rows.append(html.Tr([
+                    html.Td(slot, style={"textAlign": "center"}),
+                    html.Td(match["name"], style={"textAlign": "center"})
+                ]))
+                assigned.remove(match)
+            else:
+                rows.append(html.Tr([
+                    html.Td(slot, style={"textAlign": "center"}),
+                    html.Td("---", style={"textAlign": "center"})
+                ]))
+
+        card = dbc.Card([
+            dbc.CardHeader(f"Team {team_num}", className="text-center text-white"),
+            dbc.CardBody([
+                dbc.Table([
+                    html.Thead(html.Tr([
+                        html.Th("Position", style={"textAlign": "center"}),
+                        html.Th("Player", style={"textAlign": "center"})
+                    ])),
+                    html.Tbody(rows)
+                ], bordered=True, hover=False, style={"color": "white", "width": "100%"})
+            ])
+        ], style={
+            "minWidth": "180px",
+            "margin": "10px",
+            "backgroundColor": "#2a2a2a",
+            "border": "1px solid #444"
+        })
+
+        team_cards.append(card)
+
+    # Create rows of 4 teams each
+    rows = []
+    for i in range(0, len(team_cards), 4):
+        row_cards = team_cards[i:i+4]
+        row = dbc.Row([
+            dbc.Col(card, width=3) for card in row_cards
+        ], className="mb-4")
+        rows.append(row)
+
+    return html.Div(
+        dbc.Container(rows, fluid=True),
+        style={"padding": "20px"}
+    )
+
 @app.callback(
     Output("add-player-collapse", "is_open"),
     [Input("toggle-add-player", "n_clicks")],
@@ -764,6 +892,8 @@ def toggle_draft_history(n_clicks, is_open):
         return not is_open
     return is_open
 
+
+
 # Add new callback for updating roster limits
 @app.callback(
     [Output(f"{pos.lower()}-limit", "value") for pos in ["QB", "RB", "WR", "TE", "K", "DST"]],
@@ -776,8 +906,36 @@ def update_roster_limits(num_rounds):
     
     limits = calculate_roster_limits(num_rounds)
     return [limits[pos] for pos in ["QB", "RB", "WR", "TE", "K", "DST"]]
+@app.callback(
+    Output("tab-content", "children"),
+    Input("main-tabs", "value"),
+    State("draft-state", "data")
+)
 
-# Add this at the top of the file with the other style definitions
+### CREATES NEW TAB FOR TEAM VIEWs
+
+def render_tab_content(tab, draft_state):
+    if tab == "draft":
+        return dbc.Row([
+            dbc.Col(create_draft_setup(), width=12, className="mb-4"),
+            dbc.Col(create_draft_board(), width=12, className="mb-4")
+        ])
+    
+    elif tab == "teams":
+        # Only render if draft has started
+        if draft_state["pick_history"] == [] and draft_state["round"] == 1 and draft_state["pick"] == 1:
+            return html.Div(
+                "Teams will be displayed here after the draft starts.",
+                style={"padding": "20px", "color": "white"}
+            )
+    
+    ### CENTERS NEW TAB CONTENT
+    
+    return dbc.Container(
+    create_team_overview(draft_state),
+    fluid=True,
+    style={"display": "flex", "justifyContent": "center", "padding": "20px"}
+)
 app.index_string = '''
 <!DOCTYPE html>
 <html>
@@ -802,6 +960,31 @@ app.index_string = '''
             }
             .dash-dropdown .Select-option.is-selected {
                 background-color: #375a7f !important;
+            }
+            /* Make dropdown input text white */
+            .dash-dropdown .Select-input {
+                color: white !important;
+            }
+            .dash-dropdown .Select-input input {
+                color: white !important;
+            }
+            .dash-dropdown .Select-control {
+                color: white !important;
+            }
+            /* Remove all collapse animations */
+            .collapse {
+                transition: none !important;
+            }
+            .collapsing {
+                transition: none !important;
+            }
+            .collapse.show {
+                transition: none !important;
+            }
+            /* Override Bootstrap's transition */
+            .collapse, .collapsing {
+                transition-property: none !important;
+                transition-duration: 0s !important;
             }
         </style>
     </head>
