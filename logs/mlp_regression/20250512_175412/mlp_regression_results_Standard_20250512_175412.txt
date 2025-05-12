@@ -1,0 +1,73 @@
+Grid Search Results
+==================
+
+Best Parameters:
+mlp__activation: tanh
+mlp__alpha: 0.1
+mlp__batch_size: 32
+mlp__early_stopping: True
+mlp__hidden_layer_sizes: (175,)
+mlp__learning_rate_init: 0.001
+mlp__max_iter: 1000
+mlp__n_iter_no_change: 10
+mlp__validation_fraction: 0.1
+
+
+Test Set Predictions
+===================
+
+Top 20 Test Set Predictions:
+---------------------------
+
+Rank | Player Name | Position | Team | Actual | Predicted
+-----|-------------|----------|------|---------|----------
+   1 | Josh Allen  | QB       | BUF  |  380.6 |    234.1
+   2 | Kyler Murray | QB       | ARI  |  274.5 |    231.0
+   3 | Justin Herbert | QB       | LAC  |  368.8 |    230.0
+   4 | Patrick Mahomes | QB       | KAN  |  362.4 |    227.2
+   5 | Aaron Rodgers | QB       | GNB  |    0.0 |    225.1
+   6 | Russell Wilson | QB       | SEA  |  314.6 |    224.9
+   7 | Todd Gurley | RB       | LAR  |  184.4 |    222.9
+   8 | Christian McCaffrey | RB       | CAR  |  351.2 |    219.8
+   9 | Carson Wentz | QB       | PHI  |  176.4 |    219.6
+  10 | Jared Goff  | QB       | LAR  |  232.0 |    218.5
+  11 | Lamar Jackson | QB       | BAL  |  319.2 |    218.0
+  12 | Joe Burrow  | QB       | CIN  |  338.7 |    217.1
+  13 | Kyler Murray | QB       | ARI  |  368.7 |    216.9
+  14 | Jonathan Taylor | RB       | IND  |  118.4 |    216.9
+  15 | Matt Ryan   | QB       | ATL  |  274.4 |    215.6
+  16 | Dalvin Cook | RB       | MIN  |  168.3 |    210.6
+  17 | Ezekiel Elliott | RB       | DAL  |  168.8 |    206.2
+  18 | Alvin Kamara | RB       | NOR  |  187.7 |    203.0
+  19 | Aaron Jones | RB       | GNB  |  175.0 |    202.0
+  20 | C.J. Stroud | QB       | HOU  |  216.4 |    200.9
+
+
+2025 Season Predictions
+=======================
+
+Top 20 Players for 2025 Season:
+==============================
+
+Rank | Player Name | Position | Team | Predicted Target
+-----|-------------|----------|------|-----------------
+   1 | Josh Allen  | QB       | BUF  | 233.5
+   2 | Lamar Jackson | QB       | BAL  | 232.9
+   3 | Jalen Hurts | QB       | PHI  | 232.8
+   4 | Joe Burrow  | QB       | CIN  | 228.5
+   5 | Baker Mayfield | QB       | TAM  | 227.6
+   6 | Jared Goff  | QB       | DET  | 224.0
+   7 | Justin Herbert | QB       | LAC  | 219.0
+   8 | Patrick Mahomes | QB       | KAN  | 215.1
+   9 | Josh Jacobs | RB       | GNB  | 214.4
+  10 | Jahmyr Gibbs | RB       | DET  | 212.9
+  11 | Geno Smith  | QB       | SEA  | 211.1
+  12 | Jordan Love | QB       | GNB  | 208.4
+  13 | Derrick Henry | RB       | BAL  | 207.8
+  14 | Brock Purdy | QB       | SFO  | 202.9
+  15 | Bijan Robinson | RB       | ATL  | 200.6
+  16 | Amon-Ra St. Brown | WR       | DET  | 195.8
+  17 | Saquon Barkley | RB       | PHI  | 195.3
+  18 | Kyler Murray | QB       | ARI  | 195.2
+  19 | Sam Darnold | QB       | MIN  | 193.5
+  20 | C.J. Stroud | QB       | HOU  | 193.0

@@ -16,7 +16,7 @@ from utils.model_evaluation import evaluate_model, save_results, save_model
 # === CONFIGURATION ===
 input = "1"
 scoring_type = "PPR" if input == "1" else "Standard"
-input_file = "data/final_data/nfl_stats_long_format_with_context_filtered.csv"   
+input_file = "data/final_data/nfl_stats_long_format_with_context_filtered_with_experience.csv"   
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # Create directories if they don't exist

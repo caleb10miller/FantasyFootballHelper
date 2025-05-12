@@ -8,6 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 import sys
 import os
 from datetime import datetime
+from sklearn.model_selection import GridSearchCV
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.plotting import plot_actual_vs_predicted
 from utils.data_processing import prepare_data, prepare_next_season_data
@@ -16,7 +17,7 @@ from utils.model_evaluation import evaluate_model, save_results, save_model
 # === CONFIGURATION ===
 input = "0"
 scoring_type = "PPR" if input == "1" else "Standard"
-input_file = "data/final_data/nfl_stats_long_format_with_context_filtered.csv"   
+input_file = "data/final_data/nfl_stats_long_format_with_context_filtered_with_experience.csv"   
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # Create directories if they don't exist
@@ -94,11 +95,38 @@ pipeline = Pipeline([
     ("stack", stacked_model)
 ])
 
-# === FIT MODEL ===
-pipeline.fit(X_train, y_train)
+# === PARAMETER GRID ===
+param_grid = {
+    'stack__mlp__hidden_layer_sizes': [(125,)],
+    'stack__mlp__activation': ['tanh'],
+    'stack__mlp__alpha': [0.125],
+    'stack__mlp__batch_size': [32],
+    'stack__xgb__n_estimators': [200],
+    'stack__xgb__max_depth': [3],
+    'stack__xgb__learning_rate': [0.05],
+    'stack__xgb__subsample': [0.9],
+    'stack__xgb__colsample_bytree': [0.9],
+    'stack__xgb__reg_alpha': [0.1],
+    'stack__xgb__reg_lambda': [10],
+    'stack__final_estimator__n_estimators': [100],
+    'stack__final_estimator__learning_rate': [0.05],
+    'stack__final_estimator__max_depth': [3]
+}
+
+# === GRID SEARCH ===
+grid_search = GridSearchCV(
+    pipeline,
+    param_grid,
+    cv=3,
+    scoring='r2',
+    n_jobs=-1,
+    verbose=2
+)
+
+grid_search.fit(X_train, y_train)
 
 # === EVALUATE ===
-y_pred = pipeline.predict(X_test)
+y_pred = grid_search.predict(X_test)
 
 # Evaluate model
 mse, rmse, r2 = evaluate_model(y_test, y_pred, scoring_type)
@@ -116,18 +144,18 @@ plot_actual_vs_predicted(
 # === GENERATE PREDICTIONS FOR 2025 SEASON ===
 if len(df_next_season) > 0:
     X_next_season = prepare_next_season_data(df_next_season, feature_cols, categorical_cols)
-    next_season_predictions = pipeline.predict(X_next_season)
+    next_season_predictions = grid_search.predict(X_next_season)
 else:
     next_season_predictions = None
 
 # === SAVE RESULTS ===
 results_file = save_results(
-    pipeline, y_test, y_pred, df.loc[X_test.index], 
+    grid_search, y_test, y_pred, df.loc[X_test.index], 
     df_next_season, next_season_predictions, scoring_type, timestamp
 )
 
 # === SAVE MODEL ===
-model_file = save_model(pipeline, scoring_type, timestamp)
+model_file = save_model(grid_search, scoring_type, timestamp)
 
 print(f"\nResults saved to {results_file}")
 print(f"Model saved to {model_file}")

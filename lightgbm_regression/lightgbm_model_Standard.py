@@ -126,7 +126,7 @@ class LightGBMRegressor(BaseEstimator, RegressorMixin):
 
 def main():
     # Load and prepare data
-    df = pd.read_csv('data/final_data/nfl_stats_long_format_with_context_filtered.csv')
+    df = pd.read_csv('data/final_data/nfl_stats_long_format_with_context_filtered_with_experience.csv')
     
     # Remove rows with NaN in target variable
     df = df.dropna(subset=['Target_Standard'])
@@ -145,7 +145,7 @@ def main():
     
     # Define feature columns
     feature_cols = [
-        'Age', 'Games Played', 'Games Started',
+        'Age', 'Games Played', 'Games Started', 'Years_of_Experience',
         'Yards per Completion', 'Yards per Passing Touchdown',
         'Attempts per Completion', 'Passing Touchdowns',
         'Interceptions Thrown', 'Rushing Attempts',
