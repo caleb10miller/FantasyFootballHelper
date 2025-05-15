@@ -49,10 +49,10 @@ def get_current_drafter(round_num, pick_num, num_teams):
 
 # Default roster configuration
 DEFAULT_ROSTER_CONFIG = {
-    "QB": 1,
-    "RB": 4,
+    "QB": 2,
+    "RB": 5,
     "WR": 5,
-    "TE": 2,
+    "TE": 1,
     "K": 1,
     "DST": 1
 }
@@ -392,23 +392,30 @@ app.layout = dbc.Container([
     [State('num-teams', 'value'),
      State('num-rounds', 'value'),
      State('draft-position', 'value'),
+     State('scoring-type', 'value'),
      State('draft-state', 'data')],
     prevent_initial_call=True
 )
-def start_draft(n_clicks, num_teams, num_rounds, draft_position, draft_state):
+def start_draft(n_clicks, num_teams, num_rounds, draft_position, scoring_type, draft_state):
     if not n_clicks:
         return draft_state, {"display": "block" if not draft_state.get('setup_collapsed', False) else "none"}, ""
-    
     # Validate inputs
     if not all([num_teams, num_rounds, draft_position]):
         return draft_state, {"display": "block"}, "Please fill in all required fields"
-    
     if draft_position > num_teams:
         return draft_state, {"display": "block"}, f"Draft position cannot be greater than number of teams ({num_teams})"
-    
+    # Load player data and pipeline path based on scoring type
+    player_data_path = "data/final_data/nfl_stats_long_format_with_context_filtered_with_experience.csv"
+    if scoring_type == "PPR":
+        pipeline_path = "lightgbm_regression/joblib_files/lightgbm_regression_pipeline_PPR_20250514_214644.pkl"
+    else:
+        pipeline_path = "stacked_model/joblib_files/stacked_model_pipeline_Standard_20250514_214726.pkl"
+    # Load player data
+    df_players = pd.read_csv(player_data_path)
+    df_players = df_players[df_players['Season'] == 2024].copy()
+    available_players = set(df_players['Player Name'].unique())
     # Initialize other_teams_picks with empty lists for all teams
     other_teams_picks = {i: [] for i in range(1, num_teams + 1) if i != draft_position}
-    
     new_draft_state = {
         'round': 1,
         'pick': 1,
@@ -422,12 +429,13 @@ def start_draft(n_clicks, num_teams, num_rounds, draft_position, draft_state):
         },
         'other_teams_picks': other_teams_picks,
         'pick_history': [],
-        'available_players': list(AVAILABLE_PLAYERS),
+        'available_players': list(available_players),
         'error_message': None,
-        'setup_collapsed': True
+        'setup_collapsed': True,
+        'player_data_path': player_data_path,
+        'pipeline_path': pipeline_path,
+        'scoring_type': scoring_type
     }
-    
-    # Return new state and hide the setup section
     return new_draft_state, {"display": "none"}, ""
 
 @app.callback(
@@ -470,59 +478,48 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
             "K": k_limit or 1,
             "DST": dst_limit or 1
         }
-        
+        # Load player data and pipeline from draft_state
+        player_data_path = draft_state.get('player_data_path', "data/final_data/nfl_stats_long_format_with_context_filtered_with_experience.csv")
+        pipeline_path = draft_state.get('pipeline_path', "lightgbm_regression/joblib_files/lightgbm_regression_pipeline_PPR_20250514_214644.pkl")
+        df_players = pd.read_csv(player_data_path)
+        df_players = df_players[df_players['Season'] == 2024].copy()
+        from recommender_system import load_pipeline
+        pipeline = load_pipeline(pipeline_path)
         # Get current drafter
         current_drafter = get_current_drafter(
             draft_state['round'],
             draft_state['pick'],
             draft_state['num_teams']
         )
-        
         # Calculate picks until user's turn
         user_position = draft_state['draft_position']
         picks_until_turn = 0
-        
-        if current_drafter != user_position:  # Only calculate if it's not user's turn
+        if current_drafter != user_position:
             current_round = draft_state['round']
             current_pick = draft_state['pick']
             num_teams = draft_state['num_teams']
-            
-            # For even rounds (2, 4, 6...), we need to reverse the positions
             if current_round % 2 == 0:
-                # Convert positions to reversed order
                 current_pos = num_teams - current_drafter + 1
                 user_pos = num_teams - user_position + 1
             else:
                 current_pos = current_drafter
                 user_pos = user_position
-            
-            # If we're at the end of a round
             if current_pick == num_teams:
-                # If current round is odd and next round is even
                 if current_round % 2 == 1:
-                    # Calculate distance from last pick to user's reversed position
                     picks_until_turn = num_teams - user_position + 1
-                # If current round is even and next round is odd
                 else:
-                    # Calculate distance from last pick to user's normal position
                     picks_until_turn = user_position
             else:
-                # Within the same round
                 if current_pos < user_pos:
                     picks_until_turn = user_pos - current_pos
                 else:
-                    # Need to go to next round
                     remaining_in_round = num_teams - current_pick
                     if current_round % 2 == 1:
-                        # Going from odd to even round
                         picks_until_turn = remaining_in_round + (num_teams - user_position + 1)
                     else:
-                        # Going from even to odd round
                         picks_until_turn = remaining_in_round + user_position
-        
         # Get recommendations from available players
-        available_players = df_players[df_players['Player Name'].isin(draft_state.get('available_players', AVAILABLE_PLAYERS))]
-
+        available_players = df_players[df_players['Player Name'].isin(draft_state.get('available_players', set(df_players['Player Name'].unique())))]
         # Add engineered features ONLY for PPR (LightGBM model)
         if scoring_type == "PPR":
             available_players['QB_Features'] = (available_players['Position'] == 'QB').astype(int)
@@ -533,33 +530,23 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
             available_players['RB_Rushing_Yards'] = available_players['RB_Features'] * available_players['Yards per Carry']
             available_players['WR_Receiving_Yards'] = available_players['WR_Features'] * available_players['Yards per Reception']
             available_players['TE_Receiving_Yards'] = available_players['TE_Features'] * available_players['Yards per Reception']
-
         try:
+            from recommender_system import recommend_players
             recommendations = recommend_players(
                 df_players=available_players,
                 round_num=draft_state['round'],
                 team_state=draft_state.get('team_state', {'position_counts': {}}),
-                pipeline=pipelines[scoring_type],
+                pipeline=pipeline,
                 scoring_type=scoring_type,
                 roster_config=roster_config,
-                top_n=50,  # Increased to 25 recommendations
+                top_n=100, 
                 num_rounds=draft_state['num_rounds'],
                 league_size=draft_state['num_teams'],
                 vor_weight=0.7
             )
-            
-            # Format the recommendations table with VOR and Overall Score
-
-            ### RENAMED RECOMMENDATIONS HERE TO DISPLAY THEM WITHOUT __  IN THE DASHBOARD ###
-
             recommendations['Predicted Points'] = recommendations['Predicted_Points'].map(lambda x: f"{x:.1f}")
             recommendations['Value Over Replacement'] = recommendations['VOR'].round(1)
             recommendations['Overall Score'] = recommendations['Overall_Score'].round(3)
-            
-            
-
-            ### CHANGED BELOW AS WELL 
-
             table = html.Div([
                 dbc.Table.from_dataframe(
                     recommendations[['Player Name', 'Position', 'Team', 'Predicted Points', 'Value Over Replacement', 'Overall Score']],
@@ -568,15 +555,14 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
                     hover=True
                 )
             ], style={
-                'maxHeight': '300px',  # Set maximum height
-                'overflowY': 'auto',   # Enable vertical scrolling
-                'overflowX': 'hidden', # Hide horizontal scrollbar
-                'marginBottom': '20px'  # Add some space below the table
+                'maxHeight': '300px',
+                'overflowY': 'auto',
+                'overflowX': 'hidden',
+                'marginBottom': '20px'
             })
         except Exception as e:
             print(f"Error generating recommendations: {str(e)}")
             table = html.Div("Unable to generate recommendations at this time.")
-        
         # Create draft history table from the pick_history list
         history_table = None
         if draft_state.get('pick_history'):
@@ -589,7 +575,6 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
                     'Player': pick['player'],
                     'Position': pick['position']
                 })
-            
             if history_data:
                 history_df = pd.DataFrame(history_data)
                 history_table = dbc.Table.from_dataframe(
@@ -598,13 +583,10 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
                     bordered=True,
                     hover=True
                 )
-        
-        # Determine if draft is complete
         is_draft_complete = draft_state['round'] > draft_state['num_rounds']
-        error_message = draft_state.get('error_message')  # Get error message from state
+        error_message = draft_state.get('error_message')
         if is_draft_complete and not error_message:
             error_message = "Draft is complete!"
-        
         return (
             table,
             f"Round {draft_state['round']}",
@@ -612,12 +594,11 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
             f"Team {current_drafter}'s turn to draft",
             f"{picks_until_turn} picks until your turn" if picks_until_turn > 0 else "Your turn to draft",
             history_table,
-            is_draft_complete,  # Disable submit button if draft is complete
+            is_draft_complete,
             error_message
         )
     except Exception as e:
         print(f"Error in update_display: {str(e)}")
-        # Return safe default values if an error occurs
         return (
             html.Div("Error loading recommendations"),
             "Round -",

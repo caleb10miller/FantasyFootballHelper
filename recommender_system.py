@@ -43,6 +43,8 @@ def avoid_te_early(row, round_num, scoring_type):
 
 def avoid_k_dst_early(row, round_num, num_rounds=15):
     """Delay Kicker/Defense picks until the last 2 rounds."""
+    round_num = int(round_num)
+    num_rounds = int(num_rounds)
     if row["Position"] in ["K", "DEF"]:
         return round_num >= (num_rounds - 2)
     return True
@@ -123,8 +125,19 @@ def calculate_vor_and_score(df_players, replacement_levels, vor_weight=0.7):
     
     return df
 
-def apply_all_rules(row, round_num, team_state, roster_config, scoring_type):
-    num_rounds = max(roster_config.values()) + sum(roster_config.values()) - 1  # Estimate total rounds from roster config
+def apply_all_rules(row, round_num, team_state, roster_config, scoring_type, num_rounds=None):
+    # Ensure num_rounds is provided
+    if num_rounds is None:
+        num_rounds = max(roster_config.values()) + sum(roster_config.values()) - 1
+
+    # Special rule: In last 3 rounds, always recommend K/DEF if not yet drafted
+    if (
+        row["Position"] in ["K", "DEF"]
+        and int(round_num) >= int(num_rounds) - 2
+        and team_state["position_counts"].get(row["Position"], 0) < roster_config.get(row["Position"], 1)
+    ):
+        return True
+
     return (
         avoid_qb_early(row, round_num, scoring_type)
         and avoid_te_early(row, round_num, scoring_type)
@@ -188,7 +201,7 @@ def recommend_players(
 
     eligible_players = df_players[
         df_players.apply(
-            lambda row: apply_all_rules(row, round_num, team_state, roster_config, scoring_type),
+            lambda row: apply_all_rules(row, round_num, team_state, roster_config, scoring_type, num_rounds),
             axis=1
         )
     ]
