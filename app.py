@@ -3,6 +3,7 @@ from dash import html, dcc, Input, Output, State, callback
 import dash_bootstrap_components as dbc
 import pandas as pd
 from recommender_system import recommend_players, load_pipeline
+from lightgbm_regression.lightgbm_regressor import LightGBMRegressor
 
 # Initialize the Dash app with dark theme
 app = dash.Dash(
@@ -96,9 +97,12 @@ def calculate_roster_limits(num_rounds):
     
     return limits
 
-# Load the pipeline and player data
-pipeline = load_pipeline("mlp_regression/joblib_files/mlp_pipeline_PPR.pkl")
-df_players = pd.read_csv("data/final_data/nfl_stats_long_format_with_context_filtered.csv")
+# Load the pipelines and player data
+pipelines = {
+    "PPR": load_pipeline("lightgbm_regression/joblib_files/lightgbm_regression_pipeline_PPR_20250514_214644.pkl"),
+    "Standard": load_pipeline("stacked_model/joblib_files/stacked_model_pipeline_Standard_20250514_214726.pkl")
+}
+df_players = pd.read_csv("data/final_data/nfl_stats_long_format_with_context_filtered_with_experience.csv")
 # Filter to only 2024 players and create initial available players list
 df_players = df_players[df_players['Season'] == 2024].copy()
 AVAILABLE_PLAYERS = set(df_players['Player Name'].unique())
@@ -518,14 +522,25 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
         
         # Get recommendations from available players
         available_players = df_players[df_players['Player Name'].isin(draft_state.get('available_players', AVAILABLE_PLAYERS))]
-        
+
+        # Add engineered features ONLY for PPR (LightGBM model)
+        if scoring_type == "PPR":
+            available_players['QB_Features'] = (available_players['Position'] == 'QB').astype(int)
+            available_players['RB_Features'] = (available_players['Position'] == 'RB').astype(int)
+            available_players['WR_Features'] = (available_players['Position'] == 'WR').astype(int)
+            available_players['TE_Features'] = (available_players['Position'] == 'TE').astype(int)
+            available_players['QB_Passing_Yards'] = available_players['QB_Features'] * available_players['Yards per Completion']
+            available_players['RB_Rushing_Yards'] = available_players['RB_Features'] * available_players['Yards per Carry']
+            available_players['WR_Receiving_Yards'] = available_players['WR_Features'] * available_players['Yards per Reception']
+            available_players['TE_Receiving_Yards'] = available_players['TE_Features'] * available_players['Yards per Reception']
+
         try:
             recommendations = recommend_players(
                 df_players=available_players,
                 round_num=draft_state['round'],
                 team_state=draft_state.get('team_state', {'position_counts': {}}),
-                pipeline=pipeline,
-                scoring_type=scoring_type or "PPR",
+                pipeline=pipelines[scoring_type],
+                scoring_type=scoring_type,
                 roster_config=roster_config,
                 top_n=50,  # Increased to 25 recommendations
                 num_rounds=draft_state['num_rounds'],
@@ -537,7 +552,7 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
 
             ### RENAMED RECOMMENDATIONS HERE TO DISPLAY THEM WITHOUT __  IN THE DASHBOARD ###
 
-            recommendations['Predicted Points'] = recommendations['Predicted_Points'].round(1)
+            recommendations['Predicted Points'] = recommendations['Predicted_Points'].map(lambda x: f"{x:.1f}")
             recommendations['Value Over Replacement'] = recommendations['VOR'].round(1)
             recommendations['Overall Score'] = recommendations['Overall_Score'].round(3)
             

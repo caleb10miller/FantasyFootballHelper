@@ -154,6 +154,11 @@ def recommend_players(
 
     df_players = df_players[df_players["Season"] == 2024].copy()
 
+    # Ensure scoring_type has a valid value
+    scoring_type = scoring_type or "PPR"
+    if scoring_type not in ["PPR", "Standard"]:
+        scoring_type = "PPR"
+
     exclude_cols = [
         "Player Name", "Season", "Target_PPR", "Target_Standard",
         "PPR Fantasy Points Scored", "Standard Fantasy Points Scored",
@@ -165,7 +170,11 @@ def recommend_players(
     for col in ["Team", "Position"]:
         X[col] = X[col].astype(str)
 
-    df_players["Predicted_Points"] = pipeline.predict(X)
+    try:
+        df_players["Predicted_Points"] = pipeline.predict(X)
+    except Exception as e:
+        print(f"Error during prediction: {str(e)}")
+        raise
     
     # Calculate VOR and Overall Score
     replacement_levels = get_replacement_levels(df_players, league_size)
