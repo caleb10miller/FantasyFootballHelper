@@ -13,32 +13,38 @@ def load_pipeline(pipeline_path):
 # Configurable Draft Rules
 # -----------------------------
 
-def is_elite_qb(player_name, round_num, predicted_points):
-    """Determine if a QB is elite based on predicted points."""
-    QB_ELITE_THRESHOLD = 200  # QBs projected for 200+ points
-    return predicted_points >= QB_ELITE_THRESHOLD and round_num >= 3
+def is_elite_qb(player_name, round_num, predicted_points, scoring_type):
+    """Determine if a QB is elite based on predicted points and scoring type."""
+    if scoring_type == "PPR":
+        QB_ELITE_THRESHOLD = 240 
+    else:
+        QB_ELITE_THRESHOLD = 250 
+    return predicted_points >= QB_ELITE_THRESHOLD and round_num >= 2
 
-def is_elite_te(player_name, round_num, predicted_points):
-    """Determine if a TE is elite based on predicted points."""
-    TE_ELITE_THRESHOLD = 170  # TEs projected for 170+ points
-    return predicted_points >= TE_ELITE_THRESHOLD and round_num >= 3
+def is_elite_te(player_name, round_num, predicted_points, scoring_type):
+    """Determine if a TE is elite based on predicted points and scoring type."""
+    if scoring_type == "PPR":
+        TE_ELITE_THRESHOLD = 170 
+    else:
+        TE_ELITE_THRESHOLD = 160 
+    return predicted_points >= TE_ELITE_THRESHOLD and round_num >= 1
 
-def avoid_qb_early(row, round_num):
+def avoid_qb_early(row, round_num, scoring_type):
     """Avoid QB before round 4 unless elite."""
     if row["Position"] != "QB":
         return True
-    return round_num >= 5 or is_elite_qb(row["Player Name"], round_num, row["Predicted_Points"])
+    return round_num >= 5 or is_elite_qb(row["Player Name"], round_num, row["Predicted_Points"], scoring_type)
 
-def avoid_te_early(row, round_num):
+def avoid_te_early(row, round_num, scoring_type):
     """Avoid TE before round 5 unless elite."""
     if row["Position"] != "TE":
         return True
-    return round_num >= 6 or is_elite_te(row["Player Name"], round_num, row["Predicted_Points"])
+    return round_num >= 5 or is_elite_te(row["Player Name"], round_num, row["Predicted_Points"], scoring_type)
 
 def avoid_k_dst_early(row, round_num, num_rounds=15):
     """Delay Kicker/Defense picks until the last 2 rounds."""
     if row["Position"] in ["K", "DEF"]:
-        return round_num >= (num_rounds - 1)
+        return round_num >= (num_rounds - 2)
     return True
 
 def respect_roster_limits(row, team_state, roster_config):
@@ -117,11 +123,11 @@ def calculate_vor_and_score(df_players, replacement_levels, vor_weight=0.7):
     
     return df
 
-def apply_all_rules(row, round_num, team_state, roster_config):
+def apply_all_rules(row, round_num, team_state, roster_config, scoring_type):
     num_rounds = max(roster_config.values()) + sum(roster_config.values()) - 1  # Estimate total rounds from roster config
     return (
-        avoid_qb_early(row, round_num)
-        and avoid_te_early(row, round_num)
+        avoid_qb_early(row, round_num, scoring_type)
+        and avoid_te_early(row, round_num, scoring_type)
         and avoid_k_dst_early(row, round_num, num_rounds)
         and respect_roster_limits(row, team_state, roster_config)
         and prioritize_needs(row, team_state, roster_config)
@@ -182,7 +188,7 @@ def recommend_players(
 
     eligible_players = df_players[
         df_players.apply(
-            lambda row: apply_all_rules(row, round_num, team_state, roster_config),
+            lambda row: apply_all_rules(row, round_num, team_state, roster_config, scoring_type),
             axis=1
         )
     ]
