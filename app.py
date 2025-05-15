@@ -873,14 +873,21 @@ def create_team_overview(draft_state):
 
         team_cards.append(card)
 
-    # Create rows of 4 teams each
+    # Create rows of team cards, spaced evenly
     rows = []
-    for i in range(0, len(team_cards), 4):
-        row_cards = team_cards[i:i+4]
+    if num_teams <= 4:
+        col_width = 12 // num_teams
         row = dbc.Row([
-            dbc.Col(card, width=3) for card in row_cards
-        ], className="mb-4")
+            dbc.Col(card, width=col_width) for card in team_cards
+        ], className="mb-4", justify="center")
         rows.append(row)
+    else:
+        for i in range(0, len(team_cards), 4):
+            row_cards = team_cards[i:i+4]
+            row = dbc.Row([
+                dbc.Col(card, width=3) for card in row_cards
+            ], className="mb-4", justify="center")
+            rows.append(row)
 
     return html.Div(
         dbc.Container(rows, fluid=True),
