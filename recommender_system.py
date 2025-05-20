@@ -61,6 +61,22 @@ def prioritize_needs(row, team_state, roster_config):
     max_allowed = roster_config.get(position, 99)
     return filled < max_allowed
 
+def defer_backup_qb(row, team_state, num_rounds=15, round_num=1):
+    """Defer backup QB until later rounds."""
+    num_rounds = int(num_rounds)
+    round_num = int(round_num)
+    if row["Position"] != "QB":
+        return True
+    
+    current_qbs = team_state["position_counts"].get("QB", 0)
+    
+    # If you have 0 QBs, allow drafting a QB
+    if current_qbs == 0:
+        return True
+    
+    # If you have 1 QB, only allow drafting a backup in final 5 rounds
+    return current_qbs == 1 and round_num > (num_rounds - 5)
+
 def get_replacement_levels(df_players, league_size=12):
     """Calculate replacement level points for each position."""
     replacement_ranks = {
@@ -144,6 +160,7 @@ def apply_all_rules(row, round_num, team_state, roster_config, scoring_type, num
         and avoid_k_dst_early(row, round_num, num_rounds)
         and respect_roster_limits(row, team_state, roster_config)
         and prioritize_needs(row, team_state, roster_config)
+        and defer_backup_qb(row, team_state, num_rounds, round_num)
     )
 
 # -----------------------------
