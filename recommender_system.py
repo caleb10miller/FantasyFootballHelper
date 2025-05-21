@@ -13,33 +13,47 @@ def load_pipeline(pipeline_path):
 # Configurable Draft Rules
 # -----------------------------
 
-def is_elite_qb(player_name, round_num, predicted_points, scoring_type):
-    """Determine if a QB is elite based on predicted points and scoring type."""
-    if scoring_type == "PPR":
-        QB_ELITE_THRESHOLD = 240 
+def is_elite_qb(player_name, round_num, predicted_points, scoring_type, df_players=None):
+    """Determine if a QB is elite based on being in the top 5% of predicted points."""
+    if df_players is None:
+        # Fallback to fixed thresholds if no data provided
+        if scoring_type == "PPR":
+            QB_ELITE_THRESHOLD = 240 
+        else:
+            QB_ELITE_THRESHOLD = 250 
     else:
-        QB_ELITE_THRESHOLD = 250 
+        # Calculate top 5% threshold from data
+        qb_players = df_players[df_players['Position'] == 'QB']
+        QB_ELITE_THRESHOLD = qb_players['Predicted_Points'].quantile(0.95)
+    
     return predicted_points >= QB_ELITE_THRESHOLD and round_num >= 2
 
-def is_elite_te(player_name, round_num, predicted_points, scoring_type):
-    """Determine if a TE is elite based on predicted points and scoring type."""
-    if scoring_type == "PPR":
-        TE_ELITE_THRESHOLD = 170 
+def is_elite_te(player_name, round_num, predicted_points, scoring_type, df_players=None):
+    """Determine if a TE is elite based on being in the top 5% of predicted points."""
+    if df_players is None:
+        # Fallback to fixed thresholds if no data provided
+        if scoring_type == "PPR":
+            TE_ELITE_THRESHOLD = 170 
+        else:
+            TE_ELITE_THRESHOLD = 160 
     else:
-        TE_ELITE_THRESHOLD = 160 
+        # Calculate top 5% threshold from data
+        te_players = df_players[df_players['Position'] == 'TE']
+        TE_ELITE_THRESHOLD = te_players['Predicted_Points'].quantile(0.97)
+    
     return predicted_points >= TE_ELITE_THRESHOLD and round_num >= 1
 
-def avoid_qb_early(row, round_num, scoring_type):
+def avoid_qb_early(row, round_num, scoring_type, df_players):
     """Avoid QB before round 4 unless elite."""
     if row["Position"] != "QB":
         return True
-    return round_num >= 5 or is_elite_qb(row["Player Name"], round_num, row["Predicted_Points"], scoring_type)
+    return round_num >= 5 or is_elite_qb(row["Player Name"], round_num, row["Predicted_Points"], scoring_type, df_players)
 
-def avoid_te_early(row, round_num, scoring_type):
+def avoid_te_early(row, round_num, scoring_type, df_players):
     """Avoid TE before round 5 unless elite."""
     if row["Position"] != "TE":
         return True
-    return round_num >= 5 or is_elite_te(row["Player Name"], round_num, row["Predicted_Points"], scoring_type)
+    return round_num >= 5 or is_elite_te(row["Player Name"], round_num, row["Predicted_Points"], scoring_type, df_players)
 
 def avoid_k_dst_early(row, round_num, num_rounds=15):
     """Delay Kicker/Defense picks until the last 2 rounds."""
@@ -141,7 +155,7 @@ def calculate_vor_and_score(df_players, replacement_levels, vor_weight=0.7):
     
     return df
 
-def apply_all_rules(row, round_num, team_state, roster_config, scoring_type, num_rounds=None):
+def apply_all_rules(row, round_num, team_state, roster_config, scoring_type, num_rounds=None, df_players=None):
     # Ensure num_rounds is provided
     if num_rounds is None:
         num_rounds = max(roster_config.values()) + sum(roster_config.values()) - 1
@@ -155,8 +169,8 @@ def apply_all_rules(row, round_num, team_state, roster_config, scoring_type, num
         return True
 
     return (
-        avoid_qb_early(row, round_num, scoring_type)
-        and avoid_te_early(row, round_num, scoring_type)
+        avoid_qb_early(row, round_num, scoring_type, df_players)
+        and avoid_te_early(row, round_num, scoring_type, df_players)
         and avoid_k_dst_early(row, round_num, num_rounds)
         and respect_roster_limits(row, team_state, roster_config)
         and prioritize_needs(row, team_state, roster_config)
@@ -190,6 +204,8 @@ def recommend_players(
 
     df_players = df_players[df_players["Season"] == 2024].copy()
 
+    df_players = df_players[~df_players['Player Name'].isin(team_state.get('drafted_players', []))]
+
     # Ensure scoring_type has a valid value
     scoring_type = scoring_type or "PPR"
     if scoring_type not in ["PPR", "Standard"]:
@@ -218,7 +234,7 @@ def recommend_players(
 
     eligible_players = df_players[
         df_players.apply(
-            lambda row: apply_all_rules(row, round_num, team_state, roster_config, scoring_type, num_rounds),
+            lambda row: apply_all_rules(row, round_num, team_state, roster_config, scoring_type, num_rounds, df_players),
             axis=1
         )
     ]
