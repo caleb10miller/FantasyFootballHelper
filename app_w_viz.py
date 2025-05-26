@@ -2,6 +2,8 @@ import dash
 from dash import html, dcc, Input, Output, State, callback
 import dash_bootstrap_components as dbc
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 from recommender_system import recommend_players, load_pipeline
 from lightgbm_regression.lightgbm_regressor import LightGBMRegressor
 from compare_stats import compare_stats
@@ -361,7 +363,7 @@ app.layout = dbc.Container([
     dcc.Tabs(id="main-tabs", value="draft", children=[
         dcc.Tab(label="Draft Board", value="draft", style={'color': 'black'}, selected_style={'color': 'black'}),
         dcc.Tab(label="Team Overview", value="teams", style={'color': 'black'}, selected_style={'color': 'black'}),
-        dcc.Tab(label="Visualisations", value="viz", style={'color': 'black'}, selected_style={'color': 'black'}), #NEW VIS FUNCTION
+        dcc.Tab(label="Visualizations", value="viz", style={'color': 'black'}, selected_style={'color': 'black'}), #NEW VIS FUNCTION
     ], style={'color': 'black'}),    
     # Tab content will be injected here
     html.Div(id="tab-content"),
@@ -386,7 +388,7 @@ app.layout = dbc.Container([
     })
 ], fluid=True)
 
-def create_visualisations_tab():
+def create_visualizations_tab():
     # Build stat list dynamically
     numeric_cols = (
         df_players.select_dtypes(include="number")
@@ -965,24 +967,76 @@ def toggle_draft_history(n_clicks, is_open):
     State("viz-seasons", "value"),
     prevent_initial_call=True
 )
-
 def update_visual(n_clicks, players, stats, chart_type, seasons_text):
     if not players or not stats:
         return "Select at least one player and one stat."
 
-    # Parse seasons
+    # Parse season input
     if seasons_text:
         try:
             seasons = [int(s.strip()) for s in seasons_text.split(",") if s.strip()]
         except ValueError:
             return "Season field must be comma‑separated years (e.g. 2023, 2024)."
     else:
-        seasons = None                 # default is latest season
+        seasons = [df_players["Season"].max()]
 
-    # Call the visualisation function (it shows the chart directly)
-    compare_stats(df_players, players, stats, chart_type=chart_type, seasons=seasons)
+    # Filter relevant data
+    df_filtered = df_players[df_players["Player Name"].isin(players) & df_players["Season"].isin(seasons)]
 
-    return "Chart generated in a new window (close it to make another)."
+    if df_filtered.empty:
+        return "No data found for selected players/seasons."
+
+    figures = []
+
+    if chart_type in ["bar", "line", "box"]:
+        for stat in stats:
+            if stat not in df_filtered.columns:
+                continue
+
+            if chart_type == "bar":
+                fig = px.bar(df_filtered, x="Player Name", y=stat, color="Season", barmode="group",
+                             title=f"{stat} by Player ({', '.join(map(str, seasons))})")
+
+            elif chart_type == "line":
+                fig = px.line(df_filtered, x="Season", y=stat, color="Player Name",
+                              title=f"{stat} over Seasons")
+
+            elif chart_type == "box":
+                fig = px.box(df_filtered, x="Player Name", y=stat, color="Player Name",
+                             title=f"Distribution of {stat} by Player")
+
+            figures.append(dcc.Graph(figure=fig))
+
+    elif chart_type == "radar":
+        # Plotly radar = polar chart with scatterpolar
+        for season in seasons:
+            df_season = df_filtered[df_filtered["Season"] == season]
+            if df_season.empty:
+                continue
+
+            fig = go.Figure()
+            for player in players:
+                player_row = df_season[df_season["Player Name"] == player]
+                if player_row.empty:
+                    continue
+                values = [player_row[stat].values[0] if stat in player_row else 0 for stat in stats]
+                fig.add_trace(go.Scatterpolar(
+                    r=values + [values[0]],  # Close the loop
+                    theta=stats + [stats[0]],
+                    name=f"{player} ({season})",
+                    fill='toself'
+                ))
+            fig.update_layout(
+                polar=dict(radialaxis=dict(visible=True)),
+                title=f"Radar Chart ({season})",
+                showlegend=True
+            )
+            figures.append(dcc.Graph(figure=fig))
+
+    else:
+        return "Unsupported chart type."
+
+    return figures
 
 # Add new callback for updating roster limits
 @app.callback(
@@ -1019,7 +1073,7 @@ def render_tab_content(tab, draft_state):
                 style={"padding": "20px", "color": "white"}
             )
     elif tab == "viz":                              # <‑‑ NEW
-        return dbc.Container(create_visualisations_tab(), fluid=True)
+        return dbc.Container(create_visualizations_tab(), fluid=True)
     
     ### CENTERS NEW TAB CONTENT
     
