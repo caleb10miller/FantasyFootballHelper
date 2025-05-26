@@ -2,8 +2,9 @@ import dash
 from dash import html, dcc, Input, Output, State, callback
 import dash_bootstrap_components as dbc
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
+import io
+import base64
+from matplotlib import pyplot as plt
 from recommender_system import recommend_players, load_pipeline
 from lightgbm_regression.lightgbm_regressor import LightGBMRegressor
 from compare_stats import compare_stats
@@ -414,7 +415,8 @@ def create_visualizations_tab():
                     dcc.Dropdown(
                         id="viz-stat-dropdown",
                         options=[{"label": c, "value": c} for c in numeric_cols],
-                        multi=True
+                        multi=True,
+                        style={"color": "black", "backgroundColor": "white"}
                     )
                 ], width=6),
             ], className="mb-3"),
@@ -967,6 +969,25 @@ def toggle_draft_history(n_clicks, is_open):
     State("viz-seasons", "value"),
     prevent_initial_call=True
 )
+
+def mpl_fig_to_base64_img(fig):
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", bbox_inches="tight")
+    buf.seek(0)
+    encoded = base64.b64encode(buf.read()).decode()
+    plt.close(fig)  # Avoid memory leaks
+    return f"data:image/png;base64,{encoded}"
+    
+@app.callback(
+    Output("viz-output", "children"),
+    Input("viz-show-btn", "n_clicks"),
+    State("viz-player-dropdown", "value"),
+    State("viz-stat-dropdown", "value"),
+    State("viz-chart-type", "value"),
+    State("viz-seasons", "value"),
+    prevent_initial_call=True
+)
+
 def update_visual(n_clicks, players, stats, chart_type, seasons_text):
     if not players or not stats:
         return "Select at least one player and one stat."
@@ -976,68 +997,27 @@ def update_visual(n_clicks, players, stats, chart_type, seasons_text):
         try:
             seasons = [int(s.strip()) for s in seasons_text.split(",") if s.strip()]
         except ValueError:
-            return "Season field must be comma‑separated years (e.g. 2023, 2024)."
+            return "Season field must be comma-separated years (e.g. 2023, 2024)."
     else:
         seasons = [df_players["Season"].max()]
 
-    # Filter relevant data
+    # Filter the data just like compare_stats would
     df_filtered = df_players[df_players["Player Name"].isin(players) & df_players["Season"].isin(seasons)]
 
     if df_filtered.empty:
         return "No data found for selected players/seasons."
 
+    # Run compare_stats but capture figures instead of showing them
     figures = []
 
-    if chart_type in ["bar", "line", "box"]:
-        for stat in stats:
-            if stat not in df_filtered.columns:
-                continue
+    # Call your function and capture figures
+    fig_list = compare_stats(df_filtered, players, stats, chart_type, seasons, return_figs=True)
 
-            if chart_type == "bar":
-                fig = px.bar(df_filtered, x="Player Name", y=stat, color="Season", barmode="group",
-                             title=f"{stat} by Player ({', '.join(map(str, seasons))})")
-
-            elif chart_type == "line":
-                fig = px.line(df_filtered, x="Season", y=stat, color="Player Name",
-                              title=f"{stat} over Seasons")
-
-            elif chart_type == "box":
-                fig = px.box(df_filtered, x="Player Name", y=stat, color="Player Name",
-                             title=f"Distribution of {stat} by Player")
-
-            figures.append(dcc.Graph(figure=fig))
-
-    elif chart_type == "radar":
-        # Plotly radar = polar chart with scatterpolar
-        for season in seasons:
-            df_season = df_filtered[df_filtered["Season"] == season]
-            if df_season.empty:
-                continue
-
-            fig = go.Figure()
-            for player in players:
-                player_row = df_season[df_season["Player Name"] == player]
-                if player_row.empty:
-                    continue
-                values = [player_row[stat].values[0] if stat in player_row else 0 for stat in stats]
-                fig.add_trace(go.Scatterpolar(
-                    r=values + [values[0]],  # Close the loop
-                    theta=stats + [stats[0]],
-                    name=f"{player} ({season})",
-                    fill='toself'
-                ))
-            fig.update_layout(
-                polar=dict(radialaxis=dict(visible=True)),
-                title=f"Radar Chart ({season})",
-                showlegend=True
-            )
-            figures.append(dcc.Graph(figure=fig))
-
-    else:
-        return "Unsupported chart type."
+    for fig in fig_list:
+        img_uri = mpl_fig_to_base64_img(fig)
+        figures.append(html.Img(src=img_uri, style={"width": "90%", "margin": "20px auto", "display": "block"}))
 
     return figures
-
 # Add new callback for updating roster limits
 @app.callback(
     [Output(f"{pos.lower()}-limit", "value") for pos in ["QB", "RB", "WR", "TE", "K", "DST"]],
