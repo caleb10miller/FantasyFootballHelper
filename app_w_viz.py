@@ -453,15 +453,6 @@ def create_visualizations_tab():
         ])
     ], style={"backgroundColor": "#2a2a2a", "color": "white"})
 
-def fig_to_base64(fig):
-    buf = io.BytesIO()
-    fig.savefig(buf, format="png", bbox_inches='tight')
-    buf.seek(0)
-    img_bytes = buf.read()
-    encoded = base64.b64encode(img_bytes).decode()
-    plt.close(fig)
-    return f"data:image/png;base64,{encoded}"
-
 # Callbacks
 @app.callback(
     [Output('draft-state', 'data'),
@@ -987,33 +978,30 @@ def update_visual(n_clicks, players, stats, chart_type, seasons_text):
     if not players or not stats:
         return "Select at least one player and one stat."
 
-    if seasons_text:
-        try:
-            seasons = [int(s.strip()) for s in seasons_text.split(",") if s.strip()]
-        except ValueError:
-            return "Season field must be comma-separated years (e.g. 2023, 2024)."
-    else:
-        seasons = [df_players["Season"].max()]
+    try:
+        seasons = [int(s.strip()) for s in seasons_text.split(",") if s.strip()]
+    except Exception as e:
+        return f"Invalid season input. Use comma-separated numbers like '2023,2024'. Error: {e}"
 
-    df_filtered = df_players[
-        df_players["Player Name"].isin(players) & df_players["Season"].isin(seasons)
-    ]
+    try:
+        fig_list = compare_stats(df_players, players, stats, chart_type, seasons, return_figs=True)
+    except Exception as e:
+        return f"Error generating figures: {e}"
 
-    if df_filtered.empty:
-        return "No data found for selected players/seasons."
+    if not fig_list:
+        return "No figures generated."
 
-    # Get matplotlib figures from compare_stats
-    figs = compare_stats(df_players, players, stats, chart_type, seasons, return_figs=True)
-    if not figs:
-        return "No charts could be generated for the given inputs."
+    def mpl_fig_to_base64_img(fig):
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png', bbox_inches='tight')
+        buf.seek(0)
+        encoded = base64.b64encode(buf.read()).decode()
+        plt.close(fig)
+        return f"data:image/png;base64,{encoded}"
 
-    # Convert each figure to base64 image and embed in html.Img
-    images = []
-    for fig in figs:
-        img_uri = mpl_fig_to_base64_img(fig)
-        images.append(html.Img(src=img_uri, style={"width": "90%", "margin": "20px auto", "display": "block"}))
-
-    return images
+    return [html.Img(src=mpl_fig_to_base64_img(fig),
+                     style={"width": "90%", "margin": "20px auto", "display": "block"})
+            for fig in fig_list]
     
 # Add new callback for updating roster limits
 @app.callback(
