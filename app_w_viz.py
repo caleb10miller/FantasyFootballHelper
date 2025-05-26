@@ -448,6 +448,15 @@ def create_visualizations_tab():
         ])
     ], style={"backgroundColor": "#2a2a2a", "color": "white"})
 
+def fig_to_base64(fig):
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", bbox_inches='tight')
+    buf.seek(0)
+    img_bytes = buf.read()
+    encoded = base64.b64encode(img_bytes).decode()
+    plt.close(fig)
+    return f"data:image/png;base64,{encoded}"
+
 # Callbacks
 @app.callback(
     [Output('draft-state', 'data'),
@@ -959,24 +968,6 @@ def toggle_draft_history(n_clicks, is_open):
     if n_clicks:
         return not is_open
     return is_open
-
-@app.callback(
-    Output("viz-output", "children"),
-    Input("viz-show-btn", "n_clicks"),
-    State("viz-player-dropdown", "value"),
-    State("viz-stat-dropdown", "value"),
-    State("viz-chart-type", "value"),
-    State("viz-seasons", "value"),
-    prevent_initial_call=True
-)
-
-def mpl_fig_to_base64_img(fig):
-    buf = io.BytesIO()
-    fig.savefig(buf, format="png", bbox_inches="tight")
-    buf.seek(0)
-    encoded = base64.b64encode(buf.read()).decode()
-    plt.close(fig)  # Avoid memory leaks
-    return f"data:image/png;base64,{encoded}"
     
 @app.callback(
     Output("viz-output", "children"),
@@ -987,12 +978,10 @@ def mpl_fig_to_base64_img(fig):
     State("viz-seasons", "value"),
     prevent_initial_call=True
 )
-
 def update_visual(n_clicks, players, stats, chart_type, seasons_text):
     if not players or not stats:
         return "Select at least one player and one stat."
 
-    # Parse season input
     if seasons_text:
         try:
             seasons = [int(s.strip()) for s in seasons_text.split(",") if s.strip()]
@@ -1001,23 +990,26 @@ def update_visual(n_clicks, players, stats, chart_type, seasons_text):
     else:
         seasons = [df_players["Season"].max()]
 
-    # Filter the data just like compare_stats would
-    df_filtered = df_players[df_players["Player Name"].isin(players) & df_players["Season"].isin(seasons)]
+    df_filtered = df_players[
+        df_players["Player Name"].isin(players) & df_players["Season"].isin(seasons)
+    ]
 
     if df_filtered.empty:
         return "No data found for selected players/seasons."
 
-    # Run compare_stats but capture figures instead of showing them
-    figures = []
+    # Get matplotlib figures from compare_stats
+    figs = compare_stats(df_filtered, players, stats, chart_type, seasons, return_figs=True)
+    if not figs:
+        return "No charts could be generated for the given inputs."
 
-    # Call your function and capture figures
-    fig_list = compare_stats(df_filtered, players, stats, chart_type, seasons, return_figs=True)
-
-    for fig in fig_list:
+    # Convert each figure to base64 image and embed in html.Img
+    images = []
+    for fig in figs:
         img_uri = mpl_fig_to_base64_img(fig)
-        figures.append(html.Img(src=img_uri, style={"width": "90%", "margin": "20px auto", "display": "block"}))
+        images.append(html.Img(src=img_uri, style={"width": "90%", "margin": "20px auto", "display": "block"}))
 
-    return figures
+    return images
+    
 # Add new callback for updating roster limits
 @app.callback(
     [Output(f"{pos.lower()}-limit", "value") for pos in ["QB", "RB", "WR", "TE", "K", "DST"]],
