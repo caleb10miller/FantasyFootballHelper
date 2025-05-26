@@ -407,7 +407,9 @@ def create_visualizations_tab():
                         id="viz-player-dropdown",
                         options=[{"label": n, "value": n}
                                  for n in sorted(df_players["Player Name"].unique())],
-                        multi=True
+                        multi=True,
+                        placeholder="Select player(s)",
+                        style={"color": "black"}
                     )
                 ], width=6),
                 dbc.Col([
@@ -416,7 +418,8 @@ def create_visualizations_tab():
                         id="viz-stat-dropdown",
                         options=[{"label": c, "value": c} for c in numeric_cols],
                         multi=True,
-                        style={"color": "black", "backgroundColor": "white"}
+                        placeholder="Select statistic(s)",
+                        style={"color": "black"}
                     )
                 ], width=6),
             ], className="mb-3"),
@@ -432,6 +435,8 @@ def create_visualizations_tab():
                             {"label": "Box", "value": "box"}
                         ],
                         value="bar",
+                        placeholder="Select chart type",
+                        style={"color":"black"},
                         clearable=False
                     )
                 ], width=4),
@@ -998,7 +1003,7 @@ def update_visual(n_clicks, players, stats, chart_type, seasons_text):
         return "No data found for selected players/seasons."
 
     # Get matplotlib figures from compare_stats
-    figs = compare_stats(df_filtered, players, stats, chart_type, seasons, return_figs=True)
+    figs = compare_stats(df_players, players, stats, chart_type, seasons, return_figs=True)
     if not figs:
         return "No charts could be generated for the given inputs."
 
