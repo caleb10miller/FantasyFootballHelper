@@ -1,4 +1,6 @@
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from math import pi
@@ -34,7 +36,7 @@ def compare_stats(df, players, stats, chart_type='bar', seasons=None, return_fig
             angles = [n / float(num_vars) * 2 * pi for n in range(num_vars)]
             angles += angles[:1]
 
-            fig = plt.figure(figsize=(7, 7))
+            fig = plt.figure(figsize=(4, 4))
             ax = plt.subplot(111, polar=True)
 
             for player in players:
@@ -70,7 +72,7 @@ def compare_stats(df, players, stats, chart_type='bar', seasons=None, return_fig
                     print(f"No valid data for '{stat}' in season {season}. Skipping.")
                     continue
 
-                fig = plt.figure(figsize=(8, 5))
+                fig = plt.figure(figsize=(5, 3))
                 plt.title(f"{stat} - Season {season}")
                 sns.barplot(data=stat_data, x='Player Name', y=stat, palette='Set2')
                 plt.tight_layout()
@@ -87,7 +89,7 @@ def compare_stats(df, players, stats, chart_type='bar', seasons=None, return_fig
                 continue
             combined_avg = combined_data.groupby('Player Name')[stat].mean().reset_index()
 
-            fig = plt.figure(figsize=(8, 5))
+            fig = plt.figure(figsize=(5, 3))
             plt.title(f"{stat} - Combined Average ({min(seasons)}–{max(seasons)})")
             sns.barplot(data=combined_avg, x='Player Name', y=stat, palette='Set3')
             plt.tight_layout()
@@ -104,7 +106,7 @@ def compare_stats(df, players, stats, chart_type='bar', seasons=None, return_fig
                 print(f"Stat '{stat}' not found. Skipping.")
                 continue
 
-            fig = plt.figure(figsize=(8, 5))
+            fig = plt.figure(figsize=(5, 3))
             for player in players:
                 player_df = df[df['Player Name'] == player][['Season', stat]].dropna().sort_values('Season')
                 if player_df.empty:
@@ -133,7 +135,7 @@ def compare_stats(df, players, stats, chart_type='bar', seasons=None, return_fig
             if stat_data.empty:
                 continue
 
-            fig = plt.figure(figsize=(8, 5))
+            fig = plt.figure(figsize=(5, 3))
             plt.title(f"{stat} - Box Plot ({min(seasons)}–{max(seasons)})")
             sns.boxplot(data=stat_data, x='Player Name', y=stat)
             plt.tight_layout()

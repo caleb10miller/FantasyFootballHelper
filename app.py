@@ -2,8 +2,14 @@ import dash
 from dash import html, dcc, Input, Output, State, callback
 import dash_bootstrap_components as dbc
 import pandas as pd
+import io
+import base64
+from matplotlib import pyplot as plt
 from recommender_system import recommend_players, load_pipeline
 from lightgbm_regression.lightgbm_regressor import LightGBMRegressor
+from compare_stats import compare_stats
+import matplotlib
+matplotlib.use('Agg')
 
 # Initialize the Dash app with dark theme
 app = dash.Dash(
@@ -102,9 +108,8 @@ pipelines = {
     "PPR": load_pipeline("lightgbm_regression/joblib_files/lightgbm_regression_pipeline_PPR_20250514_214644.pkl"),
     "Standard": load_pipeline("stacked_model/joblib_files/stacked_model_pipeline_Standard_20250514_214726.pkl")
 }
-df_players = pd.read_csv("data/final_data/nfl_stats_long_format_with_context_filtered_with_experience.csv")
-# Filter to only 2024 players and create initial available players list
-df_players = df_players[df_players['Season'] == 2024].copy()
+df_players_all = pd.read_csv("data/final_data/nfl_stats_long_format_with_context_filtered_with_experience.csv")
+df_players = df_players_all[df_players_all['Season'] == 2024].copy()
 AVAILABLE_PLAYERS = set(df_players['Player Name'].unique())
 
 # Layout components
@@ -360,6 +365,7 @@ app.layout = dbc.Container([
     dcc.Tabs(id="main-tabs", value="draft", children=[
         dcc.Tab(label="Draft Board", value="draft", style={'color': 'black'}, selected_style={'color': 'black'}),
         dcc.Tab(label="Team Overview", value="teams", style={'color': 'black'}, selected_style={'color': 'black'}),
+        dcc.Tab(label="Visualizations", value="viz", style={'color': 'black'}, selected_style={'color': 'black'}),
     ], style={'color': 'black'}),    
     # Tab content will be injected here
     html.Div(id="tab-content"),
@@ -383,6 +389,71 @@ app.layout = dbc.Container([
         'setup_collapsed': False  # Add this to track setup collapse state
     })
 ], fluid=True)
+
+def create_visualizations_tab():
+    # Build stat list dynamically
+    numeric_cols = (
+        df_players_all.select_dtypes(include="number")
+                  .columns
+                  .drop(["Season", "Age"], errors="ignore")
+    )
+
+    return dbc.Card([
+        dbc.CardHeader("Player Stat Visualiser", className="text-center text-white"),
+        dbc.CardBody([
+            dbc.Row([
+                dbc.Col([
+                    dbc.Label("Players"),
+                    dcc.Dropdown(
+                        id="viz-player-dropdown",
+                        options=[{"label": n, "value": n}
+                                 for n in sorted(df_players_all["Player Name"].unique())],
+                        multi=True,
+                        placeholder="Select player(s)",
+                        style={"color": "white", "backgroundColor": "#222"}
+                    )
+                ], width=6),
+                dbc.Col([
+                    dbc.Label("Statistics"),
+                    dcc.Dropdown(
+                        id="viz-stat-dropdown",
+                        options=[{"label": c, "value": c} for c in numeric_cols],
+                        multi=True,
+                        placeholder="Select statistic(s)",
+                        style={"color": "white", "backgroundColor": "#222"}
+                    )
+                ], width=6),
+            ], className="mb-3"),
+            dbc.Row([
+                dbc.Col([
+                    dbc.Label("Chart Type"),
+                    dcc.Dropdown(
+                        id="viz-chart-type",
+                        options=[
+                            {"label": "Bar", "value": "bar"},
+                            {"label": "Radar", "value": "radar"},
+                            {"label": "Line", "value": "line"},
+                            {"label": "Box", "value": "box"}
+                        ],
+                        value="bar",
+                        placeholder="Select chart type",
+                        style={"color": "white", "backgroundColor": "#222"},
+                        clearable=False
+                    )
+                ], width=4),
+                dbc.Col([
+                    dbc.Label("Season(s) (comma‑sep)"),
+                    dbc.Input(id="viz-seasons", type="text", placeholder="2024, 2023")
+                ], width=4),
+                dbc.Col([
+                    dbc.Button("Show Chart", id="viz-show-btn", color="info", className="mt-4")
+                ], width=4)
+            ]),
+            html.Hr(),
+            html.Div(id="viz-output")
+        ])
+    ], style={"backgroundColor": "#2a2a2a", "color": "white"})
+
 # Callbacks
 @app.callback(
     [Output('draft-state', 'data'),
@@ -895,7 +966,54 @@ def toggle_draft_history(n_clicks, is_open):
         return not is_open
     return is_open
 
+@app.callback(
+    Output("viz-output", "children"),
+    Input("viz-show-btn", "n_clicks"),
+    State("viz-player-dropdown", "value"),
+    State("viz-stat-dropdown", "value"),
+    State("viz-chart-type", "value"),
+    State("viz-seasons", "value"),
+    prevent_initial_call=True
+)
+def update_visual(n_clicks, players, stats, chart_type, seasons_text):
+    if not players or not stats:
+        return "Select at least one player and one stat."
 
+    try:
+        seasons = [int(s.strip()) for s in seasons_text.split(",") if s.strip()]
+    except Exception as e:
+        return f"Invalid season input. Use comma-separated numbers like '2023,2024'. Error: {e}"
+
+    try:
+        fig_list = compare_stats(df_players_all, players, stats, chart_type, seasons, return_figs=True)
+    except Exception as e:
+        return f"Error generating figures: {e}"
+
+    if not fig_list:
+        return "No figures generated."
+
+    def mpl_fig_to_base64_img(fig):
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png', bbox_inches='tight')
+        buf.seek(0)
+        encoded = base64.b64encode(buf.read()).decode()
+        plt.close(fig)
+        return f"data:image/png;base64,{encoded}"
+
+    return dbc.Container([
+        dbc.Row([
+            dbc.Col(
+                dbc.Card([
+                    dbc.CardBody([
+                        html.Img(src=mpl_fig_to_base64_img(fig),
+                                 style={"width": "350px", "margin": "0 auto", "display": "block"})
+                    ])
+                ], style={"margin": "12px", "backgroundColor": "#23272b", "border": "1px solid #444"}),
+                width="auto"
+            )
+            for fig in fig_list
+        ], justify="center", style={"padding": "20px 0"})
+    ], fluid=True)
 
 # Add new callback for updating roster limits
 @app.callback(
@@ -931,6 +1049,8 @@ def render_tab_content(tab, draft_state):
                 "Teams will be displayed here after the draft starts.",
                 style={"padding": "20px", "color": "white"}
             )
+    elif tab == "viz":                              # <‑‑ NEW
+        return dbc.Container(create_visualizations_tab(), fluid=True)
     
     ### CENTERS NEW TAB CONTENT
     
@@ -958,21 +1078,24 @@ app.index_string = '''
             .dash-dropdown .Select-value-label {
                 color: white !important;
             }
-            .dash-dropdown .Select-option:hover {
-                background-color: #375a7f !important;
+            .dash-dropdown .Select-multi-value__label {
+                color: white !important;
             }
-            .dash-dropdown .Select-option.is-selected {
-                background-color: #375a7f !important;
+            .dash-dropdown .Select-control {
+                color: white !important;
+                background-color: #222 !important;
             }
-            /* Make dropdown input text white */
             .dash-dropdown .Select-input {
                 color: white !important;
             }
             .dash-dropdown .Select-input input {
                 color: white !important;
             }
-            .dash-dropdown .Select-control {
-                color: white !important;
+            .dash-dropdown .Select-option:hover {
+                background-color: #375a7f !important;
+            }
+            .dash-dropdown .Select-option.is-selected {
+                background-color: #375a7f !important;
             }
             /* Remove all collapse animations */
             .collapse {
@@ -1004,3 +1127,4 @@ app.index_string = '''
 
 if __name__ == '__main__':
     app.run(debug=True) 
+    

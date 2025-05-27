@@ -8,6 +8,8 @@ from matplotlib import pyplot as plt
 from recommender_system import recommend_players, load_pipeline
 from lightgbm_regression.lightgbm_regressor import LightGBMRegressor
 from compare_stats import compare_stats
+import matplotlib
+matplotlib.use('Agg')
 
 # Initialize the Dash app with dark theme
 app = dash.Dash(
@@ -106,9 +108,8 @@ pipelines = {
     "PPR": load_pipeline("lightgbm_regression/joblib_files/lightgbm_regression_pipeline_PPR_20250514_214644.pkl"),
     "Standard": load_pipeline("stacked_model/joblib_files/stacked_model_pipeline_Standard_20250514_214726.pkl")
 }
-df_players = pd.read_csv("data/final_data/nfl_stats_long_format_with_context_filtered_with_experience.csv")
-# Filter to only 2024 players and create initial available players list
-df_players = df_players[df_players['Season'] == 2024].copy()
+df_players_all = pd.read_csv("data/final_data/nfl_stats_long_format_with_context_filtered_with_experience.csv")
+df_players = df_players_all[df_players_all['Season'] == 2024].copy()
 AVAILABLE_PLAYERS = set(df_players['Player Name'].unique())
 
 # Layout components
@@ -392,7 +393,7 @@ app.layout = dbc.Container([
 def create_visualizations_tab():
     # Build stat list dynamically
     numeric_cols = (
-        df_players.select_dtypes(include="number")
+        df_players_all.select_dtypes(include="number")
                   .columns
                   .drop(["Season", "Age"], errors="ignore")
     )
@@ -406,10 +407,10 @@ def create_visualizations_tab():
                     dcc.Dropdown(
                         id="viz-player-dropdown",
                         options=[{"label": n, "value": n}
-                                 for n in sorted(df_players["Player Name"].unique())],
+                                 for n in sorted(df_players_all["Player Name"].unique())],
                         multi=True,
                         placeholder="Select player(s)",
-                        style={"color": "black"}
+                        style={"color": "white", "backgroundColor": "#222"}
                     )
                 ], width=6),
                 dbc.Col([
@@ -419,7 +420,7 @@ def create_visualizations_tab():
                         options=[{"label": c, "value": c} for c in numeric_cols],
                         multi=True,
                         placeholder="Select statistic(s)",
-                        style={"color": "black"}
+                        style={"color": "white", "backgroundColor": "#222"}
                     )
                 ], width=6),
             ], className="mb-3"),
@@ -436,7 +437,7 @@ def create_visualizations_tab():
                         ],
                         value="bar",
                         placeholder="Select chart type",
-                        style={"color":"black"},
+                        style={"color": "white", "backgroundColor": "#222"},
                         clearable=False
                     )
                 ], width=4),
@@ -984,7 +985,7 @@ def update_visual(n_clicks, players, stats, chart_type, seasons_text):
         return f"Invalid season input. Use comma-separated numbers like '2023,2024'. Error: {e}"
 
     try:
-        fig_list = compare_stats(df_players, players, stats, chart_type, seasons, return_figs=True)
+        fig_list = compare_stats(df_players_all, players, stats, chart_type, seasons, return_figs=True)
     except Exception as e:
         return f"Error generating figures: {e}"
 
@@ -999,9 +1000,20 @@ def update_visual(n_clicks, players, stats, chart_type, seasons_text):
         plt.close(fig)
         return f"data:image/png;base64,{encoded}"
 
-    return [html.Img(src=mpl_fig_to_base64_img(fig),
-                     style={"width": "90%", "margin": "20px auto", "display": "block"})
-            for fig in fig_list]
+    return dbc.Container([
+        dbc.Row([
+            dbc.Col(
+                dbc.Card([
+                    dbc.CardBody([
+                        html.Img(src=mpl_fig_to_base64_img(fig),
+                                 style={"width": "350px", "margin": "0 auto", "display": "block"})
+                    ])
+                ], style={"margin": "12px", "backgroundColor": "#23272b", "border": "1px solid #444"}),
+                width="auto"
+            )
+            for fig in fig_list
+        ], justify="center", style={"padding": "20px 0"})
+    ], fluid=True)
     
 # Add new callback for updating roster limits
 @app.callback(
@@ -1066,21 +1078,24 @@ app.index_string = '''
             .dash-dropdown .Select-value-label {
                 color: white !important;
             }
-            .dash-dropdown .Select-option:hover {
-                background-color: #375a7f !important;
+            .dash-dropdown .Select-multi-value__label {
+                color: white !important;
             }
-            .dash-dropdown .Select-option.is-selected {
-                background-color: #375a7f !important;
+            .dash-dropdown .Select-control {
+                color: white !important;
+                background-color: #222 !important;
             }
-            /* Make dropdown input text white */
             .dash-dropdown .Select-input {
                 color: white !important;
             }
             .dash-dropdown .Select-input input {
                 color: white !important;
             }
-            .dash-dropdown .Select-control {
-                color: white !important;
+            .dash-dropdown .Select-option:hover {
+                background-color: #375a7f !important;
+            }
+            .dash-dropdown .Select-option.is-selected {
+                background-color: #375a7f !important;
             }
             /* Remove all collapse animations */
             .collapse {
