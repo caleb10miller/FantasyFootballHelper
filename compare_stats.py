@@ -30,7 +30,15 @@ def compare_stats(df, players, stats, chart_type='bar', seasons=None, return_fig
                 continue
 
             radar_data = radar_data.set_index('Player Name')
-            radar_normalized = (radar_data - radar_data.min()) / (radar_data.max() - radar_data.min())
+            # Robust normalization: if all values are identical, set to 0.5
+            radar_normalized = radar_data.copy()
+            for col in radar_normalized.columns:
+                col_min = radar_normalized[col].min()
+                col_max = radar_normalized[col].max()
+                if col_max == col_min:
+                    radar_normalized[col] = 0.5
+                else:
+                    radar_normalized[col] = (radar_normalized[col] - col_min) / (col_max - col_min)
             categories = stats
             num_vars = len(categories)
             angles = [n / float(num_vars) * 2 * pi for n in range(num_vars)]
