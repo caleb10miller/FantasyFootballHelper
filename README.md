@@ -7,8 +7,8 @@ This repository contains Fantasy Football Draft Assistant, a **data-driven** too
 - **Exploratory Data Analysis (EDA)**: Identifying key trends, distributions, and relationships within the data.
 - **Feature Engineering**: Creating new, meaningful features to improve model performance in future phases.
 - **Machine Learning Modeling**: Predicting fantasy performance using regression models.
-- **Recommender System Construction**: Developing a system to optimize draft selections.
-- **Dashboard UI Development**: Building an interactive tool for users.
+- **Recommender System Construction**: Developing a hybrid system that combines ML model outputs with rule-based heuristics to enhance draft strategy.
+- **Dashboard UI Development**: Building an interactive tool for users. A demo video is linked below showcasing the dashboard's functionality and a full draft simulation.
 
 ## Data Sources  
 Our dataset consists of **NFL player statistics from the 2018-2024 seasons**, collected from reputable sources:
@@ -25,7 +25,7 @@ This branch contains all deliverables, licensing, and documentation related to t
 **Main Files & Folders**:  
 - `deliverables/` – Main directory for all deliverables.  
   - `DSCI591/` – Folder with all deliverables related to part 1 of the Capstone.
-    - `Capstone_Part1_FinalDoc.pdf` - Final document contianing links to the repo and all reports / presentations for part 1.
+    - `Capstone_Part1_FinalDoc.pdf` - Final document containing links to the repo and all reports / presentations for part 1.
     - `DataAcquisitionAndPreprocessingReport.pdf` - Report documenting the acquisition and preprocessing process in part 1.
     - `EDAandFeatureEngineeringReport.pdf` - Report documenting our EDA and feature engineering in part 1.
     - `LaunchReport.pdf` - Launch report walking through our initial project idea.
@@ -182,7 +182,7 @@ This branch contains the recommender system function and dashboard app.
 - `LICENSE` - MIT licensing
 - `README.md` – Documentation for the entire project.
 - `app.py` - Dashboard app.
-- `compare_stats.py` - File contianing custom visualization function.
+- `compare_stats.py` - File containing a custom visualization function.
 - `recommender_system.py` - Recommender system.
 - `requirements.txt` - Project requirements
 
@@ -194,7 +194,7 @@ This branch contains the recommender system function and dashboard app.
    - Calls **fantasy_points_calc.py** to compute fantasy points for each season
 
 2. Run **final_dataset_long_format.py**:
-   - Unions all seasons into a long format dataset
+   - Combines all seasons into a single long-format dataset (one row per player-season)
 
 3. Run **add_context_variables.py**:
    - Adds deltas, year-over-year metrics, and other contextual features
@@ -226,13 +226,9 @@ jupyter notebook
 ```  
 
 ### 3. Feature Engineering & Multicollinearity Reduction  
-Run the **drop_multicollinearity.py** script to refine the dataset by:  
+Run the **drop_multicollinearity.py** script (see step 1) to refine the dataset by:  
 - Removing **redundant correlated variables** using Variance Inflation Factor (VIF) analysis.  
 - Creating **new derived features** such as composite player performance metrics.  
-
-```sh
-python Capstone/drop_multicollinearity.py
-```
 
 ### 4. Machine Learning Models  
 - Model Training & Evaluation
@@ -240,22 +236,31 @@ python Capstone/drop_multicollinearity.py
 - Automated Hyperparameter Tuning and Feature Selection.
 
 ```sh
-python Capstone/FantasyFootballHelper-modeling/linear_regression/linear_model_PPR.py
+python linear_regression/linear_model_PPR.py
 # Can change model type and scoring type.
 ```
 
 ### 5. Recommender System Construction  
-- 
-- Implementing **custom draft logic** (e.g., "If no QB in round 1, prioritize WR/RB").  
-- Optimizing player selection based on real-time draft inputs.
+- Implemented a hybrid recommendation engine that combines:
+  - Machine learning model predictions (MLP + XGBoost)
+  - Rule-based logic grounded in fantasy draft heuristics (e.g., positional scarcity, best player available, roster limits)
+- Dynamically adapts to draft inputs (round, roster needs, scoring format) to provide updated recommendations
 
 ### 6. Dashboard Development  
-- Building an **interactive web-based UI** for fantasy football managers.  
+- Building an **interactive web-based UI** that allows users to input draft context and view top player recommendations in real time.  
 
 ```sh
-python Capstone/app.py
+python app.py
 # Runs the dashboard
 ```
+
+## Dashboard Demos
+
+**Dashboard Functionality Demo**  
+[Watch Here](https://youtu.be/S1IaT5Xy95Q)
+
+**Full Draft Walkthrough**  
+[Watch Here](https://youtu.be/gsA_mNDSpPE)
 
 ## Installation & Usage  
 
@@ -299,35 +304,34 @@ python drop_multicollinearity.py
 **Train and Test Models**  
 ```sh
 # Linear Regression
-python Capstone/linear_regression/linear_model_PPR.py
-python Capstone/linear_regression/linear_model_Standard.py
+python linear_regression/linear_model_PPR.py
+python linear_regression/linear_model_Standard.py
 
 # MLP Regression
-python Capstone/mlp_regression/mlp_model_PPR.py
-python Capstone/mlp_regression/mlp_model_Standard.py
+python mlp_regression/mlp_model_PPR.py
+python mlp_regression/mlp_model_Standard.py
 
 # XGBoost
-python Capstone/xgboost_regression/xgboost_model_PPR.py
-python Capstone/xgboost_regression/xgboost_model_Standard.py
+python xgboost_regression/xgboost_model_PPR.py
+python xgboost_regression/xgboost_model_Standard.py
 
 # Stacked
-python Capstone/stacked_model/stacked_model_PPR.py
-python Capstone/stacked_model/stacked_model_Standard.py
+python stacked_model/stacked_model_PPR.py
+python stacked_model/stacked_model_Standard.py
 
 # LightGBM
-python Capstone/lightgbm_regression/lightgbm_model_PPR.py
-python Capstone/lightgbm_regression/lightgbm_model_Standard.py
+python lightgbm_regression/lightgbm_model_PPR.py
+python lightgbm_regression/lightgbm_model_Standard.py
 
 # Deep Neural Network
-python Capstone/deep_neural_network/dnn_model_PPR.py
-python Capstone/deep_neural_network/dnn_model_Standard.py
+python deep_neural_network/dnn_model_PPR.py
+python deep_neural_network/dnn_model_Standard.py
 ```
 
 **Run Dashboard App**  
 ```sh
-python Capstone/app.py
+python app.py
 ```  
-
 
 ## Contributors  
 - **Caleb Miller** – cm3962@drexel.edu  
