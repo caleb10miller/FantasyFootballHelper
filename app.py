@@ -591,16 +591,14 @@ def update_display(draft_state, scoring_type, qb_limit, rb_limit, wr_limit, te_l
                         picks_until_turn = remaining_in_round + user_position
         # Get recommendations from available players
         available_players = df_players[df_players['Player Name'].isin(draft_state.get('available_players', set(df_players['Player Name'].unique())))]
-        # Add engineered features ONLY for PPR (LightGBM model)
-        if scoring_type == "PPR":
-            available_players['QB_Features'] = (available_players['Position'] == 'QB').astype(int)
-            available_players['RB_Features'] = (available_players['Position'] == 'RB').astype(int)
-            available_players['WR_Features'] = (available_players['Position'] == 'WR').astype(int)
-            available_players['TE_Features'] = (available_players['Position'] == 'TE').astype(int)
-            available_players['QB_Passing_Yards'] = available_players['QB_Features'] * available_players['Yards per Completion']
-            available_players['RB_Rushing_Yards'] = available_players['RB_Features'] * available_players['Yards per Carry']
-            available_players['WR_Receiving_Yards'] = available_players['WR_Features'] * available_players['Yards per Reception']
-            available_players['TE_Receiving_Yards'] = available_players['TE_Features'] * available_players['Yards per Reception']
+        available_players['QB_Features'] = (available_players['Position'] == 'QB').astype(int)
+        available_players['RB_Features'] = (available_players['Position'] == 'RB').astype(int)
+        available_players['WR_Features'] = (available_players['Position'] == 'WR').astype(int)
+        available_players['TE_Features'] = (available_players['Position'] == 'TE').astype(int)
+        available_players['QB_Passing_Yards'] = available_players['QB_Features'] * available_players['Yards per Completion']
+        available_players['RB_Rushing_Yards'] = available_players['RB_Features'] * available_players['Yards per Carry']
+        available_players['WR_Receiving_Yards'] = available_players['WR_Features'] * available_players['Yards per Reception']
+        available_players['TE_Receiving_Yards'] = available_players['TE_Features'] * available_players['Yards per Reception']
         try:
             from recommender_system import recommend_players
             recommendations = recommend_players(
